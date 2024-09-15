@@ -20,14 +20,18 @@ export class BoardRenderer {
                 cell.classList.add('cell');
                 cell.dataset.row = row;
                 cell.dataset.col = col;
+                
+                const stone = this.board.grid[row][col];
+                if (stone) {
+                    const stoneElement = document.createElement('div');
+                    stoneElement.classList.add('stone');
+                    const stoneColor = PLAYER_COLORS[stone.playerId];
+                    stoneElement.style.backgroundColor = stoneColor;
 
-                const playerId = this.board.grid[row][col];
-                if (playerId) {
-                    const stone = document.createElement('div');
-                    stone.classList.add('stone');
-                    const stoneColor = PLAYER_COLORS[playerId];
-                    stone.style.backgroundColor = stoneColor;
-                    cell.appendChild(stone);
+                    // Assign the stone's unique ID to the element
+                    stoneElement.dataset.stoneId = stone.id;
+
+                    cell.appendChild(stoneElement);
                 }
 
                 this.gridElement.appendChild(cell);
@@ -73,14 +77,15 @@ export class BoardRenderer {
                 cell.dataset.row = row;
                 cell.dataset.col = col;
     
-                const playerId = this.board.grid[row][col];
-                if (playerId !== null) {
+                const stone = this.board.grid[row][col];
+                if (stone !== null) {
                     const stoneElement = document.createElement('div');
                     stoneElement.classList.add('stone');
-                    stoneElement.style.backgroundColor = PLAYER_COLORS[playerId];
-    
+                    stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
+                    stoneElement.dataset.stoneId = stone.id; 
+
                     // Calculate initial and target positions
-                    const previousPosition = this.getPreviousStonePosition(row, col, playerId);
+                    const previousPosition = this.getPreviousStonePosition(row, col, stone);
                     const currentTop = row * (this.cellSize + this.gapSize) + (this.cellSize - this.stoneSize) / 2;
                     const currentLeft = col * (this.cellSize + this.gapSize) + (this.cellSize - this.stoneSize) / 2;
     
@@ -96,6 +101,7 @@ export class BoardRenderer {
                             element: stoneElement,
                             fromTop: previousPosition.top,
                             toTop: currentTop,
+                            stoneId: stone.id,
                         });
                     } else {
                         // Stone didn't move; set directly to current position
@@ -120,32 +126,30 @@ export class BoardRenderer {
     }
     
 
-    getPreviousStonePosition(row, col, playerId) {
+    getPreviousStonePosition(row, col, stone) {
         // Find the stone's position before gravity was applied
         // This requires tracking the stones' positions before gravity
         // For the purpose of this implementation, we'll assume that the stones moved vertically only
 
-        const previousRow = this.findPreviousRow(row, col, playerId);
+        const previousRow = this.findPreviousRow(row, col, stone);
         const top = previousRow * (this.cellSize + this.gapSize) + (this.cellSize - this.stoneSize) / 2;
         return { top };
     }
 
-    findPreviousRow(newRow, col, playerId) {
-        // Starting from newRow upwards, find the first position where the stone was before gravity
-        // Since we rotated the grid and applied gravity, stones may have moved down
-
-        // Note: We need to keep track of the previous grid state before gravity was applied
-        // We'll store it in the Board class before applying gravity
-
+    findPreviousRow(newRow, col, stone) {
         const previousGrid = this.board.previousGrid;
-        for (let row = 0; row <= newRow; row++) {
-            if (previousGrid[row][col] === playerId) {
+    
+        for (let row = 0; row < this.board.size; row++) {
+            const prevStone = previousGrid[row][col];
+            if (prevStone && prevStone.id === stone.id) {
                 return row;
             }
         }
-        // If not found, assume it started from the top
-        return 0;
+    
+        // If not found, assume it started from the newRow
+        return newRow;
     }
+    
 
     animateStonesFalling(stonesToAnimate, callback) {
         let animationsCompleted = 0;
@@ -183,11 +187,12 @@ export class BoardRenderer {
     
 
 
-    animateStoneDrop(startRow, col, targetRow, playerId, callback) {
-        const stoneColor = PLAYER_COLORS[playerId];
+    animateStoneDrop(startRow, col, targetRow, stone, callback) {
+        const stoneColor = PLAYER_COLORS[stone.playerId];
         const stoneElement = document.createElement('div');
         stoneElement.classList.add('stone');
         stoneElement.style.backgroundColor = stoneColor;
+        stoneElement.dataset.stoneId = stone.id;
 
         // Calculate the offset to center the stone within the cell
         const offset = (this.cellSize - this.stoneSize) / 2;
@@ -205,7 +210,7 @@ export class BoardRenderer {
             setTimeout(() => {
                 // Remove the temporary stone element
                 this.gridElement.removeChild(stoneElement);
-                this.board.placeStone(targetRow, col, playerId);
+                this.board.placeStone(targetRow, col, stone.playerId);
                 this.drawBoard();
                 callback(); // Proceed with game logic
             }, 0);

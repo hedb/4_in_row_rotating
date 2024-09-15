@@ -1,11 +1,12 @@
 import { WINNING_ROW_LENGTH } from './config.js';
+import { Stone } from './Stone.js';
 
 
 export class Board {
     constructor(size) {
         this.size = size;
         this.grid = this.createGrid();
-        this.previousGrid = this.createGrid(); // Store previous grid state
+        this.previousGrid = null; // Store previous grid state
     }
 
     createGrid() {
@@ -27,8 +28,8 @@ export class Board {
         return this.grid[row][col] !== null;
     }
     
-    placeStone(row, col, playerId) {
-        this.grid[row][col] = playerId;
+    placeStone(row, col, stone) {
+        this.grid[row][col] = stone;
     }
     
 
@@ -77,6 +78,8 @@ export class Board {
         this.grid = newGrid;
     }
 
+    
+
     applyGravity() {
         // Store the current grid as the previous grid before gravity is applied
         this.previousGrid = this.grid.map(row => row.slice());
@@ -106,7 +109,8 @@ export class Board {
             row < this.size &&
             col >= 0 &&
             col < this.size &&
-            this.grid[row][col] === playerId
+            this.grid[row][col] != null &&
+            this.grid[row][col].playerId === playerId
         ) {
             count++;
             row += deltaRow;

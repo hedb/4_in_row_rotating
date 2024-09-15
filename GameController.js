@@ -1,6 +1,7 @@
 import { Board } from './Board.js';
 import { BoardRenderer } from './BoardRenderer.js';
 import { InputHandler } from './InputHandler.js';
+import { Stone } from './Stone.js';
 import {
     GRID_SIZE,
     CELL_SIZE,
@@ -65,8 +66,9 @@ export class GameController {
             return;
         }
 
-        this.boardRenderer.animateStoneDrop(selectedRow, col, targetRow, this.currentPlayer, () => {
-            this.board.placeStone(targetRow, col, this.currentPlayer);
+        const stone = new Stone(this.currentPlayer);
+        this.boardRenderer.animateStoneDrop(selectedRow, col, targetRow, stone, () => {
+            this.board.placeStone(targetRow, col, stone);
             this.boardRenderer.drawBoard();
 
             // Check for a win
