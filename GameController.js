@@ -22,6 +22,7 @@ export class GameController {
         this.currentPlayer = 1; // Start with Player 1
         this.gameOver = false;
         this.inputEnabled = true; // Control input state
+        this.displayGameOverMessage('')
         
         // Draw the initial board
         this.boardRenderer.drawBoard();
@@ -133,7 +134,7 @@ export class GameController {
             // Animate stones falling due to gravity
             this.boardRenderer.animateGravity(() => {
                 // After gravity animation completes
-        
+                
                 // Re-render the board to show the final state
                 this.boardRenderer.drawBoard();
         
@@ -159,10 +160,10 @@ export class GameController {
     checkForWinAfterRotation() {
         for (let row = 0; row < this.board.size; row++) {
             for (let col = 0; col < this.board.size; col++) {
-                const playerId = this.board.grid[row][col];
-                if (playerId !== null) {
-                    if (this.board.checkForWin(row, col, playerId)) {
-                        return playerId;
+                const stone = this.board.grid[row][col];
+                if (stone !== null) {
+                    if (this.board.checkForWin(row, col, stone.playerId)) {
+                        return stone.playerId;
                     }
                 }
             }
