@@ -14,9 +14,11 @@ export class GameController {
         this.inputHandler = new InputHandler(this);
         this.init();
         this.inputHandler.bindInputEvents();
+        this.update_countdown_func(this.rotationFrequency)
     }
 
     init() {
+        this.turnCounter = 0
         this.board = new Board(GRID_SIZE);
         this.boardRenderer = new BoardRenderer(this.board, CELL_SIZE);
         this.currentPlayer = 1; // Start with Player 1
@@ -93,6 +95,16 @@ export class GameController {
 
     switchPlayer() {
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+        this.turnCounter++;
+        if (this.turnCounter%this.rotationFrequency == 0) {
+            this.update_countdown_func(0)
+            setTimeout(() => {
+                this.rotateGrid();
+            }, 0);
+
+        } else {
+            this.update_countdown_func(this.rotationFrequency-(this.turnCounter%this.rotationFrequency))
+        }
     }
 
 
@@ -147,6 +159,7 @@ export class GameController {
                 } else {
                     // Continue the game
                     this.inputEnabled = true;
+                    this.update_countdown_func(this.rotationFrequency)
                 }
         
                 this.isRotating = false;
