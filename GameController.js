@@ -31,6 +31,14 @@ export class GameController {
         
     }
 
+     displayWinners(winners) {
+        for (let winner of winners) {
+            const stoneElement = winner.stoneElement;
+            // change color of stone element
+            stoneElement.style.backgroundColor = 'green';
+        }
+    }
+
     startGame() {
         this.boardRenderer.drawBoard();
         this.inputHandler.bindInputEvents();
@@ -75,10 +83,10 @@ export class GameController {
             this.boardRenderer.drawBoard();
 
             // Check for a win
-            const hasWon = this.board.checkForWin(targetRow, col, this.currentPlayer);
-
-            if (hasWon) {
+            const winners = this.board.checkForWin(targetRow, col, this.currentPlayer);
+            if (winners) {
                 this.gameOver = true;
+                this.displayWinners(winners);
                 this.displayGameOverMessage(`Player ${this.currentPlayer} wins!`);
             } else if (this.board.isBoardFull()) {
                 this.gameOver = true;

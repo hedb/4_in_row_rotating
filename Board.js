@@ -43,27 +43,56 @@ export class Board {
     }
 
     checkForWin(row, col, playerId) {
-        return (
-            this.checkDirection(row, col, playerId, 0, 1) || // Horizontal
-            this.checkDirection(row, col, playerId, 1, 0) || // Vertical
-            this.checkDirection(row, col, playerId, 1, 1) || // Diagonal /
-            this.checkDirection(row, col, playerId, 1, -1)   // Diagonal \
-        );
+        const cond1 = this.checkDirection(row, col, playerId, 0, 1); // Horizontal
+        if (cond1[0])
+            return cond1[1]
+        const cond2 = this.checkDirection(row, col, playerId, 1, 0); // Vertical
+        if (cond2[0])
+            return cond2[1]
+        const cond3 = this.checkDirection(row, col, playerId, 1, 1); // Diagonal /
+        if (cond3[0])
+            return cond3[1]
+        const cond4 = this.checkDirection(row, col, playerId, 1, -1);   // Diagonal \
+        if (cond4[0])
+            return cond4[1]
+        return false
     }
 
     checkDirection(row, col, playerId, deltaRow, deltaCol) {
-        let count = 1;
-
         // Check in the positive direction
-        count += this.countStones(row, col, playerId, deltaRow, deltaCol);
+        let winners = this.countStones(row, col, playerId, deltaRow, deltaCol);
 
         // Check in the negative direction
-        count += this.countStones(row, col, playerId, -deltaRow, -deltaCol);
-
-        return count >= WINNING_ROW_LENGTH;
+        let ls = this.countStones(row, col, playerId, -deltaRow, -deltaCol);
+        if (ls.length > 0){// Remove the stone at the center to avoid double counting
+            ls.pop(0)
+            winners = winners.concat(ls);
+        }
+        return [winners.length >= WINNING_ROW_LENGTH, winners];
     }
 
 
+    countStones(startRow, startCol, playerId, deltaRow, deltaCol) {
+        // let count = 0;
+        let row = startRow;
+        let col = startCol;
+        let winners = [];
+        while (
+            row >= 0 &&
+            row < this.size &&
+            col >= 0 &&
+            col < this.size &&
+            this.grid[row][col] != null &&
+            this.grid[row][col].playerId === playerId
+        ) {
+            // count++;
+            winners.push(this.grid[row][col]);
+            row += deltaRow;
+            col += deltaCol;
+        }
+
+        return winners;
+    }
 
     rotateGrid() {
         // Rotate the grid 90 degrees counterclockwise
@@ -99,24 +128,4 @@ export class Board {
         }
     }
 
-    countStones(startRow, startCol, playerId, deltaRow, deltaCol) {
-        let count = 0;
-        let row = startRow + deltaRow;
-        let col = startCol + deltaCol;
-
-        while (
-            row >= 0 &&
-            row < this.size &&
-            col >= 0 &&
-            col < this.size &&
-            this.grid[row][col] != null &&
-            this.grid[row][col].playerId === playerId
-        ) {
-            count++;
-            row += deltaRow;
-            col += deltaCol;
-        }
-
-        return count;
-    }
 }

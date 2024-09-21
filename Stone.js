@@ -2,7 +2,6 @@
 
 export class Stone {
     static idCounter = 0;
-
     constructor(playerId, id = null) {
         this.playerId = playerId;
         if (id !== null) {
@@ -10,5 +9,8 @@ export class Stone {
         } else {
             this.id = Stone.idCounter++;
         }
+    }
+    setElement(stoneElement) {
+        this.stoneElement = stoneElement;
     }
 }

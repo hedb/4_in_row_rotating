@@ -25,6 +25,7 @@ export class BoardRenderer {
                 if (stone) {
                     const stoneElement = document.createElement('div');
                     stoneElement.classList.add('stone');
+                    // stone.setElement(stoneElement);
                     const stoneColor = PLAYER_COLORS[stone.playerId];
                     stoneElement.style.backgroundColor = stoneColor;
 
@@ -32,6 +33,8 @@ export class BoardRenderer {
                     stoneElement.dataset.stoneId = stone.id;
 
                     cell.appendChild(stoneElement);
+                    console.log(typeof(stone));
+                    stone.setElement(stoneElement);
                 }
 
                 this.gridElement.appendChild(cell);
@@ -82,7 +85,7 @@ export class BoardRenderer {
                     const stoneElement = document.createElement('div');
                     stoneElement.classList.add('stone');
                     stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
-                    stoneElement.dataset.stoneId = stone.id; 
+                    stoneElement.dataset.stoneId = stone.id; // Assign unique ID
 
                     // Calculate initial and target positions
                     const previousPosition = this.getPreviousStonePosition(row, col, stone);
@@ -210,7 +213,7 @@ export class BoardRenderer {
             setTimeout(() => {
                 // Remove the temporary stone element
                 this.gridElement.removeChild(stoneElement);
-                this.board.placeStone(targetRow, col, stone.playerId);
+                this.board.placeStone(targetRow, col, stone);
                 this.drawBoard();
                 callback(); // Proceed with game logic
             }, 0);
