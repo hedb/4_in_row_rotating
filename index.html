@@ -3,20 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Four-in-a-Row with Rotating Grid - Phase 1</title>
+    <title>Four in a row (wait, what?)</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Four-in-a-Row with Rotating Grid</h1>
+    <h1>Four in a row (wait, what?)</h1>
 
     <div id="game-container">
-        <div class="control-panel">
+        <div class="top-bar">
+            <div class="control-group">
+                <label for="countdown">Turns until next rotation:</label>
+                <span id="countdown"></span>
+            </div>
+            <div id="settings-icon">⚙️</div>
+        </div>
+
+        <div id="turn-indicator">Player 1's turn</div>
+
+        <div id="grid-wrapper">
+            <div id="grid"></div>
+        </div>
+
+    </div>
+
+    <div id="settings-pane" class="hidden">
+        <div id="settings-content">
+            <h2>Settings</h2>
             <div class="control-group">
                 <label for="rotationFrequency">Rotation Frequency:</label>
                 <select id="rotationFrequency">
                     <option value="1">1</option>
-                    <option value="2" selected>2</option>
-                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="3"  selected>3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
@@ -26,23 +44,14 @@
                     <option value="10">10</option>
                 </select>
             </div>
-            <div class="control-group">
-                <label for="countdown">Turns until rotation:</label>
-                <span id="countdown"></span>
+            <div class="settings-actions">
+                <button id="rotate-button">Rotate Grid</button>
+                <button id="reset-button">Reset Game</button>
             </div>
-        </div>
-
-        <div id="turn-indicator">Player 1's turn</div>
-
-        <div id="grid-wrapper">
-            <div id="grid"></div>
-        </div>
-
-        <div class="control-panel">
-            <button id="rotate-button">Rotate Grid</button>
-            <button id="reset-button">Reset Game</button>
+            <button id="close-settings">Close</button>
         </div>
     </div>
+    <div id="overlay" class="hidden"></div>
 
     <script type="module" src="index.js"></script>
 </body>

@@ -46,22 +46,38 @@ export class BoardRenderer {
         // Apply the rotation to the grid wrapper
         this.gridWrapper.style.transform = `rotate(-90deg)`;
     
+        // Define a named handler to be able to remove it later
+        const handleTransitionEnd = (event) => {
+            // Ensure we are only responding to the transition on the grid wrapper itself
+            if (event.target !== this.gridWrapper) {
+                return;
+            }
+
+            // Use a timeout to ensure the transform reset happens after the current execution stack
+            setTimeout(() => {
+                // Disable transitions temporarily
+                this.gridWrapper.style.transition = 'none';
+                this.gridWrapper.style.transform = 'rotate(0deg)';
+        
+                // Use requestAnimationFrame to wait for the DOM to be ready for the next paint
+                requestAnimationFrame(() => {
+                    // Re-enable transitions by clearing the inline style
+                    this.gridWrapper.style.transition = '';
+            
+                    // Re-render the grid to reflect the new state
+                    this.drawBoard();
+            
+                    // Callback after animation completes
+                    if (callback) callback();
+                });
+            }, 0);
+
+            // Clean up the event listener
+            this.gridWrapper.removeEventListener('transitionend', handleTransitionEnd);
+        };
+    
         // Listen for the transition end event
-        this.gridWrapper.addEventListener('transitionend', () => {
-            // Remove the rotation and transition
-            this.gridWrapper.style.transition = 'none';
-            this.gridWrapper.style.transform = 'rotate(0deg)';
-    
-            // Force reflow to re-enable transitions
-            void this.gridWrapper.offsetWidth;
-            this.gridWrapper.style.transition = 'transform 1s ease-in-out';
-    
-            // Re-render the grid to reflect the new state
-            this.drawBoard();
-    
-            // Callback after animation completes
-            if (callback) callback();
-        }, { once: true });
+        this.gridWrapper.addEventListener('transitionend', handleTransitionEnd);
     }
     
 
