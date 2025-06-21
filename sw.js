@@ -7,6 +7,7 @@ console.log(`[Service Worker] Cache name: ${CACHE_NAME}`);
 
 // All files that make up the app shell
 const APP_SHELL_FILES = [
+    '/',
     '/index.html',
     '/styles.css',
     '/index.js',
@@ -21,6 +22,9 @@ const APP_SHELL_FILES = [
 // On install, cache all app shell files
 self.addEventListener('install', event => {
     console.log(`[Service Worker] Install event triggered for version ${VERSION}`);
+    // Take control immediately
+    self.skipWaiting();
+    
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -53,6 +57,9 @@ self.addEventListener('install', event => {
 // On activate, delete old caches
 self.addEventListener('activate', event => {
     console.log(`[Service Worker] Activate event triggered for version ${VERSION}`);
+    // Take control of all clients immediately
+    self.clients.claim();
+    
     event.waitUntil(
         caches.keys().then(cacheNames => {
             console.log(`[Service Worker] Found existing caches:`, cacheNames);
@@ -75,11 +82,17 @@ self.addEventListener('activate', event => {
 // On fetch, serve from cache, but inject version params into index.html
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
+    
+    // Log every single request for debugging
+    console.log(`[Service Worker] FETCH EVENT - Full URL: ${event.request.url}`);
+    console.log(`[Service Worker] FETCH EVENT - Pathname: ${url.pathname}`);
+    console.log(`[Service Worker] FETCH EVENT - Search params: ${url.search}`);
 
     // If the request is for index.html, modify it on the fly
     if (url.pathname === '/' || url.pathname === '/index.html') {
         console.log(`[Service Worker] Intercepting HTML request: ${url.pathname}`);
         event.respondWith(
+            // Always look for /index.html in cache, regardless of whether request was for / or /index.html
             caches.match('/index.html')
                 .then(response => {
                     if (!response) {
@@ -94,6 +107,7 @@ self.addEventListener('fetch', event => {
                             .replace('src="index.js"', `src="index.js?v=${VERSION}"`);
                         
                         console.log(`[Service Worker] HTML modified with version parameters`);
+                        console.log(`[Service Worker] Injected: styles.css?v=${VERSION} and index.js?v=${VERSION}`);
                         return new Response(versionedHtml, {
                             headers: { 'Content-Type': 'text/html' }
                         });
