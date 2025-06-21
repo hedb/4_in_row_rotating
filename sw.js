@@ -1,5 +1,5 @@
-import { VERSION } from './config.js';
-
+// Hard-code VERSION to avoid module import issues in service worker
+const VERSION = '0.6.0';
 const CACHE_NAME = `4-in-a-row-v${VERSION}`;
 
 console.log(`[Service Worker] Starting with VERSION: ${VERSION}`);
@@ -16,7 +16,10 @@ const APP_SHELL_FILES = [
     '/BoardRenderer.js',
     '/GameController.js',
     '/InputHandler.js',
-    '/Stone.js'
+    '/Stone.js',
+    '/manifest.json',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png'
 ];
 
 // On install, cache all app shell files
@@ -29,24 +32,29 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log(`[Service Worker] Opened cache: ${CACHE_NAME}`);
-                console.log(`[Service Worker] Starting to fetch ${APP_SHELL_FILES.length} files with cache busting...`);
-                
+                console.log(`[Service Worker] Caching app shell with clean URLs...`);
+
                 // Force fresh fetches by adding cache-busting parameters during install
                 const fetchPromises = APP_SHELL_FILES.map(url => {
-                    const bustUrl = `${url}?cb=${Date.now()}`;
-                    console.log(`[Service Worker] Fetching fresh: ${bustUrl}`);
-                    return fetch(bustUrl).then(response => {
+                    // Always use a cache-buster to ensure we get a fresh version from the network
+                    const fetchUrl = `${url}?cb=${Date.now()}`;
+                    console.log(`[Service Worker] Fetching fresh: ${fetchUrl}`);
+
+                    return fetch(fetchUrl).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`[Service Worker] Fetch failed for ${url}: ${response.status} ${response.statusText}`);
+                        }
                         console.log(`[Service Worker] Successfully fetched ${url}, status: ${response.status}`);
                         // Store the response in cache using the clean URL (without cache-buster)
-                        return cache.put(url, response.clone()).then(() => {
-                            console.log(`[Service Worker] Cached: ${url}`);
+                        return cache.put(url, response).then(() => {
+                            console.log(`[Service Worker] Cached clean URL: ${url}`);
                         });
                     }).catch(error => {
-                        console.error(`[Service Worker] Failed to fetch ${url}:`, error);
+                        console.error(`[Service Worker] Failed to fetch and cache ${url}:`, error);
                         throw error;
                     });
                 });
-                
+
                 return Promise.all(fetchPromises).then(() => {
                     console.log(`[Service Worker] All files cached successfully for version ${VERSION}`);
                 });
@@ -79,7 +87,7 @@ self.addEventListener('activate', event => {
     );
 });
 
-// On fetch, serve from cache, but inject version params into index.html
+// On fetch, serve from cache with simple cache-first strategy
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     
@@ -92,42 +100,36 @@ self.addEventListener('fetch', event => {
     if (url.pathname === '/' || url.pathname === '/index.html') {
         console.log(`[Service Worker] Intercepting HTML request: ${url.pathname}`);
         event.respondWith(
-            // Always look for /index.html in cache, regardless of whether request was for / or /index.html
-            caches.match('/index.html')
-                .then(response => {
-                    if (!response) {
-                        console.log(`[Service Worker] HTML not in cache, fetching from network`);
-                        return fetch(event.request);
-                    }
-                    console.log(`[Service Worker] HTML found in cache, modifying with version ${VERSION}`);
-                    return response.text().then(html => {
-                        // Inject cache-busting query parameters
-                        const versionedHtml = html
-                            .replace('href="styles.css"', `href="styles.css?v=${VERSION}"`)
-                            .replace('src="index.js"', `src="index.js?v=${VERSION}"`);
-                        
-                        console.log(`[Service Worker] HTML modified with version parameters`);
-                        console.log(`[Service Worker] Injected: styles.css?v=${VERSION} and index.js?v=${VERSION}`);
-                        return new Response(versionedHtml, {
-                            headers: { 'Content-Type': 'text/html' }
-                        });
+            caches.match('/index.html').then(response => {
+                if (!response) {
+                    console.log(`[Service Worker] HTML not in cache, fetching from network`);
+                    return fetch(event.request);
+                }
+                console.log(`[Service Worker] HTML found in cache, modifying with version ${VERSION}`);
+                return response.text().then(html => {
+                    const versionedHtml = html
+                        .replace('href="styles.css"', `href="styles.css?v=${VERSION}"`)
+                        .replace('src="index.js"', `src="index.js?v=${VERSION}"`);
+                    
+                    return new Response(versionedHtml, {
+                        headers: { 'Content-Type': 'text/html' }
                     });
-                })
+                });
+            })
         );
     } else {
-        // For all other requests, use a simple cache-first strategy.
-        console.log(`[Service Worker] Cache-first request for: ${url.pathname}`);
+        // For all other requests, use a cache-first strategy, ignoring query params.
+        // This handles both versioned requests (e.g., styles.css?v=1.2.3) and
+        // clean requests from ES6 modules (e.g., /Board.js).
         event.respondWith(
-            caches.match(event.request)
-                .then(response => {
-                    if (response) {
-                        console.log(`[Service Worker] Serving from cache: ${url.pathname}`);
-                        return response;
-                    } else {
-                        console.log(`[Service Worker] Not in cache, fetching from network: ${url.pathname}`);
-                        return fetch(event.request);
-                    }
-                })
+            caches.match(event.request, { ignoreSearch: true }).then(response => {
+                if (response) {
+                    console.log(`[Service Worker] Serving from cache: ${event.request.url}`);
+                    return response;
+                }
+                console.log(`[Service Worker] Not in cache, fetching from network: ${event.request.url}`);
+                return fetch(event.request);
+            })
         );
     }
 }); 
