@@ -27,7 +27,7 @@ h1 {
     width: calc((60px + 5px) * 6 - 5px);
     height: calc((60px + 5px) * 6 - 5px);
     transform-origin: center center;
-    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: transform 0.8s ease-in-out;
     margin: 0 auto;
     will-change: transform;
     backface-visibility: hidden;
