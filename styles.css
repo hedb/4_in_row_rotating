@@ -29,6 +29,7 @@ h1 {
     transform-origin: center center;
     transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     margin: 0 auto;
+    will-change: transform;
 }
 
 #grid {
