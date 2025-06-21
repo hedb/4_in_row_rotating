@@ -1,6 +1,8 @@
 import { GameController } from './GameController.js';
 import { VERSION } from './config.js';
 
+console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
+
 const gameController = new GameController();
 gameController.startGame();
 
