@@ -1,7 +1,15 @@
 import { GameController } from './GameController.js';
+import { VERSION } from './config.js';
 
 const gameController = new GameController();
 gameController.startGame();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const versionDisplay = document.getElementById('version-display');
+    if (versionDisplay) {
+        versionDisplay.textContent = `v${VERSION}`;
+    }
+});
 
 const settingsIcon = document.getElementById('settings-icon');
 const settingsPane = document.getElementById('settings-pane');

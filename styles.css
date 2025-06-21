@@ -189,3 +189,9 @@ select {
     border: 1px solid #ccc;
     background-color: #fff;
 }
+
+.version {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #aaa;
+}
