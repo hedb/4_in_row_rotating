@@ -20,11 +20,17 @@ The application is built using a clean, object-oriented structure that separates
 
 The game is a PWA with offline capabilities, powered by a service worker (`sw.js`).
 
--   **Offline First:** The service worker caches the entire application shell (HTML, CSS, JS) upon installation, allowing the game to be launched and played without an internet connection.
--   **Version-Based Cache Busting:** To ensure users always have the latest version of the game logic, the app uses a versioning system. The version is managed in `config.js`. When the version is incremented, the service worker automatically:
-    1.  Creates a new, version-specific cache.
-    2.  Downloads all new JavaScript files, using the version number as a cache-busting query parameter (e.g., `index.js?v=0.2.0`).
-    3.  Deletes the old cache, ensuring a clean and immediate update for all users on the next page load.
+-   **Offline First:** The service worker caches the entire application shell (HTML, CSS, JS, manifest, icons) upon installation, allowing the game to be launched and played without an internet connection.
+-   **Robust Cache Versioning:** To ensure users always receive the latest version, the app uses a specific, manual versioning strategy that provides explicit control over updates.
+    1.  **Dual Versioning:** The version number must be updated in two places:
+        -   `config.js`: This `VERSION` constant is used by the application to display the version in the UI.
+        -   `sw.js`: This `VERSION` constant is used to name the cache (e.g., `4-in-a-row-v0.6.0`).
+    2.  **Update Trigger:** The browser only installs a new service worker if the `sw.js` file itself changes. Therefore, **incrementing the version in `sw.js` is the essential trigger for the entire update process.**
+    3.  **Clean Installation:** The new service worker fetches fresh copies of all app files and stores them in a new, version-named cache.
+    4.  **Atomic Swap:** On activation, the new service worker deletes the entire old cache, ensuring that stale files are never served.
+-   **Intelligent Fetch Handling:**
+    -   The service worker dynamically injects the version number as a query parameter into the CSS and JS links in `index.html` (e.g., `index.js?v=0.6.0`). This ensures the browser requests the new files after an update.
+    -   For all requests, the fetch handler uses `caches.match(event.request, { ignoreSearch: true })`. This powerful option allows it to serve the correct cached file by ignoring the query string, seamlessly handling both versioned requests from the HTML and clean URL requests from ES6 module imports.
 
 ### Animations & Transitions
 
