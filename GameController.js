@@ -141,12 +141,12 @@ export class GameController {
         this.isRotating = true;
         this.inputEnabled = false;
 
-        // Rotate the grid data structure
-        this.board.rotateGrid();
-
         // Animate the rotation
         this.boardRenderer.animateRotation(() => {
             // After rotation animation completes
+            
+            // Rotate the grid data structure
+            this.board.rotateGrid();
         
             // Apply gravity to the rotated grid
             this.board.applyGravity();

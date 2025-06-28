@@ -7,6 +7,8 @@ export class BoardRenderer {
         this.gapSize = GAP_SIZE;
         this.gridWrapper = document.getElementById('grid-wrapper');
         this.gridElement = document.getElementById('grid');
+        this.isAnimatingRotation = false;
+        this.currentRotation = 0;
     }
     
     drawBoard() {
@@ -43,41 +45,61 @@ export class BoardRenderer {
     }
 
     animateRotation(callback) {
-        // Apply the rotation to the grid wrapper
+        // Prevent multiple simultaneous rotations
+        if (this.isAnimatingRotation) {
+            return;
+        }
+        this.isAnimatingRotation = true;
+        
+        // Always rotate by exactly 90 degrees counterclockwise from current position
+        // We don't need to track accumulated rotation since we reset to 0 after each animation
         this.gridWrapper.style.transform = `rotate(-90deg)`;
     
+        // Flag to prevent multiple callback executions
+        let callbackExecuted = false;
+        
         // Define a named handler to be able to remove it later
         const handleTransitionEnd = (event) => {
             // Ensure we are only responding to the transition on the grid wrapper itself
             if (event.target !== this.gridWrapper) {
                 return;
             }
-
-            // Use a timeout to ensure the transform reset happens after the current execution stack
-            setTimeout(() => {
-                // Disable transitions temporarily
-                this.gridWrapper.style.transition = 'none';
-                this.gridWrapper.style.transform = 'rotate(0deg)';
-        
-                // Use requestAnimationFrame to wait for the DOM to be ready for the next paint
-                requestAnimationFrame(() => {
-                    // Re-enable transitions by clearing the inline style
-                    this.gridWrapper.style.transition = '';
             
-                    // Re-render the grid to reflect the new state
-                    this.drawBoard();
-            
-                    // Callback after animation completes
-                    if (callback) callback();
-                });
-            }, 0);
+            // Prevent multiple executions
+            if (callbackExecuted) {
+                return;
+            }
+            callbackExecuted = true;
 
-            // Clean up the event listener
+            // Clean up the event listener immediately
             this.gridWrapper.removeEventListener('transitionend', handleTransitionEnd);
+
+            // Reset visual rotation to 0 degrees but keep track of logical rotation
+            this.gridWrapper.style.transition = 'none';
+            this.gridWrapper.style.transform = 'rotate(0deg)';
+            
+            // Force reflow
+            this.gridWrapper.getBoundingClientRect();
+            
+            // Re-enable transitions
+            this.gridWrapper.style.transition = '';
+
+            // Reset the animation flag
+            this.isAnimatingRotation = false;
+    
+            // Callback after animation completes
+            if (callback) callback();
         };
     
         // Listen for the transition end event
         this.gridWrapper.addEventListener('transitionend', handleTransitionEnd);
+        
+        // Fallback timeout in case transitionend doesn't fire (mobile bug protection)
+        setTimeout(() => {
+            if (!callbackExecuted) {
+                handleTransitionEnd({ target: this.gridWrapper });
+            }
+        }, 2000); // 2 second fallback
     }
     
 
@@ -262,7 +284,7 @@ export class BoardRenderer {
 
 
     resetRendering() {
-        this.rotationDegrees = 0;
+        this.currentRotation = 0;
         this.gridWrapper.style.transform = 'rotate(0deg)';
         this.drawBoard();
     }
