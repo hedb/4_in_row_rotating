@@ -65,7 +65,7 @@ export class Board {
         // Check in the negative direction
         let ls = this.countStones(row, col, playerId, -deltaRow, -deltaCol);
         if (ls.length > 0){// Remove the stone at the center to avoid double counting
-            ls.pop(0)
+            ls.shift()
             winners = winners.concat(ls);
         }
         return [winners.length >= WINNING_ROW_LENGTH, winners];

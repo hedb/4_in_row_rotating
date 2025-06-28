@@ -1,4 +1,4 @@
-export const VERSION = '0.7.5';
+export const VERSION = '0.7.7';
 
 export const GRID_SIZE = 6;
 export const CELL_SIZE = 60; // Size in pixels
@@ -10,7 +10,7 @@ export const PLAYER_COLORS = {
     2: '#000000', // Player 2: Black
 };
 
-export const WINNING_ROW_LENGTH = 4;
+export const WINNING_ROW_LENGTH = 3;
 
 // New constant for falling speed
 export const STONE_FALLING_SPEED = 500; // Speed in pixels per second
