@@ -90,7 +90,7 @@ def enable_apis():
     apis = [
         'cloudfunctions.googleapis.com',
         'cloudbuild.googleapis.com',
-        'redis.googleapis.com'
+        'firestore.googleapis.com'
     ]
     
     for api in apis:
