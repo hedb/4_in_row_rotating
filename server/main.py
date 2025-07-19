@@ -52,6 +52,22 @@ def get_firestore_client():
         logger.error(f"Firestore connection failed: {str(e)}")
         return None
 
+def clean_firestore_timestamps(data):
+    """Convert Firestore timestamps to JSON-serializable ISO strings"""
+    if isinstance(data, dict):
+        cleaned = {}
+        for key, value in data.items():
+            if hasattr(value, 'isoformat'):  # Firestore timestamp
+                cleaned[key] = value.isoformat()
+            elif isinstance(value, dict):
+                cleaned[key] = clean_firestore_timestamps(value)
+            elif isinstance(value, list):
+                cleaned[key] = [clean_firestore_timestamps(item) if isinstance(item, dict) else item for item in value]
+            else:
+                cleaned[key] = value
+        return cleaned
+    return data
+
 def create_mock_session():
     """Create a mock session when Firestore is not available"""
     session_id = str(uuid.uuid4())
@@ -163,7 +179,7 @@ def handle_join_session():
         if not session_doc.exists:
             return {"error": "Session not found"}, 404
             
-        session_data = session_doc.to_dict()
+        session_data = clean_firestore_timestamps(session_doc.to_dict())
         
         if session_data["players"]["2"]["connected"]:
             return {"error": "Game is full"}, 400
@@ -178,15 +194,7 @@ def handle_join_session():
         
         # Get updated session data and convert timestamps
         updated_doc = session_ref.get()
-        updated_data = updated_doc.to_dict()
-        
-        # Convert Firestore timestamps to ISO strings for JSON serialization
-        if updated_data.get("players", {}).get("1", {}).get("lastSeen"):
-            updated_data["players"]["1"]["lastSeen"] = updated_data["players"]["1"]["lastSeen"].isoformat()
-        if updated_data.get("players", {}).get("2", {}).get("lastSeen"):
-            updated_data["players"]["2"]["lastSeen"] = updated_data["players"]["2"]["lastSeen"].isoformat()
-        if updated_data.get("createdAt"):
-            updated_data["createdAt"] = updated_data["createdAt"].isoformat()
+        updated_data = clean_firestore_timestamps(updated_doc.to_dict())
         
         result = {
             "playerId": 2,
