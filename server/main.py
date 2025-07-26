@@ -209,6 +209,147 @@ def handle_join_session():
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise
 
+def handle_get_session_state(session_id):
+    """Get the full state of a game session"""
+    try:
+        logger.info(f"Getting state for session: {session_id}")
+        
+        db = get_firestore_client()
+        if db is None:
+            return {"error": "Firestore not available"}, 503
+        
+        session_ref = db.collection('game_sessions').document(session_id)
+        session_doc = session_ref.get()
+        
+        if not session_doc.exists:
+            return {"error": "Session not found"}, 404
+            
+        # Clean timestamps and return the full session data
+        game_state = clean_firestore_timestamps(session_doc.to_dict())
+        return game_state
+        
+    except Exception as e:
+        logger.error(f"Error in handle_get_session_state: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise
+
+def handle_submit_move():
+    """Handle move submission with minimal validation"""
+    try:
+        logger.info("Handling move submission")
+        
+        if request.content_type != 'application/json':
+            return {"error": "Content-Type must be application/json"}, 400
+            
+        data = request.get_json()
+        if not data:
+            return {"error": "No JSON data provided"}, 400
+            
+        # Minimal validation - just check required fields exist
+        required_fields = ['sessionId', 'playerId', 'column']
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return {"error": f"Missing required fields: {missing_fields}"}, 400
+            
+        session_id = data['sessionId']
+        player_id = data['playerId']
+        column = data['column']
+        
+        logger.info(f"Move: Player {player_id} -> Column {column} in session {session_id}")
+        
+        db = get_firestore_client()
+        if db is None:
+            return {
+                "success": True,
+                "mock": True,
+                "message": "Move stored (mock) - Firestore not available"
+            }
+        
+        # Get session from Firestore
+        session_ref = db.collection('game_sessions').document(session_id)
+        session_doc = session_ref.get()
+        
+        if not session_doc.exists:
+            return {"error": "Session not found"}, 404
+            
+        session_data = session_doc.to_dict()
+        current_move_count = session_data.get('moveCount', 0)
+        
+        # Create move object (server doesn't validate game logic)
+        # Note: Can't use SERVER_TIMESTAMP in array elements, so use current UTC time
+        move = {
+            'player': player_id,
+            'column': column,
+            'moveNumber': current_move_count + 1,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        # Append move to session's moves array and increment move count
+        from google.cloud import firestore
+        session_ref.update({
+            'moves': firestore.ArrayUnion([move]),
+            'moveCount': current_move_count + 1
+        })
+        
+        result = {
+            "success": True,
+            "moveNumber": current_move_count + 1
+        }
+        
+        logger.info(f"Move stored: #{current_move_count + 1} for session {session_id}")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in handle_submit_move: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise
+
+def handle_get_moves(session_id):
+    """Get moves for a session with optional 'since' parameter"""
+    try:
+        logger.info(f"Getting moves for session: {session_id}")
+        
+        # Get 'since' parameter (defaults to 0)
+        since_move = request.args.get('since', 0, type=int)
+        logger.info(f"Requesting moves since move #{since_move}")
+        
+        db = get_firestore_client()
+        if db is None:
+            return {
+                "moves": [],
+                "currentMoveCount": 0,
+                "mock": True,
+                "message": "Mock moves - Firestore not available"
+            }
+        
+        # Get session from Firestore
+        session_ref = db.collection('game_sessions').document(session_id)
+        session_doc = session_ref.get()
+        
+        if not session_doc.exists:
+            return {"error": "Session not found"}, 404
+            
+        session_data = clean_firestore_timestamps(session_doc.to_dict())
+        all_moves = session_data.get('moves', [])
+        current_move_count = session_data.get('moveCount', 0)
+        
+        # Filter moves by moveNumber > since
+        new_moves = [move for move in all_moves if move.get('moveNumber', 0) > since_move]
+        
+        result = {
+            "moves": new_moves,
+            "currentMoveCount": current_move_count,
+            "sessionId": session_id
+        }
+        
+        logger.info(f"Returning {len(new_moves)} new moves (since #{since_move})")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error in handle_get_moves: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise
+
 def hello_world(request):
     """
     Main Cloud Function entry point
@@ -249,6 +390,11 @@ def hello_world(request):
                 if isinstance(result, tuple):  # Error case
                     return json.dumps(result[0]), result[1], headers
                 return json.dumps(result), 200, headers
+            elif path == 'move':
+                result = handle_submit_move()
+                if isinstance(result, tuple):  # Error case
+                    return json.dumps(result[0]), result[1], headers
+                return json.dumps(result), 200, headers
                 
         elif request.method == 'GET':
             if path == 'health' or path == '' or path == 'hello':
@@ -262,6 +408,18 @@ def hello_world(request):
                     "timestamp": datetime.now().isoformat()
                 }
                 return json.dumps(health_info), 200, headers
+            elif path.startswith('moves/'):
+                session_id = path.replace('moves/', '')
+                result = handle_get_moves(session_id)
+                if isinstance(result, tuple):  # Error case
+                    return json.dumps(result[0]), result[1], headers
+                return json.dumps(result), 200, headers
+            elif path.startswith('session/'):
+                session_id = path.replace('session/', '')
+                result = handle_get_session_state(session_id)
+                if isinstance(result, tuple):  # Error case
+                    return json.dumps(result[0]), result[1], headers
+                return json.dumps(result), 200, headers
         
         # Default 404 response
         not_found = {
@@ -271,6 +429,9 @@ def hello_world(request):
             "available_endpoints": [
                 "POST /session/create",
                 "POST /session/join", 
+                "POST /move",
+                "GET /moves/{sessionId}?since=N",
+                "GET /session/{sessionId}",
                 "GET /health"
             ]
         }
@@ -317,6 +478,9 @@ if __name__ == '__main__':
     print("Available endpoints:")
     print("  POST /session/create")
     print("  POST /session/join")
+    print("  POST /move")
+    print("  GET  /moves/{sessionId}?since=N")
+    print("  GET  /session/{sessionId}")
     print("  GET  /health")
     print("")
     

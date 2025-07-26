@@ -51,3 +51,241 @@ Because this project uses ES6 modules and a service worker, it must be run from 
 4.  Use your browser's developer tools (e.g., the "Application" tab in Chrome) to inspect the service worker and test PWA functionality.
 
 This project is a single-page application built with vanilla JavaScript (ES6 Modules), HTML, and CSS.
+
+## Multiplayer Implementation Plan
+
+### Overview
+
+With the server-side API now complete, the next phase involves evolving the client to support two distinct game modes:
+
+1. **Local Mode:** The existing "hot-seat" experience for two players sharing one device
+2. **Remote Mode:** New online multiplayer for players on different devices using the deployed server API
+
+### User Experience (UX) Design
+
+#### Game Entry & Mode Selection
+
+The user journey begins with a clear choice between game modes:
+
+1. **Main Menu:** Upon loading, users see a clean mode selection screen
+2. **Game Mode Options:**
+   - **"Play Local"** - Immediate local game start (current behavior)
+   - **"Play Online"** - Initiates remote multiplayer flow
+
+#### Online Multiplayer Flow
+
+**Creating a Game:**
+1. User selects "Play Online" → "Create New Game"
+2. App requests session from server via `POST /session/create`
+3. Display "Waiting Room" with:
+   - "Waiting for opponent..." message
+   - Shareable guest link
+   - "Copy Link" button for easy sharing
+
+**Joining a Game:**
+1. Second player opens received guest link
+2. App detects `sessionId` in URL and auto-joins via `POST /session/join`
+3. Both players transition from waiting room to active game
+
+#### In-Game Experience
+
+**Turn Management:**
+- Clear visual indication of whose turn it is
+- Disable board interaction for waiting player
+- Immediate local feedback when making moves
+- Smooth animation when receiving opponent moves
+
+**Game State Communication:**
+- "Waiting for opponent..." indicators during move transmission
+- Clear win/lose/draw screens
+- "Return to Menu" option (future: "Rematch" functionality)
+
+### Technical Architecture
+
+The implementation maintains the existing modular structure while introducing new components for online functionality:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    User Interface Layer                     │
+├─────────────────────────────────────────────────────────────┤
+│ index.html | styles.css | GameModeSelector (new)           │
+└─────────────────────────────────────────────────────────────┘
+                                │
+┌─────────────────────────────────────────────────────────────┐
+│                   Application Router                        │
+├─────────────────────────────────────────────────────────────┤
+│ index.js (enhanced) - Mode detection & handler selection   │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                    ┌───────────┴────────────┐
+                    │                        │
+┌─────────────────────────────────┐ ┌──────────────────────────────────┐
+│        Local Game Mode          │ │       Online Game Mode           │
+├─────────────────────────────────┤ ├──────────────────────────────────┤
+│ LocalGameHandler.js (new)       │ │ OnlineGameHandler.js (new)       │
+│ - Turn management               │ │ - Session management             │
+│ - Direct GameController calls   │ │ - Move synchronization           │
+└─────────────────────────────────┘ │ - Polling for opponent moves     │
+                    │               │ - API communication              │
+                    │               └──────────────────────────────────┘
+                    │                              │
+                    │               ┌──────────────────────────────────┐
+                    │               │      Network Layer               │
+                    │               ├──────────────────────────────────┤
+                    │               │ ApiController.js (new)           │
+                    │               │ - HTTP request wrapper           │
+                    │               │ - Server endpoint abstraction    │
+                    │               └──────────────────────────────────┘
+                    │                              │
+                    └──────────────┬───────────────┘
+                                   │
+┌─────────────────────────────────────────────────────────────┐
+│                   Core Game Engine                          │
+├─────────────────────────────────────────────────────────────┤
+│ GameController.js (refactored) - Pure game logic           │
+│ Board.js - Board state management                          │
+│ BoardRenderer.js - Visual rendering                        │
+│ InputHandler.js (enhanced) - Input routing                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Implementation Phases
+
+#### Phase 1: Architectural Refactoring (Foundation)
+
+**Objective:** Restructure existing code to support multiple game modes without breaking current functionality.
+
+**Tasks:**
+
+1. **Refactor `GameController.js`:**
+   - **Current Role:** Manages both game logic AND turn control
+   - **New Role:** Pure game engine focused on game state
+   - **Changes:**
+     - Extract turn management logic
+     - Expose clean API: `makeMove(column, player)`, `rotateBoard()`, `getBoardState()`
+     - Remove direct input handling dependencies
+     - Maintain all existing game rules (rotation, win detection, etc.)
+
+2. **Create `LocalGameHandler.js`:**
+   - Takes over turn-based control logic from `GameController`
+   - Manages player alternation
+   - Handles input routing from `InputHandler`
+   - Calls `GameController` methods for actual game operations
+   - **Goal:** Game plays identically to current version
+
+3. **Enhance `InputHandler.js`:**
+   - Add handler routing capability
+   - Support for different input contexts (local vs. online)
+   - Maintain existing event binding for local mode
+
+#### Phase 2: Online Infrastructure
+
+**Objective:** Build components for remote multiplayer functionality.
+
+**Tasks:**
+
+4. **Create `ApiController.js`:**
+   - Centralized server communication module
+   - Wrapper functions for all API endpoints:
+     - `createSession()` → `POST /session/create`
+     - `joinSession(sessionId)` → `POST /session/join`
+     - `submitMove(sessionId, playerId, column)` → `POST /move`
+     - `getNewMoves(sessionId, since)` → `GET /moves/{sessionId}?since=N`
+     - `getSessionState(sessionId)` → `GET /session/{sessionId}`
+   - Error handling and retry logic
+   - Network status management
+
+5. **Implement Mode Selection UI:**
+   - Add mode selection screen to `index.html`
+   - Style buttons for "Play Local" and "Play Online"
+   - Integrate with `index.js` for mode routing
+   - Hide game board initially, show after mode selection
+
+6. **Create `OnlineGameHandler.js`:**
+   - **Session Management:**
+     - Host flow: Create session, display waiting room
+     - Guest flow: Join session from URL parameter
+     - Handle session state transitions
+   - **Move Synchronization:**
+     - Submit local moves to server
+     - Poll for opponent moves (`setInterval` with `getMoves`)
+     - Apply received moves to local `GameController`
+     - Maintain move sequence integrity
+   - **State Management:**
+     - Track connection status
+     - Manage turn indicators
+     - Handle disconnection scenarios
+
+#### Phase 3: Integration & User Experience
+
+**Objective:** Tie components together and polish the user experience.
+
+**Tasks:**
+
+7. **Enhance `index.js` (Application Router):**
+   - **URL Detection:** Check for `sessionId` parameter on page load
+   - **Auto-Join:** If session ID found, launch `OnlineGameHandler` in join mode
+   - **Mode Selection:** Otherwise, display mode selection UI
+   - **Handler Initialization:** Launch appropriate handler based on user choice
+   - **Navigation Management:** Handle transitions between modes
+
+8. **Implement Waiting Room UI:**
+   - Create waiting room templates in HTML
+   - "Waiting for opponent..." messaging
+   - Guest link display with copy functionality
+   - Integration with `OnlineGameHandler` for state management
+   - Transition animations to game board
+
+9. **Add Online Game State Indicators:**
+   - Enhanced turn indicators for remote play
+   - Connection status display
+   - "Waiting for opponent..." states
+   - Network error handling UI
+   - Game over screens with mode-appropriate options
+
+#### Phase 4: Testing & Polish
+
+**Objective:** Ensure robust functionality across both modes.
+
+**Tasks:**
+
+10. **Cross-Mode Testing:**
+    - Verify local mode maintains all existing functionality
+    - Test online mode with multiple browsers/devices
+    - Validate session creation, joining, and gameplay flow
+    - Test edge cases (disconnection, rapid moves, etc.)
+
+11. **Performance Optimization:**
+    - Optimize polling frequency for responsiveness vs. server load
+    - Implement efficient move batching if needed
+    - Add client-side move validation to reduce server calls
+
+12. **User Experience Refinements:**
+    - Loading states and transitions
+    - Error messaging and recovery flows
+    - Mobile responsiveness for both modes
+    - PWA functionality verification for offline local play
+
+### Development Considerations
+
+**Backward Compatibility:**
+- Local mode must maintain 100% feature parity with current version
+- All existing configuration options (rotation frequency, etc.) preserved
+- Service worker and PWA functionality unaffected
+
+**Data Flow:**
+- Online mode uses move-based synchronization (not board state)
+- Both clients reconstruct identical board state from move sequence
+- Board rotation logic remains client-side and deterministic
+
+**Error Handling:**
+- Graceful degradation when server unavailable
+- Client-side validation before server submission
+- Automatic reconnection attempts for network issues
+
+**Future Extensibility:**
+- Architecture supports easy addition of spectator mode
+- Framework for potential WebSocket upgrade
+- Foundation for features like game replay, statistics, etc.
+
+This phased approach ensures each component can be built, tested, and integrated incrementally while maintaining a working application throughout the development process.

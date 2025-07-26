@@ -11,7 +11,45 @@
 <body>
     <h1>Four-in-a-Row with Rotating Grid</h1>
 
-    <div id="game-container">
+    <!-- Mode Selection Screen -->
+    <div id="mode-selection" class="mode-selection">
+        <h2>Choose Game Mode</h2>
+        <div class="mode-buttons">
+            <button id="play-local-btn" class="mode-button">
+                <span class="mode-title">Play Local</span>
+                <span class="mode-description">Two players on this device</span>
+            </button>
+            <button id="play-online-btn" class="mode-button">
+                <span class="mode-title">Play Online</span>
+                <span class="mode-description">Play with someone remotely</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Waiting Room for Online Games -->
+    <div id="waiting-room" class="waiting-room hidden">
+        <div class="waiting-content">
+            <h2>Online Game</h2>
+            <div id="waiting-status" class="waiting-status">Creating game...</div>
+            
+            <div id="waiting-spinner" class="spinner">
+                <div class="spinner-inner"></div>
+            </div>
+            
+            <div id="sharing-section" class="sharing-section hidden">
+                <p>Share this link with your opponent:</p>
+                <div class="link-container">
+                    <input type="text" id="guest-link" class="guest-link-input" readonly>
+                    <button id="copy-link-btn" class="copy-btn">Copy Link</button>
+                </div>
+                <div id="copy-feedback" class="copy-feedback hidden">Link copied! 📋</div>
+            </div>
+            
+            <button id="cancel-waiting-btn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
         <div class="top-bar">
             <div class="control-group">
                 <label for="countdown">Turns until rotation:</label>

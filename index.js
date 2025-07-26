@@ -1,37 +1,167 @@
 import { GameController } from './GameController.js';
+import { LocalGameHandler } from './LocalGameHandler.js';
+import { OnlineGameHandler } from './OnlineGameHandler.js';
+import { InputHandler } from './InputHandler.js';
 import { VERSION } from './config.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
 
-const gameController = new GameController();
-gameController.startGame();
+class GameApp {
+    constructor() {
+        this.gameController = null;
+        this.localGameHandler = null;
+        this.onlineGameHandler = null;
+        this.inputHandler = null;
+        this.currentMode = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    const versionDisplay = document.getElementById('version-display');
-    if (versionDisplay) {
-        versionDisplay.textContent = `v${VERSION}`;
+        this.init();
     }
-});
 
-const settingsIcon = document.getElementById('settings-icon');
-const settingsPane = document.getElementById('settings-pane');
-const closeSettingsButton = document.getElementById('close-settings');
-const overlay = document.getElementById('overlay');
-const rotationFrequencySelect = document.getElementById('rotationFrequency');
+    init() {
+        // Check for session ID in URL (for online mode auto-join)
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
 
-function toggleSettingsPane() {
-    settingsPane.classList.toggle('hidden');
-    overlay.classList.toggle('hidden');
+        if (sessionId) {
+            // Auto-join online game
+            this.startOnlineModeAsGuest(sessionId);
+        } else {
+            // Show mode selection
+            this.showModeSelection();
+        }
+
+        // Bind version display and settings
+        this.bindCommonUI();
+    }
+
+    showModeSelection() {
+        const modeSelection = document.getElementById('mode-selection');
+        const gameContainer = document.getElementById('game-container');
+
+        modeSelection.classList.remove('hidden');
+        gameContainer.classList.add('hidden');
+
+        // Bind mode selection buttons
+        document.getElementById('play-local-btn').addEventListener('click', () => {
+            this.startLocalMode();
+        });
+
+        document.getElementById('play-online-btn').addEventListener('click', () => {
+            this.startOnlineModeAsHost();
+        });
+    }
+
+    startLocalMode() {
+        this.currentMode = 'local';
+
+        // Hide mode selection and show game
+        document.getElementById('mode-selection').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+
+        // Initialize game components
+        this.gameController = new GameController();
+        this.localGameHandler = new LocalGameHandler(this.gameController);
+        this.inputHandler = new InputHandler();
+
+        // Connect components
+        this.inputHandler.setGameHandler(this.localGameHandler);
+        this.inputHandler.bindInputEvents();
+
+        // Initialize local game
+        this.localGameHandler.init();
+
+        console.log('[GameApp] Local mode started');
+    }
+
+    async startOnlineModeAsHost() {
+        this.currentMode = 'online-host';
+
+        // Initialize game components
+        this.gameController = new GameController();
+        this.onlineGameHandler = new OnlineGameHandler(this.gameController);
+        this.inputHandler = new InputHandler();
+
+        // Connect components
+        this.inputHandler.setGameHandler(this.onlineGameHandler);
+
+        // Initialize as host
+        const success = await this.onlineGameHandler.initAsHost();
+        if (success) {
+            this.inputHandler.bindInputEvents();
+            console.log('[GameApp] Online host mode started');
+        } else {
+            // Failed to initialize, return to mode selection
+            this.returnToModeSelection();
+        }
+    }
+
+    async startOnlineModeAsGuest(sessionId) {
+        this.currentMode = 'online-guest';
+
+        // Initialize game components
+        this.gameController = new GameController();
+        this.onlineGameHandler = new OnlineGameHandler(this.gameController);
+        this.inputHandler = new InputHandler();
+
+        // Connect components
+        this.inputHandler.setGameHandler(this.onlineGameHandler);
+
+        // Initialize as guest
+        const success = await this.onlineGameHandler.initAsGuest(sessionId);
+        if (success) {
+            this.inputHandler.bindInputEvents();
+            console.log('[GameApp] Online guest mode started');
+        } else {
+            // Failed to initialize, return to mode selection
+            this.returnToModeSelection();
+        }
+    }
+
+    bindCommonUI() {
+        // Version display
+        const versionDisplay = document.getElementById('version-display');
+        if (versionDisplay) {
+            versionDisplay.textContent = `v${VERSION}`;
+        }
+
+        // Settings pane functionality
+        const settingsIcon = document.getElementById('settings-icon');
+        const settingsPane = document.getElementById('settings-pane');
+        const closeSettingsButton = document.getElementById('close-settings');
+        const overlay = document.getElementById('overlay');
+
+        const toggleSettingsPane = () => {
+            settingsPane.classList.toggle('hidden');
+            overlay.classList.toggle('hidden');
+        };
+
+        if (settingsIcon) settingsIcon.addEventListener('click', toggleSettingsPane);
+        if (closeSettingsButton) closeSettingsButton.addEventListener('click', toggleSettingsPane);
+        if (overlay) overlay.addEventListener('click', toggleSettingsPane);
+    }
+
+    // Method to return to mode selection (useful for future "Return to Menu" functionality)
+    returnToModeSelection() {
+        // Clean up current game
+        if (this.inputHandler) {
+            this.inputHandler.unbindInputEvents();
+        }
+
+        // Reset state
+        this.gameController = null;
+        this.localGameHandler = null;
+        this.onlineGameHandler = null;
+        this.inputHandler = null;
+        this.currentMode = null;
+
+        // Show mode selection
+        this.showModeSelection();
+    }
 }
 
-settingsIcon.addEventListener('click', toggleSettingsPane);
-closeSettingsButton.addEventListener('click', toggleSettingsPane);
-overlay.addEventListener('click', toggleSettingsPane);
-
-rotationFrequencySelect.addEventListener('change', (event) => {
-    const newFrequency = parseInt(event.target.value, 10);
-    gameController.rotationFrequency = newFrequency;
-    gameController.update_countdown_func(newFrequency - (gameController.turnCounter % newFrequency));
+// Initialize the app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    const gameApp = new GameApp();
 });
 
 

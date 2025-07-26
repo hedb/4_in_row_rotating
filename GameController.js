@@ -1,6 +1,5 @@
 import { Board } from './Board.js';
 import { BoardRenderer } from './BoardRenderer.js';
-import { InputHandler } from './InputHandler.js';
 import { Stone } from './Stone.js';
 import {
     GRID_SIZE,
@@ -11,123 +10,83 @@ import {
 
 export class GameController {
     constructor() {
-        this.inputHandler = new InputHandler(this);
         this.init();
-        this.inputHandler.bindInputEvents();
-        this.update_countdown_func(this.rotationFrequency)
     }
 
     init() {
-        this.turnCounter = 0
         this.board = new Board(GRID_SIZE);
         this.boardRenderer = new BoardRenderer(this.board, CELL_SIZE);
-        this.currentPlayer = 1; // Start with Player 1
         this.gameOver = false;
-        this.inputEnabled = true; // Control input state
-        this.displayGameOverMessage('')
+        this.inputEnabled = true;
+        this.isRotating = false;
         
         // Draw the initial board
         this.boardRenderer.drawBoard();
-        
     }
 
-     displayWinners(winners) {
-        for (let winner of winners) {
-            const stoneElement = winner.stoneElement;
-            // change color of stone element
-            stoneElement.style.backgroundColor = 'green';
-        }
+    // === GAME STATE METHODS ===
+    
+    isGameOver() {
+        return this.gameOver;
     }
 
-    startGame() {
-        this.boardRenderer.drawBoard();
-        this.inputHandler.bindInputEvents();
+    setGameOver(gameOver) {
+        this.gameOver = gameOver;
     }
 
     isInputDisabled() {
         return !this.inputEnabled;
     }
 
-    handlePlayerInput(selectedRow, col) {
-        if (this.gameOver) {
-            alert('Game over! Please reset the game.');
-            return;
-        }
-
-    
+    disableInput() {
         this.inputEnabled = false;
+    }
 
-        if (this.board.isCellOccupied(selectedRow, col)) {
-            alert('Cell is already occupied!');
-            this.inputEnabled = true;
-            return;
-        }
+    enableInput() {
+        this.inputEnabled = true;
+    }
 
-        const targetRow = this.board.getNextAvailableRow(col);
+    // === BOARD QUERY METHODS ===
 
-        if (targetRow === null) {
-            alert('Column is full!');
-            this.inputEnabled = true;
-            return;
-        }
+    isCellOccupied(row, col) {
+        return this.board.isCellOccupied(row, col);
+    }
 
-        if (selectedRow > targetRow) {
-            alert('You cannot place a stone below the lowest available position!');
-            this.inputEnabled = true;
-            return;
-        }
+    getNextAvailableRow(col) {
+        return this.board.getNextAvailableRow(col);
+    }
 
-        const stone = new Stone(this.currentPlayer);
+    isBoardFull() {
+        return this.board.isBoardFull();
+    }
+
+    getBoardState() {
+        return this.board.grid;
+    }
+
+    // === GAME ACTION METHODS ===
+
+    makeMove(selectedRow, col, targetRow, playerId, onComplete) {
+        const stone = new Stone(playerId);
         this.boardRenderer.animateStoneDrop(selectedRow, col, targetRow, stone, () => {
             this.board.placeStone(targetRow, col, stone);
             this.boardRenderer.drawBoard();
-
-            // Check for a win
-            const winners = this.board.checkForWin(targetRow, col, this.currentPlayer);
-            if (winners) {
-                this.gameOver = true;
-                this.displayWinners(winners);
-                this.displayGameOverMessage(`Player ${this.currentPlayer} wins!`);
-            } else if (this.board.isBoardFull()) {
-                this.gameOver = true;
-                this.displayGameOverMessage("It's a draw!");
-            } else {
-                this.switchPlayer();
-            }
-
-            this.inputEnabled = true;
+            onComplete();
         });
     }
 
+    checkForWin(row, col, playerId) {
+        return this.board.checkForWin(row, col, playerId);
+    }
 
-
-    switchPlayer() {
-        this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
-        this.turnCounter++;
-        if (this.turnCounter%this.rotationFrequency == 0) {
-            this.update_countdown_func(0)
-            setTimeout(() => {
-                this.rotateGrid();
-            }, 0);
-
-        } else {
-            this.update_countdown_func(this.rotationFrequency-(this.turnCounter%this.rotationFrequency))
+    displayWinners(winners) {
+        for (let winner of winners) {
+            const stoneElement = winner.stoneElement;
+            stoneElement.style.backgroundColor = 'green';
         }
     }
 
-
-    displayGameOverMessage(message) {
-        const turnIndicator = document.getElementById('turn-indicator');
-        turnIndicator.textContent = message;
-    }
-
-
-    resetGame() {
-        this.init(); // Re-initialize the game state
-    }
-
-
-    rotateGrid() {
+    rotateGrid(onComplete) {
         if (this.gameOver) {
             alert('Game over! Please reset the game.');
             return;
@@ -157,25 +116,15 @@ export class GameController {
                 
                 // Re-render the board to show the final state
                 this.boardRenderer.drawBoard();
-        
-                // Check for any win conditions after rotation
-                const winner = this.checkForWinAfterRotation();
-        
-                if (winner) {
-                    this.gameOver = true;
-                    this.displayGameOverMessage(`Player ${winner} wins after rotation!`);
-                } else {
-                    // Continue the game
-                    this.inputEnabled = true;
-                    this.update_countdown_func(this.rotationFrequency)
-                }
-        
+                
+                this.inputEnabled = true;
                 this.isRotating = false;
+                
+                if (onComplete) {
+                    onComplete();
+                }
             });
         });
-        
-
-
     }
 
     checkForWinAfterRotation() {
@@ -191,5 +140,15 @@ export class GameController {
         }
         return null;
     }
-    
+
+    resetGame() {
+        this.init();
+    }
+
+    // === LEGACY METHODS FOR BACKWARD COMPATIBILITY ===
+    // These will be removed once InputHandler is updated
+
+    startGame() {
+        this.boardRenderer.drawBoard();
+    }
 }
