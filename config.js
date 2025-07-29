@@ -1,4 +1,4 @@
-export const VERSION = '0.7.7';
+export const VERSION = '0.8.1';
 
 export const GRID_SIZE = 6;
 export const CELL_SIZE = 60; // Size in pixels

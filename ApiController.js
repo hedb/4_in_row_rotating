@@ -47,12 +47,13 @@ export class ApiController {
 
     // === SESSION MANAGEMENT ===
 
-    async createSession() {
-        console.log('[ApiController] Creating new session...');
+    async createSession(rotationFrequency) {
+        console.log(`[ApiController] Creating new session with frequency: ${rotationFrequency}...`);
         
         try {
             const result = await this.makeRequest('/session/create', {
-                method: 'POST'
+                method: 'POST',
+                body: JSON.stringify({ rotationFrequency })
             });
             
             console.log('[ApiController] Session created:', result);
@@ -100,6 +101,7 @@ export class ApiController {
                 method: 'GET'
             });
             
+            console.log('[ApiController] Session state response:', result);
             return {
                 success: true,
                 data: result

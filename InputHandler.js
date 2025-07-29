@@ -22,7 +22,7 @@ export class InputHandler {
 
         // Set initial rotation frequency only for local games
         if (this.gameHandler && this.gameHandler.constructor.name === 'LocalGameHandler') {
-            this.handleRotationFrequencyChange({ target: document.getElementById('rotationFrequency') });
+        this.handleRotationFrequencyChange({ target: document.getElementById('rotationFrequency') });
         }
     }
 

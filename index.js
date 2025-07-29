@@ -119,20 +119,20 @@ class GameApp {
 
     bindCommonUI() {
         // Version display
-        const versionDisplay = document.getElementById('version-display');
-        if (versionDisplay) {
-            versionDisplay.textContent = `v${VERSION}`;
-        }
+    const versionDisplay = document.getElementById('version-display');
+    if (versionDisplay) {
+        versionDisplay.textContent = `v${VERSION}`;
+    }
 
         // Settings pane functionality
-        const settingsIcon = document.getElementById('settings-icon');
-        const settingsPane = document.getElementById('settings-pane');
-        const closeSettingsButton = document.getElementById('close-settings');
-        const overlay = document.getElementById('overlay');
+const settingsIcon = document.getElementById('settings-icon');
+const settingsPane = document.getElementById('settings-pane');
+const closeSettingsButton = document.getElementById('close-settings');
+const overlay = document.getElementById('overlay');
 
         const toggleSettingsPane = () => {
-            settingsPane.classList.toggle('hidden');
-            overlay.classList.toggle('hidden');
+    settingsPane.classList.toggle('hidden');
+    overlay.classList.toggle('hidden');
         };
 
         if (settingsIcon) settingsIcon.addEventListener('click', toggleSettingsPane);

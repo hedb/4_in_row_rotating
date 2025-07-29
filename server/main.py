@@ -73,29 +73,54 @@ def create_mock_session():
     session_id = str(uuid.uuid4())
     session_data = {
         "sessionId": session_id,
-        "playerId": 1,
         "status": "waiting",
-        "hostLink": f"https://yourgame.com/game/{session_id}?role=host",
-        "guestLink": f"https://yourgame.com/game/{session_id}?role=guest",
+        "players": {
+            "1": {
+                "connected": True, 
+                "lastSeen": datetime.now().isoformat()
+            },
+            "2": {
+                "connected": False, 
+                "lastSeen": None
+            }
+        },
         "moves": [],  # Empty moves array
         "currentPlayer": 1,
         "moveCount": 0,
+        "rotationFrequency": 3,  # Default frequency
+        "gameOver": False,
+        "winner": None,
+        "createdAt": datetime.now().isoformat(),
+        "expiresAt": (datetime.now() + timedelta(seconds=SESSION_TIMEOUT)).isoformat(),
         "mock": True,
         "message": "Using mock data - Firestore not available"
     }
     logger.info(f"Created mock session: {session_id}")
     return session_data
 
-def handle_create_session():
+def handle_create_session(request):
     """Handle session creation with Firestore"""
     try:
         logger.info("Handling session creation")
+
+        # Get rotation frequency from client, with a default of 3
+        req_data = request.get_json(silent=True) or {}
+        rotation_frequency = int(req_data.get('rotationFrequency', 3))
+        logger.info(f"Using rotation frequency from client: {rotation_frequency}")
         
         db = get_firestore_client()
         if db is None:
             logger.warning("Firestore not available, using mock session")
-            return create_mock_session()
-        
+            # This mock response should also respect the frequency for local testing
+            mock_session = create_mock_session()
+            mock_session['rotationFrequency'] = rotation_frequency
+            return {
+                "sessionId": mock_session["sessionId"],
+                "playerId": 1,
+                "status": "waiting",
+                "gameState": mock_session
+            }
+
         session_id = str(uuid.uuid4())
         
         # Create session data with Firestore SERVER_TIMESTAMP
@@ -113,10 +138,10 @@ def handle_create_session():
                     "lastSeen": None
                 }
             },
-            "moves": [],  # Array of move events: [{player, row, col, moveNumber, timestamp}, ...]
+            "moves": [],
             "currentPlayer": 1,
             "moveCount": 0,
-            "rotationFrequency": 4,
+            "rotationFrequency": rotation_frequency, # Use value from client
             "gameOver": False,
             "winner": None,
             "createdAt": firestore.SERVER_TIMESTAMP,
@@ -127,12 +152,19 @@ def handle_create_session():
         session_ref = db.collection('game_sessions').document(session_id)
         session_ref.set(session_data)
         
+        # Fetch the created document to include server-generated timestamps
+        time.sleep(0.1) # Allow a moment for timestamp to be set
+        created_doc = session_ref.get()
+        if not created_doc.exists:
+            raise Exception("Failed to create and retrieve session document")
+            
+        final_session_data = clean_firestore_timestamps(created_doc.to_dict())
+
         result = {
             "sessionId": session_id,
             "playerId": 1,
             "status": "waiting",
-            "hostLink": f"https://yourgame.com/game/{session_id}?role=host",
-            "guestLink": f"https://yourgame.com/game/{session_id}?role=guest"
+            "gameState": final_session_data # Return the full initial state
         }
         
         logger.info(f"Created Firestore session: {session_id}")
@@ -383,7 +415,7 @@ def hello_world(request):
         # Route requests
         if request.method == 'POST':
             if path == 'session/create':
-                result = handle_create_session()
+                result = handle_create_session(request)
                 return json.dumps(result), 200, headers
             elif path == 'session/join':
                 result = handle_join_session()

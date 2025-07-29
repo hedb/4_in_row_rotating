@@ -21,6 +21,10 @@ export class OnlineGameHandler {
         this.pollingInterval = null;
         this.pollingFrequency = 2000; // 2 seconds
         
+        // Rotation tracking
+        this.isRotating = false;
+        this.lastRotationAtMove = -1; // Track the last move number when rotation occurred
+        
         // UI elements
         this.waitingRoom = null;
         this.gameContainer = null;
@@ -39,8 +43,16 @@ export class OnlineGameHandler {
         this.isHost = true;
         this.showWaitingRoom();
 
-        // Create session
-        const result = await this.apiController.createSession();
+        // --- START OF FIX ---
+        // Read the rotation frequency directly from the UI dropdown
+        const rotationFrequencyEl = document.getElementById('rotationFrequency');
+        const desiredFrequency = parseInt(rotationFrequencyEl.value, 10);
+        console.log(`[OnlineGameHandler] Host is using frequency from UI: ${desiredFrequency}`);
+
+        // Create session with the selected frequency
+        const result = await this.apiController.createSession(desiredFrequency);
+        // --- END OF FIX ---
+
         if (!result.success) {
             this.showError(`Failed to create session: ${result.error}`);
             return false;
@@ -48,11 +60,26 @@ export class OnlineGameHandler {
 
         this.sessionId = result.data.sessionId;
         this.playerId = result.data.playerId;
+        
+        // The host's local state MUST match the authoritative state from the server.
+        const authoritativeState = result.data.gameState || result.data;
+        this.rotationFrequency = authoritativeState.rotationFrequency;
+        
+        console.log('[OnlineGameHandler] Host session created. Synced state from server:', {
+            sessionId: this.sessionId,
+            playerId: this.playerId,
+            status: authoritativeState.status,
+            rotationFrequency: this.rotationFrequency // Log the synced frequency
+        });
+        
+        // Now that settings are synced, update the UI.
+        this.updateCountdownFromCurrentState();
 
         // Update waiting room with link
         this.updateWaitingRoomWithLink();
         
         // Start polling for opponent
+        console.log('[OnlineGameHandler] Host starting to poll for opponent...');
         this.startPolling();
         
         return true;
@@ -71,21 +98,31 @@ export class OnlineGameHandler {
         this.showWaitingRoom('Joining game...');
 
         // Join session
+        console.log('[OnlineGameHandler] Guest attempting to join session:', sessionId);
         const result = await this.apiController.joinSession(sessionId);
         if (!result.success) {
+            console.error('[OnlineGameHandler] Guest failed to join session:', result.error);
             this.showError(`Failed to join session: ${result.error}`);
             return false;
         }
 
         this.playerId = result.data.playerId;
         const gameState = result.data.gameState;
+        console.log('[OnlineGameHandler] Guest joined successfully:', {
+            playerId: this.playerId,
+            gameStatus: gameState.status,
+            playerCount: Object.keys(gameState.players || {}).length,
+            moveCount: gameState.moveCount
+        });
 
         if (gameState.status === 'playing') {
             // Game already started, load current state
+            console.log('[OnlineGameHandler] Game already in progress, loading state...');
             await this.loadGameState(gameState);
             this.startGame();
         } else {
             // Still waiting for game to start
+            console.log('[OnlineGameHandler] Game not started yet, guest waiting...');
             this.updateWaitingRoom('Waiting for host to start game...');
             this.startPolling();
         }
@@ -99,20 +136,48 @@ export class OnlineGameHandler {
         console.log('[OnlineGameHandler] Loading game state:', gameState);
         
         this.currentPlayer = gameState.currentPlayer;
-        this.moveCount = gameState.moveCount;
         this.rotationFrequency = gameState.rotationFrequency || 3;
-        this.lastMoveReceived = gameState.moveCount;
-
-        // Reconstruct board from moves
+        
+        // --- START OF NEW LOGIC ---
+        // Reconstruct the board by replaying the entire game history without animation
+        console.log(`[Player ${this.playerId}] Replaying ${gameState.moves.length} moves to sync board...`);
         this.gameController.resetGame();
         
+        // This loop simulates the game turn by turn to ensure rotations are applied correctly.
         for (const move of gameState.moves) {
-            await this.applyMoveToBoard(move, false); // Don't animate
+            // Place the stone directly without animation
+            const targetRow = this.gameController.getNextAvailableRow(move.column);
+            if (targetRow !== null) {
+                const stone = new ((await import('./Stone.js')).Stone)(move.player);
+                this.gameController.board.placeStone(targetRow, move.column, stone);
+            }
+            
+            // Check if this move triggered a rotation
+            if (move.moveNumber > 0 && move.moveNumber % this.rotationFrequency === 0) {
+                console.log(`[Player ${this.playerId}] Applying historical rotation at move #${move.moveNumber}`);
+                this.gameController.board.rotateGrid();
+                this.gameController.board.applyGravity();
+            }
         }
+        
+        // After replaying history, render the final board state once.
+        this.gameController.boardRenderer.drawBoard();
+        
+        // Sync the final move counts
+        this.moveCount = gameState.moveCount;
+        this.lastMoveReceived = gameState.moveCount;
+        
+        console.log(`[Player ${this.playerId}] Sync complete. Final move count: ${this.moveCount}`);
+        // --- END OF NEW LOGIC ---
     }
 
     startGame() {
-        console.log('[OnlineGameHandler] Starting online game');
+        console.log('[OnlineGameHandler] Starting online game', {
+            isHost: this.isHost,
+            playerId: this.playerId,
+            sessionId: this.sessionId,
+            currentGameState: this.gameState
+        });
         
         this.gameState = 'playing';
         this.hideWaitingRoom();
@@ -120,10 +185,13 @@ export class OnlineGameHandler {
         
         // Initialize game display
         this.updateTurnIndicator();
-        this.updateCountdown();
+        this.updateCountdownFromCurrentState();
         
         if (!this.pollingInterval) {
+            console.log('[OnlineGameHandler] Starting polling from startGame()...');
             this.startPolling();
+        } else {
+            console.log('[OnlineGameHandler] Polling already active, continuing...');
         }
     }
 
@@ -172,21 +240,26 @@ export class OnlineGameHandler {
             return;
         }
 
-        // Apply move locally with animation
+        // Apply move locally with animation (use the actual clicked row)
         await this.applyMoveToBoard({
             player: this.playerId,
             column: col,
-            moveNumber: result.data.moveNumber
+            moveNumber: result.data.moveNumber,
+            selectedRow: selectedRow // Use the actual clicked row for local player animation
         }, true);
 
         // Update game state
         this.moveCount = result.data.moveNumber;
         this.lastMoveReceived = this.moveCount;
+        console.log('[OnlineGameHandler] Local move completed, updating state:', {
+            moveNumber: result.data.moveNumber,
+            newMoveCount: this.moveCount
+        });
         this.switchPlayer();
     }
 
     async applyMoveToBoard(move, animate = true) {
-        const { player, column } = move;
+        const { player, column, selectedRow = 0 } = move;
         const targetRow = this.gameController.getNextAvailableRow(column);
         
         if (targetRow === null) {
@@ -194,9 +267,12 @@ export class OnlineGameHandler {
             return;
         }
 
+        console.log('[OnlineGameHandler] Applying move to board:', { player, column, selectedRow, targetRow, animate });
+
         return new Promise((resolve) => {
             if (animate) {
-                this.gameController.makeMove(0, column, targetRow, player, () => {
+                // Use selectedRow for animation start position, targetRow for final position
+                this.gameController.makeMove(selectedRow, column, targetRow, player, () => {
                     this.checkForGameEnd(targetRow, column, player);
                     resolve();
                 });
@@ -237,25 +313,47 @@ export class OnlineGameHandler {
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
         this.updateTurnIndicator();
         
-        // Check for rotation
-        if (this.moveCount % this.rotationFrequency === 0) {
+        console.log('[OnlineGameHandler] Player switched:', {
+            currentPlayer: this.currentPlayer,
+            moveCount: this.moveCount,
+            rotationFrequency: this.rotationFrequency,
+            shouldRotate: this.moveCount % this.rotationFrequency === 0
+        });
+        
+        // Check for rotation - only trigger if moveCount is exactly divisible by frequency and > 0
+        // Also prevent duplicate rotations by checking if we already rotated at this move count
+        if (this.moveCount > 0 && 
+            this.moveCount % this.rotationFrequency === 0 && 
+            this.lastRotationAtMove !== this.moveCount &&
+            !this.isRotating) {
+            
+            console.log('[OnlineGameHandler] Triggering rotation at move count:', this.moveCount);
+            this.lastRotationAtMove = this.moveCount;
             this.updateCountdown(0);
+            // Add a longer delay to ensure both players rotate at approximately the same time
             setTimeout(() => {
                 this.rotateGrid();
-            }, 100);
+            }, 500); // Increased delay for better sync
         } else {
-            this.updateCountdown(this.rotationFrequency - (this.moveCount % this.rotationFrequency));
+            // Calculate correct countdown
+            this.updateCountdownFromCurrentState();
         }
 
         this.gameController.enableInput();
     }
 
     rotateGrid() {
-        if (this.gameController.isGameOver()) {
+        if (this.gameController.isGameOver() || this.isRotating) {
             return;
         }
 
+        this.isRotating = true;
+        console.log('[OnlineGameHandler] Starting grid rotation at move count:', this.moveCount);
+
         this.gameController.rotateGrid(() => {
+            console.log('[OnlineGameHandler] Grid rotation completed');
+            this.isRotating = false;
+            
             // Check for win after rotation
             const winner = this.gameController.checkForWinAfterRotation();
             if (winner) {
@@ -269,6 +367,7 @@ export class OnlineGameHandler {
                     this.displayGameOverMessage('You lose after rotation! 😔');
                 }
             } else {
+                // Reset countdown to full rotation frequency after rotation
                 this.updateCountdown(this.rotationFrequency);
             }
         });
@@ -309,15 +408,45 @@ export class OnlineGameHandler {
 
             // Check if game started (for guests waiting)
             if (this.gameState === 'waiting' && moves.length > 0) {
+                console.log('[OnlineGameHandler] Guest detected game start, launching game...');
                 this.startGame();
+            }
+
+            // For hosts waiting, check if we should start the game
+            if (this.gameState === 'waiting' && this.isHost) {
+                // We need to check session state to see if a second player joined
+                console.log('[OnlineGameHandler] Host checking if guest joined...');
+                const sessionResult = await this.apiController.getSessionState(this.sessionId);
+                
+                if (sessionResult.success) {
+                    const sessionData = sessionResult.data;
+                    const playerCount = Object.keys(sessionData.players || {}).length;
+                    
+                    if (playerCount >= 2 && sessionData.status === 'playing') {
+                        console.log('[OnlineGameHandler] Host detected guest joined, starting game...');
+                        this.startGame();
+                    }
+                } else {
+                    console.error('[OnlineGameHandler] Failed to get session state:', sessionResult.error);
+                }
             }
 
             // Apply new moves
             for (const move of moves) {
                 if (move.player !== this.playerId) {
-                    // Opponent's move
-                    this.showMessage('Opponent is making a move...');
-                    await this.applyMoveToBoard(move, true);
+                    // Opponent's move - always animate from top row
+                    await this.applyMoveToBoard({
+                        ...move,
+                        selectedRow: 0 // Always animate from top for opponent moves
+                    }, true);
+                    
+                    // Update move count to match the server
+                    this.moveCount = move.moveNumber;
+                    console.log('[OnlineGameHandler] Opponent move applied, updating state:', {
+                        moveNumber: move.moveNumber,
+                        newMoveCount: this.moveCount
+                    });
+                    
                     this.switchPlayer();
                 }
             }
@@ -431,12 +560,36 @@ export class OnlineGameHandler {
     }
 
     updateCountdown(turnsLeft) {
+        if (this.playerId === 2) { // Only log for the second player
+            console.log(`[Player 2] Countdown updated to: ${turnsLeft}`);
+        }
         const countdownElement = document.getElementById('countdown');
         if (countdownElement) {
             if (typeof turnsLeft !== 'undefined') {
                 countdownElement.textContent = turnsLeft;
             }
         }
+    }
+
+    updateCountdownFromCurrentState() {
+        // Calculate countdown based on current move count and rotation frequency
+        let turnsUntilRotation;
+        if (this.moveCount === 0) {
+            // At start of game, show full rotation frequency
+            turnsUntilRotation = this.rotationFrequency;
+        } else {
+            turnsUntilRotation = this.rotationFrequency - (this.moveCount % this.rotationFrequency);
+            // If result is 0, it means we're exactly at rotation point, show full frequency
+            if (turnsUntilRotation === 0) {
+                turnsUntilRotation = this.rotationFrequency;
+            }
+        }
+        console.log('[OnlineGameHandler] Updating countdown from current state:', {
+            moveCount: this.moveCount,
+            rotationFrequency: this.rotationFrequency,
+            turnsUntilRotation
+        });
+        this.updateCountdown(turnsUntilRotation);
     }
 
     displayGameOverMessage(message) {

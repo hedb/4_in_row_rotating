@@ -43,14 +43,14 @@ export class GameController {
     }
 
     enableInput() {
-        this.inputEnabled = true;
+            this.inputEnabled = true;
     }
 
     // === BOARD QUERY METHODS ===
 
     isCellOccupied(row, col) {
         return this.board.isCellOccupied(row, col);
-    }
+        }
 
     getNextAvailableRow(col) {
         return this.board.getNextAvailableRow(col);
@@ -62,7 +62,7 @@ export class GameController {
 
     getBoardState() {
         return this.board.grid;
-    }
+        }
 
     // === GAME ACTION METHODS ===
 
@@ -116,8 +116,8 @@ export class GameController {
                 
                 // Re-render the board to show the final state
                 this.boardRenderer.drawBoard();
-                
-                this.inputEnabled = true;
+        
+                    this.inputEnabled = true;
                 this.isRotating = false;
                 
                 if (onComplete) {
@@ -140,7 +140,7 @@ export class GameController {
         }
         return null;
     }
-
+    
     resetGame() {
         this.init();
     }
