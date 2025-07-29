@@ -10,7 +10,7 @@ export const PLAYER_COLORS = {
     2: '#000000', // Player 2: Black
 };
 
-export const WINNING_ROW_LENGTH = 3;
+export const WINNING_ROW_LENGTH = 4;
 
 // New constant for falling speed
 export const STONE_FALLING_SPEED = 500; // Speed in pixels per second
