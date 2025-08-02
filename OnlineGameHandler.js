@@ -361,6 +361,20 @@ export class OnlineGameHandler {
                 this.gameState = 'finished';
                 this.stopPolling();
                 
+                // Find and highlight the winning stones
+                outerLoop: for (let row = 0; row < this.gameController.board.size; row++) {
+                    for (let col = 0; col < this.gameController.board.size; col++) {
+                        const stone = this.gameController.board.grid[row][col];
+                        if (stone !== null && stone.playerId === winner) {
+                            const winners = this.gameController.checkForWin(row, col, stone.playerId);
+                            if (winners) {
+                                this.gameController.displayWinners(winners);
+                                break outerLoop;
+                            }
+                        }
+                    }
+                }
+                
                 if (winner === this.playerId) {
                     this.displayGameOverMessage('You win after rotation! 🎉');
                 } else {

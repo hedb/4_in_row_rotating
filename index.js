@@ -1,5 +1,6 @@
 import { GameController } from './GameController.js';
 import { LocalGameHandler } from './LocalGameHandler.js';
+import { AIGameHandler } from './AIGameHandler.js';
 import { OnlineGameHandler } from './OnlineGameHandler.js';
 import { InputHandler } from './InputHandler.js';
 import { VERSION } from './config.js';
@@ -10,6 +11,7 @@ class GameApp {
     constructor() {
         this.gameController = null;
         this.localGameHandler = null;
+        this.aiGameHandler = null;
         this.onlineGameHandler = null;
         this.inputHandler = null;
         this.currentMode = null;
@@ -46,6 +48,10 @@ class GameApp {
             this.startLocalMode();
         });
 
+        document.getElementById('play-ai-btn').addEventListener('click', () => {
+            this.startAiMode();
+        });
+
         document.getElementById('play-online-btn').addEventListener('click', () => {
             this.startOnlineModeAsHost();
         });
@@ -71,6 +77,28 @@ class GameApp {
         this.localGameHandler.init();
 
         console.log('[GameApp] Local mode started');
+    }
+
+    startAiMode() {
+        this.currentMode = 'ai';
+
+        // Hide mode selection and show game
+        document.getElementById('mode-selection').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+
+        // Initialize game components
+        this.gameController = new GameController();
+        this.aiGameHandler = new AIGameHandler(this.gameController);
+        this.inputHandler = new InputHandler();
+
+        // Connect components
+        this.inputHandler.setGameHandler(this.aiGameHandler);
+        this.inputHandler.bindInputEvents();
+
+        // Initialize AI game
+        this.aiGameHandler.init();
+
+        console.log('[GameApp] AI mode started');
     }
 
     async startOnlineModeAsHost() {
@@ -150,6 +178,7 @@ const overlay = document.getElementById('overlay');
         // Reset state
         this.gameController = null;
         this.localGameHandler = null;
+        this.aiGameHandler = null;
         this.onlineGameHandler = null;
         this.inputHandler = null;
         this.currentMode = null;
