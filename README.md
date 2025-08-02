@@ -1,12 +1,14 @@
 # Four-in-a-Row with a Twist: The Rotating Grid
 
-This project is a modern, web-based implementation of the classic "Four-in-a-Row" game, designed for two players. It features a clean, professional user interface and a challenging twist: the entire 6x6 grid rotates 90 degrees counter-clockwise, forcing players to constantly adapt their strategies. It is also a fully offline-capable Progressive Web App (PWA).
+This project is a modern, web-based implementation of the classic "Four-in-a-Row" game, designed for multiple play modes. It features a clean, professional user interface and a challenging twist: the entire 6x6 grid rotates 90 degrees counter-clockwise, forcing players to constantly adapt their strategies. It is also a fully offline-capable Progressive Web App (PWA).
 
 ## Key Features
 
 -   **Progressive Web App:** Installable on mobile and desktop devices for an app-like experience and offline availability.
+-   **Multiple Game Modes:** Play locally with a friend, challenge the AI, or compete online with remote players.
 -   **Dynamic Gameplay:** Connect four of your stones horizontally, vertically, or diagonally to win.
 -   **Turn-Based Grid Rotation:** The 6x6 grid rotates after a configurable number of player turns.
+-   **AI Opponent:** Intelligent computer player with visual stone-dropping animations.
 -   **Polished & Animated UI:** The game features a responsive interface with smooth, physics-based animations.
 -   **Configurable Settings:** A slide-out settings pane allows players to adjust the rotation frequency, manage the game, and view the current app version.
 
@@ -14,7 +16,7 @@ This project is a modern, web-based implementation of the classic "Four-in-a-Row
 
 ### Modular Architecture
 
-The application is built using a clean, object-oriented structure that separates concerns: `GameController.js`, `Board.js`, `BoardRenderer.js`, `InputHandler.js`, and `config.js`.
+The application is built using a clean, object-oriented structure that separates concerns: `GameController.js`, `Board.js`, `BoardRenderer.js`, `InputHandler.js`, `AIGameHandler.js`, `AIPlayer.js`, and `config.js`.
 
 ### PWA & Service Worker
 
@@ -52,14 +54,30 @@ Because this project uses ES6 modules and a service worker, it must be run from 
 
 This project is a single-page application built with vanilla JavaScript (ES6 Modules), HTML, and CSS.
 
+## Game Modes
+
+The application supports three distinct game modes:
+
+1. **Local Mode:** Hot-seat multiplayer for two players sharing one device
+2. **AI Mode:** Single-player challenge against an intelligent computer opponent
+3. **Online Mode:** Remote multiplayer for players on different devices using the deployed server API
+
+### AI Mode Features
+
+-   **Smart Computer Opponent:** The AI selects valid moves and provides a challenging experience
+-   **Visual Stone Dropping:** AI moves feature the same satisfying stone-drop animations as multiplayer
+-   **Full Rotation Support:** The AI mode includes all grid rotation mechanics with configurable frequency
+-   **Consistent Win Detection:** Proper win highlighting and messaging for both player and computer victories
+
 ## Multiplayer Implementation Plan
 
 ### Overview
 
-With the server-side API now complete, the next phase involves evolving the client to support two distinct game modes:
+With the server-side API now complete, the application currently supports local multiplayer and AI modes, with online multiplayer planned for future implementation. The existing architecture cleanly separates these modes:
 
 1. **Local Mode:** The existing "hot-seat" experience for two players sharing one device
-2. **Remote Mode:** New online multiplayer for players on different devices using the deployed server API
+2. **AI Mode:** Single-player vs. computer using `AIGameHandler.js` and `AIPlayer.js`
+3. **Remote Mode:** Planned online multiplayer for players on different devices using the deployed server API
 
 ### User Experience (UX) Design
 
@@ -70,7 +88,8 @@ The user journey begins with a clear choice between game modes:
 1. **Main Menu:** Upon loading, users see a clean mode selection screen
 2. **Game Mode Options:**
    - **"Play Local"** - Immediate local game start (current behavior)
-   - **"Play Online"** - Initiates remote multiplayer flow
+   - **"Play vs. Computer"** - Single-player AI challenge (current behavior)
+   - **"Play Online"** - Initiates remote multiplayer flow (planned)
 
 #### Online Multiplayer Flow
 

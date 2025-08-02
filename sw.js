@@ -1,5 +1,5 @@
 // Hard-code VERSION to avoid module import issues in service worker
-const VERSION = '0.9.0';
+const VERSION = '0.9.1';
 const CACHE_NAME = `4-in-a-row-v${VERSION}`;
 
 // console.log(`[Service Worker] Starting with VERSION: ${VERSION}`);
