@@ -60,6 +60,11 @@ class GameApp {
     startLocalMode() {
         this.currentMode = 'local';
 
+        // Clean up any existing input handlers
+        if (this.inputHandler) {
+            this.inputHandler.unbindInputEvents();
+        }
+
         // Hide mode selection and show game
         document.getElementById('mode-selection').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
@@ -81,6 +86,11 @@ class GameApp {
 
     startAiMode() {
         this.currentMode = 'ai';
+
+        // Clean up any existing input handlers
+        if (this.inputHandler) {
+            this.inputHandler.unbindInputEvents();
+        }
 
         // Hide mode selection and show game
         document.getElementById('mode-selection').classList.add('hidden');
@@ -104,6 +114,11 @@ class GameApp {
     async startOnlineModeAsHost() {
         this.currentMode = 'online-host';
 
+        // Clean up any existing input handlers
+        if (this.inputHandler) {
+            this.inputHandler.unbindInputEvents();
+        }
+
         // Initialize game components
         this.gameController = new GameController();
         this.onlineGameHandler = new OnlineGameHandler(this.gameController);
@@ -125,6 +140,11 @@ class GameApp {
 
     async startOnlineModeAsGuest(sessionId) {
         this.currentMode = 'online-guest';
+
+        // Clean up any existing input handlers
+        if (this.inputHandler) {
+            this.inputHandler.unbindInputEvents();
+        }
 
         // Initialize game components
         this.gameController = new GameController();

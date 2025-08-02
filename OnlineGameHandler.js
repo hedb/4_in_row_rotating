@@ -607,11 +607,60 @@ export class OnlineGameHandler {
     }
 
     displayGameOverMessage(message) {
+        // Hide turn indicator
         const turnIndicator = document.getElementById('turn-indicator');
         if (turnIndicator) {
-            turnIndicator.textContent = message;
-            turnIndicator.style.color = '#1ca433';
+            turnIndicator.style.display = 'none';
         }
+        
+        // Show game over container with message and button
+        const gameOverContainer = document.getElementById('game-over-container');
+        const gameOverText = document.getElementById('game-over-text');
+        const newGameBtn = document.getElementById('new-game-btn');
+        
+        if (gameOverContainer && gameOverText && newGameBtn) {
+            gameOverText.textContent = message;
+            gameOverContainer.classList.remove('hidden');
+            
+            // For all games, the button will return to mode selection
+            newGameBtn.textContent = "New game?";
+            
+            // Remove any existing event listeners and add new one
+            const newBtn = newGameBtn.cloneNode(true);
+            newGameBtn.parentNode.replaceChild(newBtn, newGameBtn);
+            
+            newBtn.addEventListener('click', () => {
+                this.returnToModeSelection();
+            });
+        }
+    }
+    
+    returnToModeSelection() {
+        // Clean up online game
+        this.stopPolling();
+        
+        // Hide game over container
+        const gameOverContainer = document.getElementById('game-over-container');
+        if (gameOverContainer) {
+            gameOverContainer.classList.add('hidden');
+        }
+        
+        // Show turn indicator again
+        const turnIndicator = document.getElementById('turn-indicator');
+        if (turnIndicator) {
+            turnIndicator.style.display = 'block';
+        }
+        
+        // Hide game container and show mode selection
+        document.getElementById('game-container').classList.add('hidden');
+        document.getElementById('mode-selection').classList.remove('hidden');
+        
+        // Reset game state
+        this.gameState = null;
+        this.sessionId = null;
+        this.playerId = null;
+        this.currentPlayer = 1;
+        this.moveCount = 0;
     }
 
     showMessage(message) {
