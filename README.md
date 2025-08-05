@@ -8,8 +8,9 @@ This project is a modern, web-based implementation of the classic "Four-in-a-Row
 -   **Multiple Game Modes:** Play locally with a friend, challenge the AI, or compete online with remote players.
 -   **Dynamic Gameplay:** Connect four of your stones horizontally, vertically, or diagonally to win.
 -   **Turn-Based Grid Rotation:** The 6x6 grid rotates after a configurable number of player turns.
--   **AI Opponent:** Intelligent computer player with visual stone-dropping animations.
+-   **AI Opponent:** Intelligent computer player with strategic decision-making and visual stone-dropping animations.
 -   **Polished & Animated UI:** The game features a responsive interface with smooth, physics-based animations.
+-   **Instant Game Restart:** "New game?" button appears after every game for quick return to mode selection.
 -   **Configurable Settings:** A slide-out settings pane allows players to adjust the rotation frequency, manage the game, and view the current app version.
 
 ## Technical Details
@@ -26,12 +27,12 @@ The game is a PWA with offline capabilities, powered by a service worker (`sw.js
 -   **Robust Cache Versioning:** To ensure users always receive the latest version, the app uses a specific, manual versioning strategy that provides explicit control over updates.
     1.  **Dual Versioning:** The version number must be updated in two places:
         -   `config.js`: This `VERSION` constant is used by the application to display the version in the UI.
-        -   `sw.js`: This `VERSION` constant is used to name the cache (e.g., `4-in-a-row-v0.6.0`).
+        -   `sw.js`: This `VERSION` constant is used to name the cache (e.g., `4-in-a-row-v0.9.2`).
     2.  **Update Trigger:** The browser only installs a new service worker if the `sw.js` file itself changes. Therefore, **incrementing the version in `sw.js` is the essential trigger for the entire update process.**
     3.  **Clean Installation:** The new service worker fetches fresh copies of all app files and stores them in a new, version-named cache.
     4.  **Atomic Swap:** On activation, the new service worker deletes the entire old cache, ensuring that stale files are never served.
 -   **Intelligent Fetch Handling:**
-    -   The service worker dynamically injects the version number as a query parameter into the CSS and JS links in `index.html` (e.g., `index.js?v=0.6.0`). This ensures the browser requests the new files after an update.
+    -   The service worker dynamically injects the version number as a query parameter into the CSS and JS links in `index.html` (e.g., `index.js?v=0.9.2`). This ensures the browser requests the new files after an update.
     -   For all requests, the fetch handler uses `caches.match(event.request, { ignoreSearch: true })`. This powerful option allows it to serve the correct cached file by ignoring the query string, seamlessly handling both versioned requests from the HTML and clean URL requests from ES6 module imports.
 
 ### Animations & Transitions
@@ -54,6 +55,25 @@ Because this project uses ES6 modules and a service worker, it must be run from 
 
 This project is a single-page application built with vanilla JavaScript (ES6 Modules), HTML, and CSS.
 
+## Current Status & Recent Updates
+
+**Version 0.9.2** - Latest improvements include:
+- **Enhanced AI Intelligence**: Strategic priority-based decision making (win detection, threat blocking)
+- **Improved User Experience**: Instant restart functionality with "New game?" button
+- **Consistent Game Flow**: All game modes return to mode selection for easy transitions
+- **Bug Fixes**: Resolved win condition highlighting and input handler cleanup issues
+
+**Implemented Features:**
+- ✅ Local multiplayer mode with full rotation mechanics
+- ✅ AI mode with strategic computer opponent  
+- ✅ Instant game restart and mode switching
+- ✅ Progressive Web App with offline capability
+
+**Planned Features:**
+- 🔄 Online multiplayer mode (server infrastructure ready)
+- 🔄 Enhanced AI difficulty levels
+- 🔄 Game statistics and replay functionality
+
 ## Game Modes
 
 The application supports three distinct game modes:
@@ -64,10 +84,11 @@ The application supports three distinct game modes:
 
 ### AI Mode Features
 
--   **Smart Computer Opponent:** The AI selects valid moves and provides a challenging experience
+-   **Strategic Computer Opponent:** The AI uses intelligent priority-based decision making - it will take winning moves when available and block your winning threats
 -   **Visual Stone Dropping:** AI moves feature the same satisfying stone-drop animations as multiplayer
 -   **Full Rotation Support:** The AI mode includes all grid rotation mechanics with configurable frequency
 -   **Consistent Win Detection:** Proper win highlighting and messaging for both player and computer victories
+-   **Instant Restart:** "New game?" button allows immediate return to mode selection after any game ends
 
 ## Multiplayer Implementation Plan
 
@@ -116,8 +137,8 @@ The user journey begins with a clear choice between game modes:
 
 **Game State Communication:**
 - "Waiting for opponent..." indicators during move transmission
-- Clear win/lose/draw screens
-- "Return to Menu" option (future: "Rematch" functionality)
+- Clear win/lose/draw screens with instant restart options
+- "New game?" button returns to mode selection for quick game transitions
 
 ### Technical Architecture
 
