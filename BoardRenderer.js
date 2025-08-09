@@ -77,15 +77,15 @@ export class BoardRenderer {
             this.gridWrapper.removeEventListener('transitionend', handleTransitionEnd);
 
             if (shouldReset) {
-                // Reset visual rotation to 0 degrees but keep track of logical rotation
-                this.gridWrapper.style.transition = 'none';
-                this.gridWrapper.style.transform = 'rotate(0deg)';
-                
-                // Force reflow
-                this.gridWrapper.getBoundingClientRect();
-                
-                // Re-enable transitions
-                this.gridWrapper.style.transition = '';
+            // Reset visual rotation to 0 degrees but keep track of logical rotation
+            this.gridWrapper.style.transition = 'none';
+            this.gridWrapper.style.transform = 'rotate(0deg)';
+            
+            // Force reflow
+            this.gridWrapper.getBoundingClientRect();
+            
+            // Re-enable transitions
+            this.gridWrapper.style.transition = '';
             }
 
             // Reset the animation flag
@@ -103,9 +103,9 @@ export class BoardRenderer {
             if (!callbackExecuted) {
                 handleTransitionEnd({ target: this.gridWrapper });
             }
-                }, 2000); // 2 second fallback
+        }, 2000); // 2 second fallback
     }
-
+    
     resetGridRotation() {
         this.gridWrapper.style.transition = 'none';
         this.gridWrapper.style.transform = 'rotate(0deg)';
@@ -213,7 +213,7 @@ export class BoardRenderer {
     }
     
     // For replay: animate stones flying up before backward rotation
-    animateReplayReverseGravity(beforeState, afterState, callback) {
+    animateReplayReverseGravity(beforeState, afterState, callback, highlightStoneId = null) {
         const stonesToAnimate = [];
         
         // Find stones that need to "fly up" to their pre-rotation positions
@@ -225,7 +225,7 @@ export class BoardRenderer {
                     let afterRow = -1;
                     for (let r = 0; r < this.board.size; r++) {
                         for (let c = 0; c < this.board.size; c++) {
-                            if (afterState[r][c] && afterState[r][c].playerId === stone.playerId) {
+                            if (afterState[r][c] && afterState[r][c].playerId === stone.playerId && afterState[r][c].id === stone.id) {
                                 afterRow = r;
                                 break;
                             }
@@ -245,7 +245,7 @@ export class BoardRenderer {
             }
         }
         
-        this.animateStonesRisingReplay(stonesToAnimate, callback);
+        this.animateStonesRisingReplay(stonesToAnimate, callback, highlightStoneId);
     }
     
     animateStonesFallingReplay(stonesToAnimate, callback) {
@@ -313,7 +313,7 @@ export class BoardRenderer {
         });
     }
     
-    animateStonesRisingReplay(stonesToAnimate, callback) {
+    animateStonesRisingReplay(stonesToAnimate, callback, highlightStoneId = null) {
         let animationsCompleted = 0;
         const totalAnimations = stonesToAnimate.length;
 
@@ -345,6 +345,12 @@ export class BoardRenderer {
             stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
             stoneElement.style.position = 'absolute';
             stoneElement.style.zIndex = '100';
+
+            // Highlight if this is the tracked stone
+            if (highlightStoneId !== null && stone.id === highlightStoneId) {
+                stoneElement.style.border = '3px solid red';
+                stoneElement.style.borderRadius = '50%';
+            }
             
             // Position at start location
             const offset = (this.cellSize - this.stoneSize) / 2;
@@ -377,7 +383,7 @@ export class BoardRenderer {
     }
 
     
-    animateGravity(callback) {
+    animateGravity(callback, highlightStoneId = null) {
         // Clear the grid element
         this.gridElement.innerHTML = '';
     
@@ -398,6 +404,12 @@ export class BoardRenderer {
                     stoneElement.classList.add('stone');
                     stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
                     stoneElement.dataset.stoneId = stone.id; // Assign unique ID
+
+                    // If this is the highlighted stone, add red border
+                    if (highlightStoneId !== null && stone.id === highlightStoneId) {
+                        stoneElement.style.border = '3px solid red';
+                        stoneElement.style.borderRadius = '50%';
+                    }
 
                     // Calculate initial and target positions
                     const previousPosition = this.getPreviousStonePosition(row, col, stone);

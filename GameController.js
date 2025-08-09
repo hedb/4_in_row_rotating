@@ -151,20 +151,49 @@ export class GameController {
                         row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
                     );
 
+                    // Determine which stone to keep highlighted during falling (map last move id)
+                    let highlightId = null;
+                    if (
+                        prevState.lastMoveRow !== null && prevState.lastMoveColumn !== null &&
+                        prevState.boardState[prevState.lastMoveRow][prevState.lastMoveColumn]
+                    ) {
+                        highlightId = prevState.boardState[prevState.lastMoveRow][prevState.lastMoveColumn].id;
+                    }
+
                     // 3) Animate gravity (vertical) in unrotated frame, then render final
                     this.boardRenderer.animateGravity(() => {
                         this.boardRenderer.drawBoard();
-                        if (nextState.lastMoveRow !== null && nextState.lastMoveColumn !== null) {
-                            this.highlightLastMove(nextState.lastMoveRow, nextState.lastMoveColumn);
+
+                        // Keep red marker on the last-move stone, mapped through rotation+gravity
+                        if (highlightId !== null) {
+                            // Find this id in the next state's final board (P3)
+                            let targetRow = null, targetCol = null;
+                            for (let r = 0; r < this.board.size; r++) {
+                                for (let c = 0; c < this.board.size; c++) {
+                                    const cell = nextState.boardState[r][c];
+                                    if (cell && cell.id === highlightId) {
+                                        targetRow = r; targetCol = c;
+                                        break;
+                                    }
+                                }
+                                if (targetRow !== null) break;
+                            }
+                            if (targetRow !== null && targetCol !== null) {
+                                this.highlightLastMove(targetRow, targetCol);
+                            }
                         }
+
                         if (onAnimationComplete) onAnimationComplete();
-                    });
+                    }, highlightId);
                 });
             }
             // If the next step is a regular move, animate the stone drop
             else if (nextState.moveType === 'move') {
                 // Restore the board to the state *before* the move, so we can animate over it
                 this.restoreGameState(prevState, true);
+
+                // As soon as the new stone starts falling, remove previous marker
+                this.clearMoveHighlights();
                 
                 // Use a timeout to allow the browser to render the previous state first
                 setTimeout(() => {
@@ -190,57 +219,128 @@ export class GameController {
 
     prevStep(onAnimationComplete) {
         if (this.currentStep > 0) {
-            const currentState = this.gameHistory[this.currentStep];
-            const prevState = this.gameHistory[this.currentStep - 1];
+            const leavingState = this.gameHistory[this.currentStep];
+            const targetIndex = this.currentStep - 1;
+            const destinationState = this.gameHistory[targetIndex];
 
-            this.currentStep--;
+            // Case C (moved up): if we are LEAVING a move step, always remove the last stone first
+            if (leavingState.moveType === 'move') {
+                const { lastMoveRow, lastMoveColumn, player } = leavingState;
+                const stone = new Stone(player);
+                this.restoreGameState(leavingState, true);
+                setTimeout(() => {
+                    this.boardRenderer.animateReplayStoneRemoval(lastMoveRow, lastMoveColumn, stone, () => {
+                        this.restoreGameState(destinationState, true);
+                        this.currentStep = targetIndex;
+                        if (onAnimationComplete) onAnimationComplete();
+                    });
+                }, 50);
+                return true;
+            }
 
-            if (currentState.moveType === 'rotation') {
-                const preRotation = currentState.preRotationBoardState; // P2
-                const postRotation = currentState.boardState;           // P3
+            // Case A: ARRIVE on a rotation step → reverse climb now (no rotation yet)
+            if (destinationState.moveType === 'rotation') {
+                const preRotation = destinationState.preRotationBoardState; // P2
+                const postRotation = destinationState.boardState;           // P3
 
                 if (preRotation) {
-                    // 1) Play reverse gravity from P3 -> P2 with wrapper unrotated
+                    let highlightId = null;
+                    if (targetIndex - 1 >= 0) {
+                        const beforeRotationState = this.gameHistory[targetIndex - 1];
+                        if (
+                            beforeRotationState.lastMoveRow !== null &&
+                            beforeRotationState.lastMoveColumn !== null &&
+                            beforeRotationState.boardState[beforeRotationState.lastMoveRow][beforeRotationState.lastMoveColumn]
+                        ) {
+                            highlightId = beforeRotationState.boardState[beforeRotationState.lastMoveRow][beforeRotationState.lastMoveColumn].id;
+                        }
+                    }
+
                     this.boardRenderer.animateReplayReverseGravity(preRotation, postRotation, () => {
-                        // After climb finishes, render P2 so stones are visible during rotation
                         this.board.grid = preRotation.map(row =>
                             row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
                         );
                         this.boardRenderer.drawBoard();
 
-                        // 2) Rotate wrapper back (visual +90deg)
+                        if (highlightId !== null) {
+                            let r2 = null, c2 = null;
+                            for (let r = 0; r < this.board.size; r++) {
+                                for (let c = 0; c < this.board.size; c++) {
+                                    const cell = preRotation[r][c];
+                                    if (cell && cell.id === highlightId) { r2 = r; c2 = c; break; }
+                                }
+                                if (r2 !== null) break;
+                            }
+                            if (r2 !== null) this.highlightLastMove(r2, c2);
+                        }
+
+                        this.currentStep = targetIndex;
+                        if (onAnimationComplete) onAnimationComplete();
+                    }, highlightId);
+                } else {
+                    this.restoreGameState(destinationState, true);
+                    this.currentStep = targetIndex;
+                    if (onAnimationComplete) onAnimationComplete();
+                }
+                return true;
+            }
+
+            // Case B: LEAVE a rotation step → reverse climb then rotate back
+            if (leavingState.moveType === 'rotation') {
+                const preRotation = leavingState.preRotationBoardState; // P2
+                const postRotation = leavingState.boardState;           // P3
+
+                if (preRotation) {
+                    let highlightId = null;
+                    if (
+                        destinationState.lastMoveRow !== null && destinationState.lastMoveColumn !== null &&
+                        destinationState.boardState[destinationState.lastMoveRow][destinationState.lastMoveColumn]
+                    ) {
+                        highlightId = destinationState.boardState[destinationState.lastMoveRow][destinationState.lastMoveColumn].id;
+                    }
+
+                    this.boardRenderer.animateReplayReverseGravity(preRotation, postRotation, () => {
+                        this.board.grid = preRotation.map(row =>
+                            row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
+                        );
+                        this.boardRenderer.drawBoard();
+
+                        if (highlightId !== null) {
+                            let r2 = null, c2 = null;
+                            for (let r = 0; r < this.board.size; r++) {
+                                for (let c = 0; c < this.board.size; c++) {
+                                    const cell = preRotation[r][c];
+                                    if (cell && cell.id === highlightId) { r2 = r; c2 = c; break; }
+                                }
+                                if (r2 !== null) break;
+                            }
+                            if (r2 !== null) this.highlightLastMove(r2, c2);
+                        }
+
                         this.animateReplayRotationBackward(() => {
-                            // 3) Finally render P1 (previous state's board)
-                            this.restoreGameState(prevState, true);
+                            this.restoreGameState(destinationState, true);
+                            if (highlightId !== null) {
+                                const lr = destinationState.lastMoveRow, lc = destinationState.lastMoveColumn;
+                                if (lr !== null && lc !== null) this.highlightLastMove(lr, lc);
+                            }
+                            this.currentStep = targetIndex;
                             if (onAnimationComplete) onAnimationComplete();
                         });
-                    });
+                    }, highlightId);
                 } else {
-                    // Fallback (older history without P2): just rotate back and render P1
                     this.animateReplayRotationBackward(() => {
-                        this.restoreGameState(prevState, true);
+                        this.restoreGameState(destinationState, true);
+                        this.currentStep = targetIndex;
                         if (onAnimationComplete) onAnimationComplete();
                     });
                 }
-            } else if (currentState.moveType === 'move') {
-                const { lastMoveRow, lastMoveColumn, player } = currentState;
-                const stone = new Stone(player);
-                
-                // Show the board with the stone we're about to remove
-                this.restoreGameState(currentState, true);
-
-                // Use a timeout to allow the browser to render the current state first
-                setTimeout(() => {
-                    this.boardRenderer.animateReplayStoneRemoval(lastMoveRow, lastMoveColumn, stone, () => {
-                        // After the stone is gone, show the board in its previous state
-                        this.restoreGameState(prevState, true); 
-                        if (onAnimationComplete) onAnimationComplete();
-                    });
-                }, 50);
-            } else {
-                this.restoreGameState(prevState, true);
-                if (onAnimationComplete) onAnimationComplete();
+                return true;
             }
+
+            // Default: simple render of destination
+            this.restoreGameState(destinationState, true);
+            this.currentStep = targetIndex;
+            if (onAnimationComplete) onAnimationComplete();
             return true;
         }
         return false;
