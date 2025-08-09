@@ -196,11 +196,32 @@ export class GameController {
             this.currentStep--;
 
             if (currentState.moveType === 'rotation') {
-                // Backward rotation: instantly show the pre-rotation state, then rotate back
-                this.restoreGameState(prevState, true);
-                this.animateReplayRotationBackward(() => {
-                    if (onAnimationComplete) onAnimationComplete();
-                });
+                const preRotation = currentState.preRotationBoardState; // P2
+                const postRotation = currentState.boardState;           // P3
+
+                if (preRotation) {
+                    // 1) Play reverse gravity from P3 -> P2 with wrapper unrotated
+                    this.boardRenderer.animateReplayReverseGravity(preRotation, postRotation, () => {
+                        // After climb finishes, render P2 so stones are visible during rotation
+                        this.board.grid = preRotation.map(row =>
+                            row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
+                        );
+                        this.boardRenderer.drawBoard();
+
+                        // 2) Rotate wrapper back (visual +90deg)
+                        this.animateReplayRotationBackward(() => {
+                            // 3) Finally render P1 (previous state's board)
+                            this.restoreGameState(prevState, true);
+                            if (onAnimationComplete) onAnimationComplete();
+                        });
+                    });
+                } else {
+                    // Fallback (older history without P2): just rotate back and render P1
+                    this.animateReplayRotationBackward(() => {
+                        this.restoreGameState(prevState, true);
+                        if (onAnimationComplete) onAnimationComplete();
+                    });
+                }
             } else if (currentState.moveType === 'move') {
                 const { lastMoveRow, lastMoveColumn, player } = currentState;
                 const stone = new Stone(player);
