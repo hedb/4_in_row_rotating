@@ -256,30 +256,49 @@ export class GameController {
                         }
                     }
 
-                    this.boardRenderer.animateReplayReverseGravity(preRotation, postRotation, () => {
-                        this.board.grid = preRotation.map(row =>
-                            row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
-                        );
-                        this.boardRenderer.drawBoard();
-
-                        if (highlightId !== null) {
-                            let r2 = null, c2 = null;
-                            for (let r = 0; r < this.board.size; r++) {
-                                for (let c = 0; c < this.board.size; c++) {
-                                    const cell = preRotation[r][c];
-                                    if (cell && cell.id === highlightId) { r2 = r; c2 = c; break; }
-                                }
-                                if (r2 !== null) break;
+                    // Show P3 and highlight immediately; no reverse-climb yet
+                    this.board.grid = postRotation.map(row =>
+                        row.map(cell => (cell ? new Stone(cell.playerId, cell.id) : null))
+                    );
+                    this.boardRenderer.drawBoard();
+                    if (highlightId !== null) {
+                        let hr = null, hc = null;
+                        for (let r = 0; r < this.board.size; r++) {
+                            for (let c = 0; c < this.board.size; c++) {
+                                const cell = postRotation[r][c];
+                                if (cell && cell.id === highlightId) { hr = r; hc = c; break; }
                             }
-                            if (r2 !== null) this.highlightLastMove(r2, c2);
+                            if (hr !== null) break;
                         }
+                        if (hr !== null) this.highlightLastMove(hr, hc);
+                    }
 
-                        this.currentStep = targetIndex;
-                        if (onAnimationComplete) onAnimationComplete();
-                    }, highlightId);
+                    // Commit step and return without starting reverse climb
+                    this.currentStep = targetIndex;
+                    if (onAnimationComplete) onAnimationComplete();
                 } else {
+                    // Fallback if no P2 snapshot exists: render P3 and highlight
                     this.restoreGameState(destinationState, true);
                     this.currentStep = targetIndex;
+                    if (targetIndex - 1 >= 0) {
+                        const beforeRotationState = this.gameHistory[targetIndex - 1];
+                        if (
+                            beforeRotationState.lastMoveRow !== null &&
+                            beforeRotationState.lastMoveColumn !== null &&
+                            beforeRotationState.boardState[beforeRotationState.lastMoveRow][beforeRotationState.lastMoveColumn]
+                        ) {
+                            const highlightId = beforeRotationState.boardState[beforeRotationState.lastMoveRow][beforeRotationState.lastMoveColumn].id;
+                            let hr = null, hc = null;
+                            for (let r = 0; r < this.board.size; r++) {
+                                for (let c = 0; c < this.board.size; c++) {
+                                    const cell = destinationState.boardState[r][c];
+                                    if (cell && cell.id === highlightId) { hr = r; hc = c; break; }
+                                }
+                                if (hr !== null) break;
+                            }
+                            if (hr !== null) this.highlightLastMove(hr, hc);
+                        }
+                    }
                     if (onAnimationComplete) onAnimationComplete();
                 }
                 return true;
