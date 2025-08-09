@@ -44,7 +44,9 @@ export class BoardRenderer {
         }
     }
 
-    animateRotation(callback) {
+    animateRotation(callback, options = {}) {
+        const { shouldReset = true } = options;
+
         // Prevent multiple simultaneous rotations
         if (this.isAnimatingRotation) {
             return;
@@ -74,15 +76,17 @@ export class BoardRenderer {
             // Clean up the event listener immediately
             this.gridWrapper.removeEventListener('transitionend', handleTransitionEnd);
 
-            // Reset visual rotation to 0 degrees but keep track of logical rotation
-            this.gridWrapper.style.transition = 'none';
-            this.gridWrapper.style.transform = 'rotate(0deg)';
-            
-            // Force reflow
-            this.gridWrapper.getBoundingClientRect();
-            
-            // Re-enable transitions
-            this.gridWrapper.style.transition = '';
+            if (shouldReset) {
+                // Reset visual rotation to 0 degrees but keep track of logical rotation
+                this.gridWrapper.style.transition = 'none';
+                this.gridWrapper.style.transform = 'rotate(0deg)';
+                
+                // Force reflow
+                this.gridWrapper.getBoundingClientRect();
+                
+                // Re-enable transitions
+                this.gridWrapper.style.transition = '';
+            }
 
             // Reset the animation flag
             this.isAnimatingRotation = false;
@@ -99,10 +103,280 @@ export class BoardRenderer {
             if (!callbackExecuted) {
                 handleTransitionEnd({ target: this.gridWrapper });
             }
-        }, 2000); // 2 second fallback
+                }, 2000); // 2 second fallback
+    }
+
+    resetGridRotation() {
+        this.gridWrapper.style.transition = 'none';
+        this.gridWrapper.style.transform = 'rotate(0deg)';
+        this.gridWrapper.getBoundingClientRect(); // Force reflow
+        this.gridWrapper.style.transition = '';
     }
     
+    animateRotationBackward(callback) {
+        if (this.isAnimatingRotation) {
+            return;
+        }
+        this.isAnimatingRotation = true;
 
+        // Apply a positive 90-degree rotation to animate backward
+        this.gridWrapper.style.transform = `rotate(90deg)`;
+
+        let callbackExecuted = false;
+        const handleTransitionEnd = (event) => {
+            if (event.target !== this.gridWrapper || callbackExecuted) {
+                return;
+            }
+            callbackExecuted = true;
+            this.gridWrapper.removeEventListener('transitionend', handleTransitionEnd);
+
+            // Reset visual rotation
+            this.gridWrapper.style.transition = 'none';
+            this.gridWrapper.style.transform = 'rotate(0deg)';
+            this.gridWrapper.getBoundingClientRect(); // Force reflow
+            this.gridWrapper.style.transition = '';
+
+            this.isAnimatingRotation = false;
+            if (callback) callback();
+        };
+
+        this.gridWrapper.addEventListener('transitionend', handleTransitionEnd);
+
+        // Fallback
+        setTimeout(() => {
+            if (!callbackExecuted) {
+                handleTransitionEnd({ target: this.gridWrapper });
+            }
+        }, 2000);
+    }
+
+    // For replay: animate stones falling after rotation
+    animateReplayGravity(beforeState, afterState, callback) {
+        // After rotation, stones should fall from their actual rotated positions
+        // First, we need to calculate where each stone in beforeState ended up after rotation
+        
+        const stonesToAnimate = [];
+        
+        // Map each stone from beforeState to its rotated position, then to its final position
+        for (let beforeRow = 0; beforeRow < this.board.size; beforeRow++) {
+            for (let beforeCol = 0; beforeCol < this.board.size; beforeCol++) {
+                const stone = beforeState[beforeRow][beforeCol];
+                if (stone) {
+                    // Calculate where this stone ended up after 90-degree counterclockwise rotation
+                    const rotatedRow = this.board.size - 1 - beforeCol;
+                    const rotatedCol = beforeRow;
+                    
+                    // Find where this stone should end up in the final state
+                    let finalRow = -1;
+                    let finalCol = -1;
+                    
+                    // Find this stone in the afterState
+                    for (let r = 0; r < this.board.size; r++) {
+                        for (let c = 0; c < this.board.size; c++) {
+                            if (afterState[r][c] && afterState[r][c].playerId === stone.playerId) {
+                                // Simple matching - in a real game you'd want better stone tracking
+                                finalRow = r;
+                                finalCol = c;
+                                afterState[r][c] = null; // Mark as used to avoid double-matching
+                                break;
+                            }
+                        }
+                        if (finalRow !== -1) break;
+                    }
+                    
+                    if (finalRow !== -1) {
+                        stonesToAnimate.push({
+                            stone: stone,
+                            fromRow: rotatedRow,
+                            toRow: finalRow,
+                            col: finalCol
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Clear the board and add empty cells
+        this.gridElement.innerHTML = '';
+        
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                this.gridElement.appendChild(cell);
+            }
+        }
+        
+        this.animateStonesFallingReplay(stonesToAnimate, callback);
+    }
+    
+    // For replay: animate stones flying up before backward rotation
+    animateReplayReverseGravity(beforeState, afterState, callback) {
+        const stonesToAnimate = [];
+        
+        // Find stones that need to "fly up" to their pre-rotation positions
+        for (let beforeRow = 0; beforeRow < this.board.size; beforeRow++) {
+            for (let beforeCol = 0; beforeCol < this.board.size; beforeCol++) {
+                const stone = beforeState[beforeRow][beforeCol];
+                if (stone) {
+                    // Find where this stone ended up after rotation
+                    let afterRow = -1;
+                    for (let r = 0; r < this.board.size; r++) {
+                        for (let c = 0; c < this.board.size; c++) {
+                            if (afterState[r][c] && afterState[r][c].playerId === stone.playerId) {
+                                afterRow = r;
+                                break;
+                            }
+                        }
+                        if (afterRow !== -1) break;
+                    }
+                    
+                    if (afterRow !== -1 && afterRow !== beforeRow) {
+                        stonesToAnimate.push({
+                            stone: stone,
+                            fromRow: afterRow,
+                            toRow: beforeRow,
+                            col: beforeCol
+                        });
+                    }
+                }
+            }
+        }
+        
+        this.animateStonesRisingReplay(stonesToAnimate, callback);
+    }
+    
+    animateStonesFallingReplay(stonesToAnimate, callback) {
+        let animationsCompleted = 0;
+        const totalAnimations = stonesToAnimate.length;
+
+        if (totalAnimations === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        // Clear the board to avoid duplicates
+        this.gridElement.innerHTML = '';
+        
+        // Add empty cells
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                this.gridElement.appendChild(cell);
+            }
+        }
+
+        stonesToAnimate.forEach(stoneInfo => {
+            const { stone, fromRow, toRow, col } = stoneInfo;
+            
+            setTimeout(() => {
+                // Create temporary stone element for animation
+                const stoneElement = document.createElement('div');
+                stoneElement.classList.add('stone');
+                stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
+                stoneElement.style.position = 'absolute';
+                stoneElement.style.zIndex = '100';
+                
+                // Position at start location
+                const offset = (this.cellSize - this.stoneSize) / 2;
+                const leftPos = col * (this.cellSize + this.gapSize) + offset;
+                const startTop = fromRow * (this.cellSize + this.gapSize) + offset;
+                const endTop = toRow * (this.cellSize + this.gapSize) + offset;
+                
+                stoneElement.style.left = `${leftPos}px`;
+                stoneElement.style.top = `${startTop}px`;
+                stoneElement.style.transition = 'top 0.5s ease-in';
+                
+                this.gridElement.appendChild(stoneElement);
+                
+                // Trigger animation
+                setTimeout(() => {
+                    stoneElement.style.top = `${endTop}px`;
+                }, 10);
+                
+                // Clean up after animation
+                setTimeout(() => {
+                    if (stoneElement.parentNode) {
+                        stoneElement.parentNode.removeChild(stoneElement);
+                    }
+                    animationsCompleted++;
+                    if (animationsCompleted === totalAnimations && callback) {
+                        callback();
+                    }
+                }, 600);
+            }, 0);
+        });
+    }
+    
+    animateStonesRisingReplay(stonesToAnimate, callback) {
+        let animationsCompleted = 0;
+        const totalAnimations = stonesToAnimate.length;
+
+        if (totalAnimations === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        // Clear the board to avoid duplicates
+        this.gridElement.innerHTML = '';
+        
+        // Add empty cells
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                this.gridElement.appendChild(cell);
+            }
+        }
+
+        stonesToAnimate.forEach(stoneInfo => {
+            const { stone, fromRow, toRow, col } = stoneInfo;
+            
+            // Create temporary stone element for animation
+            const stoneElement = document.createElement('div');
+            stoneElement.classList.add('stone');
+            stoneElement.style.backgroundColor = PLAYER_COLORS[stone.playerId];
+            stoneElement.style.position = 'absolute';
+            stoneElement.style.zIndex = '100';
+            
+            // Position at start location
+            const offset = (this.cellSize - this.stoneSize) / 2;
+            const leftPos = col * (this.cellSize + this.gapSize) + offset;
+            const startTop = fromRow * (this.cellSize + this.gapSize) + offset;
+            const endTop = toRow * (this.cellSize + this.gapSize) + offset;
+            
+            stoneElement.style.left = `${leftPos}px`;
+            stoneElement.style.top = `${startTop}px`;
+            stoneElement.style.transition = 'top 0.5s ease-out';
+            
+            this.gridElement.appendChild(stoneElement);
+            
+            // Trigger animation (stones fly up)
+            setTimeout(() => {
+                stoneElement.style.top = `${endTop}px`;
+            }, 10);
+            
+            // Clean up after animation
+            setTimeout(() => {
+                if (stoneElement.parentNode) {
+                    stoneElement.parentNode.removeChild(stoneElement);
+                }
+                animationsCompleted++;
+                if (animationsCompleted === totalAnimations && callback) {
+                    callback();
+                }
+            }, 600);
+        });
+    }
+
+    
     animateGravity(callback) {
         // Clear the grid element
         this.gridElement.innerHTML = '';
@@ -282,11 +556,150 @@ export class BoardRenderer {
         }
     }
 
+    animateReplayStoneDrop(startRow, col, targetRow, stone, callback) {
+        const stoneColor = PLAYER_COLORS[stone.playerId];
+        const stoneElement = document.createElement('div');
+        stoneElement.classList.add('stone');
+        stoneElement.style.backgroundColor = stoneColor;
+        stoneElement.dataset.stoneId = stone.id;
+
+        const offset = (this.cellSize - this.stoneSize) / 2;
+        stoneElement.style.position = 'absolute';
+        stoneElement.style.left = `${col * (this.cellSize + this.gapSize) + offset}px`;
+        stoneElement.style.top = `${startRow * (this.cellSize + this.gapSize) + offset}px`;
+        
+        // Add a higher z-index to ensure it animates over existing stones
+        stoneElement.style.zIndex = '10';
+
+        this.gridElement.appendChild(stoneElement);
+
+        if (startRow === targetRow) {
+            // No animation needed
+            this.gridElement.removeChild(stoneElement); // Clean up temporary element
+            if (callback) callback();
+            return;
+        }
+
+        const distance = Math.abs(targetRow - startRow) * (this.cellSize + this.gapSize);
+        const duration = distance / STONE_FALLING_SPEED;
+        stoneElement.style.transition = `top ${duration}s linear`;
+        const targetTop = targetRow * (this.cellSize + this.gapSize) + offset;
+
+        stoneElement.getBoundingClientRect(); // Force reflow
+        stoneElement.style.top = `${targetTop}px`;
+
+        stoneElement.addEventListener('transitionend', () => {
+            // IMPORTANT: Do NOT remove the element, as the final board is already rendered underneath.
+            // Instead, we just hide it so the permanent stone is visible.
+            stoneElement.style.opacity = '0';
+            // Clean up the element from the DOM after a short delay
+            setTimeout(() => {
+                if (stoneElement.parentElement) {
+                    this.gridElement.removeChild(stoneElement);
+                }
+            }, 100);
+            if (callback) callback();
+        });
+    }
+
+    animateReplayStoneRemoval(row, col, stone, callback) {
+        // Find and hide the existing static stone at this position
+        const existingStone = this.getStoneElement(row, col);
+        if (existingStone) {
+            existingStone.style.visibility = 'hidden';
+        }
+
+        const stoneColor = PLAYER_COLORS[stone.playerId];
+        const stoneElement = document.createElement('div');
+        stoneElement.classList.add('stone');
+        stoneElement.style.backgroundColor = stoneColor;
+        stoneElement.style.zIndex = '10';
+
+        const offset = (this.cellSize - this.stoneSize) / 2;
+        const startTop = row * (this.cellSize + this.gapSize) + offset;
+        const endTop = 0 - this.stoneSize; // Animate to just above the board
+
+        stoneElement.style.position = 'absolute';
+        stoneElement.style.left = `${col * (this.cellSize + this.gapSize) + offset}px`;
+        stoneElement.style.top = `${startTop}px`;
+
+        this.gridElement.appendChild(stoneElement);
+
+        const distance = Math.abs(endTop - startTop);
+        const duration = distance / STONE_FALLING_SPEED;
+        stoneElement.style.transition = `top ${duration}s linear`;
+
+        stoneElement.getBoundingClientRect(); // Force reflow
+        stoneElement.style.top = `${endTop}px`;
+
+        stoneElement.addEventListener('transitionend', () => {
+            if (stoneElement.parentElement) {
+                this.gridElement.removeChild(stoneElement);
+            }
+            if (callback) callback();
+        });
+    }
+
+    animateReplayGravityFromPreRotation(preRotationState, postRotationState, callback) {
+        // Clear the board and add empty cells
+        this.gridElement.innerHTML = '';
+        for (let row = 0; row < this.board.size; row++) {
+            for (let col = 0; col < this.board.size; col++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                this.gridElement.appendChild(cell);
+            }
+        }
+
+        const stonesToAnimate = [];
+
+        for (let col = 0; col < this.board.size; col++) {
+            const preRows = [];
+            const postRows = [];
+
+            for (let row = 0; row < this.board.size; row++) {
+                if (preRotationState[row][col]) {
+                    preRows.push({ playerId: preRotationState[row][col].playerId, row });
+                }
+            }
+            for (let row = 0; row < this.board.size; row++) {
+                if (postRotationState[row][col]) {
+                    postRows.push({ playerId: postRotationState[row][col].playerId, row });
+                }
+            }
+
+            const n = Math.min(preRows.length, postRows.length);
+            for (let i = 0; i < n; i++) {
+                stonesToAnimate.push({
+                    stone: { playerId: preRows[i].playerId },
+                    fromRow: preRows[i].row,
+                    toRow: postRows[i].row,
+                    col
+                });
+            }
+        }
+
+        // Use existing falling animation utility
+        this.animateStonesFallingReplay(stonesToAnimate, callback);
+    }
+
 
     resetRendering() {
         this.currentRotation = 0;
         this.gridWrapper.style.transform = 'rotate(0deg)';
         this.drawBoard();
+    }
+
+    getStoneElement(row, col) {
+        // Find the cell at the specified row/col
+        const cell = this.gridElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (cell) {
+            // Find the stone element within that cell
+            return cell.querySelector('.stone');
+        }
+        return null;
     }
 
 }

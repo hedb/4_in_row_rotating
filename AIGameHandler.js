@@ -152,22 +152,38 @@ export class AIGameHandler {
             turnIndicator.style.display = 'none';
         }
         
-        // Show game over container with message and button
+        // Show game over container and bind buttons
         const gameOverContainer = document.getElementById('game-over-container');
         const gameOverText = document.getElementById('game-over-text');
+        const analyzeBtn = document.getElementById('analyze-btn');
         const newGameBtn = document.getElementById('new-game-btn');
         
-        if (gameOverContainer && gameOverText && newGameBtn) {
+        if (gameOverContainer && gameOverText && analyzeBtn && newGameBtn) {
             gameOverText.textContent = message;
             gameOverContainer.classList.remove('hidden');
+
+            // --- Clone and replace buttons to remove old listeners ---
+            const newAnalyzeBtn = analyzeBtn.cloneNode(true);
+            analyzeBtn.parentNode.replaceChild(newAnalyzeBtn, analyzeBtn);
             
-            // Remove any existing event listeners and add new one
-            const newBtn = newGameBtn.cloneNode(true);
-            newGameBtn.parentNode.replaceChild(newBtn, newGameBtn);
+            const newNewGameBtn = newGameBtn.cloneNode(true);
+            newGameBtn.parentNode.replaceChild(newNewGameBtn, newGameBtn);
             
-            newBtn.addEventListener('click', () => {
+            // --- Add new event listeners ---
+            newAnalyzeBtn.addEventListener('click', () => {
+                this.startReplayMode();
+            });
+            
+            newNewGameBtn.addEventListener('click', () => {
                 this.startNewGame();
             });
+        }
+    }
+    
+    startReplayMode() {
+        // Trigger replay mode through the global GameApp instance
+        if (window.gameApp) {
+            window.gameApp.initReplayMode();
         }
     }
     

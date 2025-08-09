@@ -66,11 +66,32 @@
         
         <div id="game-over-container" class="game-over-container hidden">
             <span id="game-over-text"></span>
-            <button id="new-game-btn" class="new-game-btn">Another game?</button>
+            <div class="game-over-buttons">
+                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
+                <button id="new-game-btn" class="game-over-btn">New Game</button>
+            </div>
         </div>
 
         <div id="grid-wrapper">
             <div id="grid"></div>
+        </div>
+
+        <!-- Replay Controls -->
+        <div id="replay-controls" class="replay-controls hidden">
+            <div class="replay-info">
+                <span id="replay-step-info">Step 1, White turn</span>
+            </div>
+            <div class="replay-buttons">
+                <button id="replay-prev-btn" class="replay-btn" title="Previous step">
+                    <span class="replay-icon">⏮</span>
+                </button>
+                <button id="replay-next-btn" class="replay-btn" title="Next step">
+                    <span class="replay-icon">⏭</span>
+                </button>
+            </div>
+            <div class="replay-actions">
+                <button id="exit-replay-btn" class="exit-replay-btn">Exit Replay</button>
+            </div>
         </div>
 
     </div>
