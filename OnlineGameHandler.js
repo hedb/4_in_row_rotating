@@ -255,7 +255,11 @@ export class OnlineGameHandler {
             moveNumber: result.data.moveNumber,
             newMoveCount: this.moveCount
         });
-        this.switchPlayer();
+        
+        // Only switch player if game is not over
+        if (!this.gameController.isGameOver()) {
+            this.switchPlayer();
+        }
     }
 
     async applyMoveToBoard(move, animate = true) {
@@ -310,6 +314,12 @@ export class OnlineGameHandler {
     }
 
     switchPlayer() {
+        // Early return if game is over to prevent rotation logic
+        if (this.gameController.isGameOver()) {
+            console.log('[OnlineGameHandler] switchPlayer() called but game is over, skipping');
+            return;
+        }
+        
         this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
         this.updateTurnIndicator();
         
@@ -461,7 +471,10 @@ export class OnlineGameHandler {
                         newMoveCount: this.moveCount
                     });
                     
-                    this.switchPlayer();
+                    // Only switch player if game is not over
+                    if (!this.gameController.isGameOver()) {
+                        this.switchPlayer();
+                    }
                 }
             }
 
@@ -606,6 +619,80 @@ export class OnlineGameHandler {
         this.updateCountdown(turnsUntilRotation);
     }
 
+    // === ANALYZE MODE SUPPORT ===
+
+    async buildGameHistoryFromMoves() {
+        console.log('[OnlineGameHandler] Building game history for analyze mode...');
+        
+        // Get the complete move history from the server
+        const result = await this.apiController.getNewMoves(this.sessionId, 0);
+        if (!result.success || !result.data.moves) {
+            console.error('[OnlineGameHandler] Failed to get moves for analyze mode:', result.error);
+            return;
+        }
+
+        const serverMoves = result.data.moves;
+        console.log(`[OnlineGameHandler] Reconstructing game history from ${serverMoves.length} server moves`);
+
+        // Reset game controller to start fresh
+        this.gameController.resetGame();
+        
+        // Clear any existing game history and start fresh
+        this.gameController.gameHistory = [];
+        this.gameController.currentStep = -1;
+
+        // Capture initial game state (empty board)
+        this.gameController.captureGameState('game_start', null, null);
+
+        // Replay each move step by step to build complete history
+        for (let i = 0; i < serverMoves.length; i++) {
+            const move = serverMoves[i];
+            const { player, column, moveNumber } = move;
+
+            // Find target row for this move
+            const targetRow = this.gameController.getNextAvailableRow(column);
+            if (targetRow !== null) {
+                // Import Stone class and place stone
+                const { Stone } = await import('./Stone.js');
+                const stone = new Stone(player);
+                this.gameController.board.placeStone(targetRow, column, stone);
+
+                // Capture game state after move placement
+                this.gameController.captureGameState('move', targetRow, column, {
+                    player: player,
+                    moveNumber: moveNumber
+                });
+
+                // Check if this move triggers a rotation
+                if (moveNumber > 0 && moveNumber % this.rotationFrequency === 0) {
+                    console.log(`[OnlineGameHandler] Applying rotation at move #${moveNumber} during history build`);
+                    
+                    // Apply rotation and gravity (without animation)
+                    this.gameController.board.rotateGrid();
+                    
+                    // Capture pre-gravity board state for analyze mode animation
+                    const preRotationBoardState = this.gameController.board.grid.map(row =>
+                        row.map(cell => cell ? { playerId: cell.playerId, id: cell.id } : null)
+                    );
+                    
+                    this.gameController.board.applyGravity();
+
+                    // Capture game state after rotation with preRotationBoardState for analyze mode
+                    this.gameController.captureGameState('rotation', null, null, { 
+                        preRotationBoardState,
+                        moveNumber: moveNumber,
+                        rotationType: 'counter_clockwise'
+                    });
+                }
+            }
+        }
+
+        // Ensure final board state matches what was displayed
+        this.gameController.boardRenderer.drawBoard();
+        
+        console.log(`[OnlineGameHandler] Game history built with ${this.gameController.gameHistory.length} steps`);
+    }
+
     displayGameOverMessage(message) {
         // Hide turn indicator
         const turnIndicator = document.getElementById('turn-indicator');
@@ -613,25 +700,41 @@ export class OnlineGameHandler {
             turnIndicator.style.display = 'none';
         }
         
-        // Show game over container with message and button
+        // Build game history from server moves for analyze mode
+        this.buildGameHistoryFromMoves();
+        
+        // Show game over container with message and buttons
         const gameOverContainer = document.getElementById('game-over-container');
         const gameOverText = document.getElementById('game-over-text');
+        const analyzeBtn = document.getElementById('analyze-btn');
         const newGameBtn = document.getElementById('new-game-btn');
         
-        if (gameOverContainer && gameOverText && newGameBtn) {
+        if (gameOverContainer && gameOverText && analyzeBtn && newGameBtn) {
             gameOverText.textContent = message;
             gameOverContainer.classList.remove('hidden');
             
-            // For all games, the button will return to mode selection
-            newGameBtn.textContent = "New game?";
+            // --- Clone and replace buttons to remove old listeners ---
+            const newAnalyzeBtn = analyzeBtn.cloneNode(true);
+            analyzeBtn.parentNode.replaceChild(newAnalyzeBtn, analyzeBtn);
             
-            // Remove any existing event listeners and add new one
-            const newBtn = newGameBtn.cloneNode(true);
-            newGameBtn.parentNode.replaceChild(newBtn, newGameBtn);
+            const newNewGameBtn = newGameBtn.cloneNode(true);
+            newGameBtn.parentNode.replaceChild(newNewGameBtn, newGameBtn);
             
-            newBtn.addEventListener('click', () => {
+            // --- Add new event listeners ---
+            newAnalyzeBtn.addEventListener('click', () => {
+                this.startReplayMode();
+            });
+            
+            newNewGameBtn.addEventListener('click', () => {
                 this.returnToModeSelection();
             });
+        }
+    }
+    
+    startReplayMode() {
+        // Trigger replay mode through the global GameApp instance
+        if (window.gameApp) {
+            window.gameApp.initReplayMode();
         }
     }
     

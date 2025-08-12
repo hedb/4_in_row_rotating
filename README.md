@@ -38,8 +38,9 @@ The game is a PWA with offline capabilities, powered by a service worker (`sw.js
 ### Animations & Transitions
 
 -   **Bouncy Grid Rotation:** The grid rotation uses a custom CSS `transition` with a `cubic-bezier` timing function to create a delightful "bouncy" effect.
--   **Robust Rendering:** To prevent rendering glitches on mobile devices, the grid wrapper uses `will-change: transform`, `backface-visibility: hidden`, and `transform: translateZ(0)` to promote the animation to its own compositing layer and ensure smooth performance.
--   **Decoupled Animation Logic:** The JavaScript animation code is carefully decoupled from the CSS, listening for `transitionend` events only on the specific element being animated.
+-   **Replay Rotation Fidelity:** Replay rotation mirrors live behavior – forward rotation plays rotate→gravity (P2→P3); backward rotation plays reverse‑gravity (P3→P2)→rotate back. Stones are tracked by stable ids to ensure correct movement and highlighting.
+-   **Robust Rendering:** To prevent rendering glitches on mobile devices, the grid wrapper uses `will-change: transform`, `backface-visibility: hidden`, and `transform: translateZ(0)`.
+-   **Decoupled Animation Logic:** The JavaScript animation code is carefully decoupled from the CSS, listening for `transitionend` on the rotating wrapper and animating stone positions independently.
 
 ## How to Run Locally
 
@@ -56,6 +57,13 @@ Because this project uses ES6 modules and a service worker, it must be run from 
 This project is a single-page application built with vanilla JavaScript (ES6 Modules), HTML, and CSS.
 
 ## Current Status & Recent Updates
+
+**Version 0.9.4** – Analyze (Replay) mode and refined rotation playback:
+- New Analyze Game controls: step forward/back through the game with a red marker on the last stone
+- Forward rotation replay: board rotates, stones fall vertically to post‑gravity positions (matches live gameplay), marker persists during fall
+- Backward rotation replay: on first back onto a rotation step, the rotation’s final state is shown with marker; next back plays reverse “climb” to pre‑gravity, then rotates back; marker stays visible throughout
+- Red marker behavior: disappears when a new stone starts falling; re‑applies to the correct stone after rotation/settling via id tracking
+- Numerous UX fixes: no duplicate stones during animations, stones remain visible during rotation back, consistent highlight through steps
 
 **Version 0.9.2** - Latest improvements include:
 - **Enhanced AI Intelligence**: Strategic priority-based decision making (win detection, threat blocking)

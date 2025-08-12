@@ -46,11 +46,14 @@ export class BoardRenderer {
 
     animateRotation(callback, options = {}) {
         const { shouldReset = true } = options;
+        console.log('[BoardRenderer] animateRotation() called');
 
         // Prevent multiple simultaneous rotations
         if (this.isAnimatingRotation) {
+            console.log('[BoardRenderer] animateRotation() - already animating, aborting');
             return;
         }
+        console.log('[BoardRenderer] animateRotation() - starting rotation animation');
         this.isAnimatingRotation = true;
         
         // Always rotate by exactly 90 degrees counterclockwise from current position
@@ -90,9 +93,14 @@ export class BoardRenderer {
 
             // Reset the animation flag
             this.isAnimatingRotation = false;
+            console.log('[BoardRenderer] animateRotation() - animation completed, calling callback');
     
             // Callback after animation completes
-            if (callback) callback();
+            if (callback) {
+                callback();
+            } else {
+                console.log('[BoardRenderer] animateRotation() - no callback provided');
+            }
         };
     
         // Listen for the transition end event
@@ -384,6 +392,7 @@ export class BoardRenderer {
 
     
     animateGravity(callback, highlightStoneId = null) {
+        console.log('[BoardRenderer] animateGravity() called');
         // Clear the grid element
         this.gridElement.innerHTML = '';
     
@@ -444,9 +453,11 @@ export class BoardRenderer {
         }
     
         if (stonesToAnimate.length > 0) {
+            console.log(`[BoardRenderer] animateGravity() - starting ${stonesToAnimate.length} stone animations`);
             // Start animations
             this.animateStonesFalling(stonesToAnimate, callback);
         } else {
+            console.log('[BoardRenderer] animateGravity() - no stones to animate, calling callback immediately');
             // No stones to animate
             if (callback) callback();
         }
@@ -504,7 +515,9 @@ export class BoardRenderer {
 
             element.addEventListener('transitionend', () => {
                 animationsCompleted++;
+                console.log(`[BoardRenderer] animateStonesFalling() - animation ${animationsCompleted}/${totalAnimations} completed`);
                 if (animationsCompleted === totalAnimations) {
+                    console.log('[BoardRenderer] animateStonesFalling() - all animations completed, calling callback');
                     // All animations completed
                     if (callback) callback();
                 }

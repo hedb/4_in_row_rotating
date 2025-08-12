@@ -393,6 +393,8 @@ export class GameController {
         console.log('[GameController] Restored game state:', gameState.description);
     }
 
+
+
     animateReplayRotation(onComplete) {
         // Temporarily disable input during replay rotation animation
         this.disableInput();
@@ -508,25 +510,31 @@ export class GameController {
     }
 
     rotateGrid(onComplete) {
+        console.log('[GameController] rotateGrid() called');
+        
         if (this.gameOver) {
+            console.log('[GameController] rotateGrid() - game is over, aborting');
             alert('Game over! Please reset the game.');
             return;
         }
 
         if (this.isRotating) {
+            console.log('[GameController] rotateGrid() - already rotating, aborting');
             // Prevent multiple rotations at the same time
             return;
         }
 
+        console.log('[GameController] rotateGrid() - starting rotation animation');
         this.isRotating = true;
         this.inputEnabled = false;
 
         // Animate the rotation
         this.boardRenderer.animateRotation(() => {
-            // After rotation animation completes
+            console.log('[GameController] rotateGrid() - rotation animation completed, now applying data changes');
             
             // Rotate the grid data structure
             this.board.rotateGrid();
+            console.log('[GameController] rotateGrid() - grid data rotated');
             
             // Snapshot the board state immediately after rotation (pre-gravity)
             const preRotationBoardState = this.board.grid.map(row =>
@@ -535,21 +543,25 @@ export class GameController {
         
             // Apply gravity to the rotated grid
             this.board.applyGravity();
+            console.log('[GameController] rotateGrid() - gravity applied, starting gravity animation');
         
             // Animate stones falling due to gravity
             this.boardRenderer.animateGravity(() => {
-                // After gravity animation completes
+                console.log('[GameController] rotateGrid() - gravity animation completed');
                 
                 // Re-render the board to show the final state
                 this.boardRenderer.drawBoard();
+                console.log('[GameController] rotateGrid() - board redrawn');
                 
                 // Capture game state after rotation (if not in replay mode)
                 if (!this.replayMode) {
                     this.captureGameState('rotation', null, null, { preRotationBoardState });
+                    console.log('[GameController] rotateGrid() - game state captured');
                 }
         
                 this.inputEnabled = true;
                 this.isRotating = false;
+                console.log('[GameController] rotateGrid() - rotation sequence complete, calling onComplete');
                 
                 if (onComplete) {
                     onComplete();
