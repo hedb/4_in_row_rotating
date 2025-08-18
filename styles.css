@@ -255,8 +255,9 @@ button:active {
 }
 .top-left-actions {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    align-items: center;
+    align-items: flex-start;
 }
 .top-center-display {
     flex: 1;

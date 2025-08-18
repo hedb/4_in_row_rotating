@@ -195,6 +195,42 @@ const overlay = document.getElementById('overlay');
         if (settingsIcon) settingsIcon.addEventListener('click', toggleSettingsPane);
         if (closeSettingsButton) closeSettingsButton.addEventListener('click', toggleSettingsPane);
         if (overlay) overlay.addEventListener('click', toggleSettingsPane);
+
+        // Top-left global actions (work when visible)
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const showGifBtn = document.getElementById('show-gif-btn');
+        const newGameBtn = document.getElementById('new-game-btn');
+        if (analyzeBtn) {
+            analyzeBtn.addEventListener('click', () => {
+                console.log('[UI] Analyze Game clicked');
+                this.initReplayMode();
+            });
+        }
+        if (showGifBtn) {
+            showGifBtn.addEventListener('click', async () => {
+                try {
+                    console.log('[UI] Show GIF clicked - generating');
+                    if (!this.gameController) throw new Error('No game in progress');
+                    const blob = await this.generateGifClientSide({
+                        version: VERSION,
+                        gridSize: 6,
+                        playerColors: { 1: '#FFFFFF', 2: '#000000' },
+                        history: this.gameController.gameHistory,
+                        winners: this.gameController.lastWinningStoneIds || []
+                    });
+                    this.showGifInTopPanel(blob);
+                } catch (e) {
+                    console.error('[UI] Show GIF failed', e);
+                    alert('Failed to generate GIF.');
+                }
+            });
+        }
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', () => {
+                console.log('[UI] New Game clicked');
+                this.returnToModeSelection();
+            });
+        }
     }
 
     // === REPLAY FUNCTIONALITY ===
