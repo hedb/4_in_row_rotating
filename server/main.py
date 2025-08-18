@@ -6,6 +6,8 @@ import traceback
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from io import BytesIO
+from PIL import Image, ImageDraw
 
 # Configure logging for Cloud Functions
 logging.basicConfig(level=logging.INFO)
@@ -400,7 +402,7 @@ def hello_world(request):
             }
             return ('', 204, headers)
         
-        # Set CORS headers for actual request
+        # Set default CORS headers for JSON responses
         headers = {
             'Access-Control-Allow-Origin': CORS_ORIGIN,
             'Content-Type': 'application/json'
@@ -427,6 +429,21 @@ def hello_world(request):
                 if isinstance(result, tuple):  # Error case
                     return json.dumps(result[0]), result[1], headers
                 return json.dumps(result), 200, headers
+            elif path == 'generate_gif':
+                # Binary response: animated GIF
+                try:
+                    if request.content_type != 'application/json':
+                        return json.dumps({"error": "Content-Type must be application/json"}), 400, headers
+                    payload = request.get_json(silent=True) or {}
+                    gif_bytes = render_gif_from_history(payload)
+                    bin_headers = {
+                        'Access-Control-Allow-Origin': CORS_ORIGIN,
+                        'Content-Type': 'image/gif'
+                    }
+                    return gif_bytes, 200, bin_headers
+                except Exception as e:
+                    logger.error(f"Error generating GIF: {str(e)}")
+                    return json.dumps({"error": "Failed to generate GIF", "message": str(e)}), 500, headers
                 
         elif request.method == 'GET':
             if path == 'health' or path == '' or path == 'hello':
@@ -517,3 +534,187 @@ if __name__ == '__main__':
     print("")
     
     app.run(host='0.0.0.0', port=8080, debug=True) 
+
+
+# ================= GIF RENDERING =================
+def render_gif_from_history(payload: dict) -> bytes:
+    """Render an animated GIF (with stone drops and board rotations) from history.
+
+    Expects full `history` array so we can access previous steps during rotation.
+    """
+    grid_size = int(payload.get('gridSize', 6))
+    history = payload.get('history', [])
+    winners = set(payload.get('winners', []))
+    player_colors = payload.get('playerColors', {"1": "#FFFFFF", "2": "#000000"})
+
+    # Geometry and style constants (match client roughly), scaled down by 3
+    scale = 1/3
+    cell_px = int(60 * scale)
+    gap_px = int(5 * scale) or 1
+    stone_px = int(50 * scale)
+    pad_px = int(10 * scale)
+    bg_rgba = (247, 248, 252, 255)
+    grid_fill = (224, 224, 224, 255)
+    grid_outline = (220, 220, 220, 255)
+    width = grid_size * cell_px + (grid_size - 1) * gap_px + 2 * pad_px
+    height = width
+
+    frames: list[Image.Image] = []
+    durations: list[int] = []  # in ms
+
+    def draw_board(board_state):
+        img = Image.new('RGBA', (width, height), bg_rgba)
+        draw = ImageDraw.Draw(img)
+        # Grid
+        for rr in range(grid_size):
+            for cc in range(grid_size):
+                x = pad_px + cc * (cell_px + gap_px)
+                y = pad_px + rr * (cell_px + gap_px)
+                draw.rounded_rectangle([x, y, x + cell_px, y + cell_px], radius=6, fill=grid_fill, outline=grid_outline)
+        # Stones
+        if board_state:
+            for rr in range(grid_size):
+                for cc in range(grid_size):
+                    d = board_state[rr][cc]
+                    if d:
+                        color = player_colors.get(str(d.get('playerId')), '#000000')
+                        sx = pad_px + cc * (cell_px + gap_px) + (cell_px - stone_px) // 2
+                        sy = pad_px + rr * (cell_px + gap_px) + (cell_px - stone_px) // 2
+                        draw.ellipse([sx, sy, sx + stone_px, sy + stone_px], fill=color, outline=(0, 0, 0, 25), width=2)
+                        if d.get('id') in winners and len(winners) >= 4:
+                            draw.ellipse([sx - 2, sy - 2, sx + stone_px + 2, sy + stone_px + 2], outline=(0, 160, 0, 255), width=5)
+        return img
+
+    def add_frame(img: Image.Image, ms: int):
+        # Keep frames in RGBA; let PIL handle palette conversion when saving
+        frames.append(img)
+        durations.append(ms)
+
+    def interpolate(a: float, b: float, t: float) -> float:
+        return a + (b - a) * t
+
+    def draw_drop_animation(prev_board, row, col, player_id, steps=10, frame_ms=60):
+        # Animate stone falling from above (just above row 0) to target row
+        base = draw_board(prev_board)
+        color = player_colors.get(str(player_id), '#000000')
+        start_y = pad_px + (0 * (cell_px + gap_px)) + (cell_px - stone_px) // 2 - (cell_px + 2 * gap_px)
+        end_y = pad_px + row * (cell_px + gap_px) + (cell_px - stone_px) // 2
+        x = pad_px + col * (cell_px + gap_px) + (cell_px - stone_px) // 2
+        for i in range(steps):
+            t = (i + 1) / steps
+            iy = int(round(interpolate(start_y, end_y, t)))
+            frame = base.copy()
+            d = ImageDraw.Draw(frame)
+            d.ellipse([x, iy, x + stone_px, iy + stone_px], fill=color, outline=(0, 0, 0, 25), width=2)
+            add_frame(frame, frame_ms)
+
+    def draw_rotation_frames(prev_board, steps=10, frame_ms=50):
+        # Render previous board, then rotate whole image from 0 to -90 degrees
+        base = draw_board(prev_board)
+        for i in range(steps):
+            # PIL rotates counter-clockwise for positive angles; game rotates -90deg in CSS (CCW), so use +90 here
+            angle = 90.0 * (i + 1) / steps
+            frame = base.rotate(angle, resample=Image.BICUBIC, expand=False, center=(width // 2, height // 2), fillcolor=bg_rgba)
+            add_frame(frame, frame_ms)
+
+    def draw_gravity_animation(pre_rot_board, post_rot_board, steps=10, frame_ms=60):
+        # Stones fall vertically from pre-rotation positions to post-rotation positions (same columns)
+        # Build lists per column of (playerColor, startRow, endRow)
+        motions = []
+        for c in range(grid_size):
+            start_rows = []
+            end_rows = []
+            for r in range(grid_size):
+                if pre_rot_board and pre_rot_board[r][c]:
+                    start_rows.append({
+                        'playerId': pre_rot_board[r][c]['playerId'],
+                        'id': pre_rot_board[r][c].get('id'),
+                        'row': r
+                    })
+            for r in range(grid_size):
+                if post_rot_board and post_rot_board[r][c]:
+                    end_rows.append({
+                        'playerId': post_rot_board[r][c]['playerId'],
+                        'id': post_rot_board[r][c].get('id'),
+                        'row': r
+                    })
+            n = min(len(start_rows), len(end_rows))
+            for i in range(n):
+                motions.append({
+                    'playerId': start_rows[i]['playerId'],
+                    'id': start_rows[i]['id'],
+                    'col': c,
+                    'startRow': start_rows[i]['row'],
+                    'endRow': end_rows[i]['row']
+                })
+
+        # Animate
+        for s in range(steps):
+            t = (s + 1) / steps
+            # Start from final state visual and overlay moving stones at intermediate positions
+            frame = draw_board(post_rot_board)
+            d = ImageDraw.Draw(frame)
+            for m in motions:
+                color = player_colors.get(str(m['playerId']), '#000000')
+                x = pad_px + m['col'] * (cell_px + gap_px) + (cell_px - stone_px) // 2
+                sy = pad_px + m['startRow'] * (cell_px + gap_px) + (cell_px - stone_px) // 2
+                ey = pad_px + m['endRow'] * (cell_px + gap_px) + (cell_px - stone_px) // 2
+                iy = int(round(interpolate(sy, ey, t)))
+                d.ellipse([x, iy, x + stone_px, iy + stone_px], fill=color, outline=(0, 0, 0, 25), width=2)
+            add_frame(frame, frame_ms)
+
+    # Build animated sequence across history
+    for idx, step in enumerate(history):
+        move_type = step.get('moveType')
+        if move_type == 'move':
+            # Animate drop using previous state's board as background
+            prev_board = history[idx - 1]['boardState'] if idx > 0 else [[None for _ in range(grid_size)] for __ in range(grid_size)]
+            row = step.get('lastMoveRow')
+            col = step.get('lastMoveColumn')
+            player = step.get('player') or 1
+            if row is not None and col is not None:
+                draw_drop_animation(prev_board, row, col, player, steps=10, frame_ms=60)
+            # Dwell on the resulting static board for readability
+            add_frame(draw_board(step.get('boardState')), 400)
+
+        elif move_type == 'rotation':
+            # Show rotation from previous board, then gravity from preRotation -> final
+            prev_board = history[idx - 1]['boardState'] if idx > 0 else step.get('preRotationBoardState')
+            pre_rot = step.get('preRotationBoardState')
+            post_rot = step.get('boardState')
+            if prev_board:
+                draw_rotation_frames(prev_board, steps=10, frame_ms=50)
+            if pre_rot and post_rot:
+                # After rotation completes, switch back to unrotated frame and animate gravity
+                draw_gravity_animation(pre_rot, post_rot, steps=10, frame_ms=60)
+            # Dwell on the final rotated+settled board
+            add_frame(draw_board(post_rot), 400)
+
+        else:
+            # game_start or unknown: just show static briefly
+            add_frame(draw_board(step.get('boardState')), 300)
+
+    # If winners exist, add a final hold frame to showcase green rings
+    if history:
+        add_frame(draw_board(history[-1].get('boardState')), 800)
+
+    # Save to GIF in memory with per-frame durations
+    if not frames:
+        img = Image.new('RGB', (512, 512), (255, 255, 255))
+        frames = [img]
+        durations = [800]
+
+    buf = BytesIO()
+    first, *rest = frames
+    first.save(
+        buf,
+        format='GIF',
+        save_all=True,
+        append_images=rest,
+        duration=durations,
+        loop=0,
+        disposal=2,
+        optimize=False
+    )
+    buf.seek(0)
+    return buf.read()

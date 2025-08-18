@@ -507,6 +507,10 @@ export class GameController {
             const stoneElement = winner.stoneElement;
             stoneElement.style.backgroundColor = 'green';
         }
+        // Persist last winners (ids) for export/gif highlighting
+        this.lastWinningStoneIds = winners
+            .filter(w => w && typeof w.id !== 'undefined')
+            .map(w => w.id);
     }
 
     rotateGrid(onComplete) {

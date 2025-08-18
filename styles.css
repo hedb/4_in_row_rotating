@@ -110,6 +110,14 @@ button:active {
     gap: 10px;
 }
 
+#download-gif-btn {
+    background-color: #8e44ad;
+}
+
+#download-gif-btn:hover {
+    background-color: #71368a;
+}
+
 .game-over-btn {
     background-color: #1ca433;
     color: white;
@@ -242,7 +250,32 @@ button:active {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 0 5px;
+}
+.top-left-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.top-center-display {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.top-center-display img {
+    max-height: 120px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.top-right-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 170px;
+    justify-content: flex-end;
 }
 .control-group {
     display: flex;

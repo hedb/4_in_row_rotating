@@ -371,20 +371,304 @@ const overlay = document.getElementById('overlay');
         const gameOverContainer = document.getElementById('game-over-container');
         const gameOverText = document.getElementById('game-over-text');
         const newGameBtn = document.getElementById('new-game-btn');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const showGifBtn = document.getElementById('show-gif-btn');
+        const topLeft = document.getElementById('top-left-actions');
 
-        if (gameOverContainer && gameOverText && newGameBtn) {
+        if (gameOverContainer && gameOverText && newGameBtn && analyzeBtn && showGifBtn && topLeft) {
+            console.log('[GameApp] showGameOverOptions(): preparing top bar actions');
             gameOverText.textContent = 'Game Over';
-            newGameBtn.textContent = 'New Game';
             gameOverContainer.classList.remove('hidden');
+            topLeft.classList.remove('hidden');
 
-            // Bind new game button
-            const newBtn = newGameBtn.cloneNode(true);
-            newGameBtn.parentNode.replaceChild(newBtn, newGameBtn);
-            
-            newBtn.addEventListener('click', () => {
+            // Reset listeners
+            const aBtn = analyzeBtn.cloneNode(true);
+            analyzeBtn.parentNode.replaceChild(aBtn, analyzeBtn);
+            const nBtn = newGameBtn.cloneNode(true);
+            newGameBtn.parentNode.replaceChild(nBtn, newGameBtn);
+            const sBtn = showGifBtn.cloneNode(true);
+            showGifBtn.parentNode.replaceChild(sBtn, showGifBtn);
+
+            aBtn.addEventListener('click', () => {
+                console.log('[GameApp] Analyze Game clicked');
+                this.initReplayMode();
+            });
+            nBtn.addEventListener('click', () => {
+                console.log('[GameApp] New Game clicked');
                 this.returnToModeSelection();
             });
+            sBtn.addEventListener('click', async () => {
+                try {
+                    console.log('[GameApp] Show GIF clicked - generating...');
+                    const blob = await this.generateGifClientSide({
+                        version: VERSION,
+                        gridSize: 6,
+                        playerColors: { 1: '#FFFFFF', 2: '#000000' },
+                        history: this.gameController.gameHistory,
+                        winners: this.gameController.lastWinningStoneIds || []
+                    });
+                    this.showGifInTopPanel(blob);
+                } catch (e) {
+                    console.error('[GameApp] Failed to show GIF', e);
+                    alert('Failed to generate GIF.');
+                }
+            });
+            console.log('[GameApp] showGameOverOptions(): actions ready and visible');
         }
+    }
+
+    showGifInTopPanel(blob) {
+        const center = document.getElementById('top-center-display');
+        if (!center) return;
+        const url = URL.createObjectURL(blob);
+        center.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Game GIF';
+        center.appendChild(img);
+    }
+
+    async downloadGameGif() {
+        if (!this.gameController) return;
+
+        // Build a compact replay payload the server or client-side encoder can use
+        const payload = {
+            version: VERSION,
+            gridSize: 6,
+            playerColors: { 1: '#FFFFFF', 2: '#000000' },
+            history: this.gameController.gameHistory,
+            winners: this.gameController.lastWinningStoneIds || []
+        };
+
+        try {
+            const blob = await this.generateGifClientSide(payload);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'four-in-a-row.gif';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch (e2) {
+            console.error('[GameApp] Client-side GIF generation failed', e2);
+            alert('Failed to generate GIF.');
+        }
+    }
+
+    async loadGifJs() {
+        if (window.GIF) return;
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/vendor/gif.js';
+            script.async = true;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load gif.js'));
+            document.head.appendChild(script);
+        });
+    }
+
+    async generateGifClientSide(payload) {
+        await this.loadGifJs();
+
+        const { gridSize, playerColors, history, winners } = payload;
+        const scale = 0.5; // shrink for perf
+        const CELL = Math.max(10, Math.floor(60 * scale));
+        const GAP = Math.max(1, Math.floor(5 * scale));
+        const STONE = Math.max(8, Math.floor(50 * scale));
+        const PAD = Math.max(4, Math.floor(10 * scale));
+        const WIDTH = gridSize * CELL + (gridSize - 1) * GAP + 2 * PAD;
+        const HEIGHT = WIDTH;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = WIDTH; canvas.height = HEIGHT;
+        const ctx = canvas.getContext('2d');
+
+        const gif = new window.GIF({
+            workers: 2,
+            quality: 10,
+            workerScript: '/vendor/gif.worker.js',
+            width: WIDTH,
+            height: HEIGHT,
+            repeat: 0, // loop forever
+            dither: false,
+        });
+
+        const BG = '#f7f8fc';
+        const GRID_FILL = '#e0e0e0';
+        const GRID_STROKE = '#dcdcdc';
+
+        const clear = () => {
+            ctx.fillStyle = BG;
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        };
+
+        const drawGrid = () => {
+            ctx.fillStyle = GRID_FILL;
+            ctx.strokeStyle = GRID_STROKE;
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const x = PAD + c * (CELL + GAP);
+                    const y = PAD + r * (CELL + GAP);
+                    ctx.beginPath();
+                    ctx.rect(x, y, CELL, CELL);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+        };
+
+        const drawBoard = (boardState) => {
+            clear();
+            drawGrid();
+            if (!boardState) return;
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const cell = boardState[r][c];
+                    if (!cell) continue;
+                    const color = playerColors[cell.playerId] || '#000000';
+                    const x = PAD + c * (CELL + GAP) + (CELL - STONE) / 2;
+                    const y = PAD + r * (CELL + GAP) + (CELL - STONE) / 2;
+                    ctx.beginPath();
+                    ctx.fillStyle = color;
+                    ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    // winner ring
+                    if (winners && winners.length >= 4 && winners.includes(cell.id)) {
+                        ctx.lineWidth = Math.max(2, Math.floor(5 * scale));
+                        ctx.strokeStyle = '#00a000';
+                        ctx.beginPath();
+                        ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2 + 2, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                }
+            }
+        };
+
+        const addFrame = (delayMs) => {
+            gif.addFrame(ctx, { copy: true, delay: delayMs });
+        };
+
+        const drawDropAnimation = (prevBoard, row, col, playerId) => {
+            const steps = 10, delay = 80;
+            // Pre-draw background
+            drawBoard(prevBoard);
+            const color = playerColors[playerId] || '#000000';
+            const startY = PAD + (0 * (CELL + GAP)) + (CELL - STONE) / 2 - (CELL + 2 * GAP);
+            const endY = PAD + row * (CELL + GAP) + (CELL - STONE) / 2;
+            const x = PAD + col * (CELL + GAP) + (CELL - STONE) / 2;
+            for (let i = 0; i < steps; i++) {
+                const t = (i + 1) / steps;
+                const iy = Math.round(startY + (endY - startY) * t);
+                drawBoard(prevBoard);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x + STONE / 2, iy + STONE / 2, STONE / 2, 0, Math.PI * 2);
+                ctx.fill();
+                addFrame(delay);
+            }
+        };
+
+        const drawRotationFrames = (prevBoard) => {
+            const steps = 10, delay = 70;
+            // draw prev to an image
+            drawBoard(prevBoard);
+            const baseImg = new Image();
+            baseImg.src = canvas.toDataURL('image/png');
+            return new Promise((resolve) => {
+                baseImg.onload = () => {
+                    for (let i = 0; i < steps; i++) {
+                        const angle = -(Math.PI / 2) * ((i + 1) / steps); // CW 90deg to match game
+                        clear();
+                        ctx.save();
+                        ctx.translate(WIDTH / 2, HEIGHT / 2);
+                        ctx.rotate(angle);
+                        ctx.drawImage(baseImg, -WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT);
+                        ctx.restore();
+                        addFrame(delay);
+                    }
+                    resolve();
+                };
+            });
+        };
+
+        const drawGravityAnimation = (preRot, postRot) => {
+            const steps = 10, delay = 80;
+            // Build motions per column
+            const motions = [];
+            for (let c = 0; c < gridSize; c++) {
+                const startRows = [];
+                const endRows = [];
+                for (let r = 0; r < gridSize; r++) if (preRot && preRot[r][c]) startRows.push({ playerId: preRot[r][c].playerId, row: r });
+                for (let r = 0; r < gridSize; r++) if (postRot && postRot[r][c]) endRows.push({ playerId: postRot[r][c].playerId, row: r });
+                const n = Math.min(startRows.length, endRows.length);
+                for (let i = 0; i < n; i++) motions.push({ col: c, playerId: startRows[i].playerId, startRow: startRows[i].row, endRow: endRows[i].row });
+            }
+
+            // Prepare a background board equal to the post-rotation settled state
+            // but with the moving stones removed so they are only drawn once.
+            const baseBoard = postRot ? postRot.map(row => row.map(cell => (cell ? { ...cell } : null))) : null;
+            motions.forEach(m => {
+                if (baseBoard && baseBoard[m.endRow] && baseBoard[m.endRow][m.col]) {
+                    baseBoard[m.endRow][m.col] = null;
+                }
+            });
+
+            for (let s = 0; s < steps; s++) {
+                const t = (s + 1) / steps;
+                // Draw board without the moving stones, then overlay them at intermediate positions
+                drawBoard(baseBoard);
+                motions.forEach(m => {
+                    const x = PAD + m.col * (CELL + GAP) + (CELL - STONE) / 2;
+                    const sy = PAD + m.startRow * (CELL + GAP) + (CELL - STONE) / 2;
+                    const ey = PAD + m.endRow * (CELL + GAP) + (CELL - STONE) / 2;
+                    const iy = Math.round(sy + (ey - sy) * t);
+                    ctx.fillStyle = playerColors[m.playerId] || '#000000';
+                    ctx.beginPath();
+                    ctx.arc(x + STONE / 2, iy + STONE / 2, STONE / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                addFrame(delay);
+            }
+        };
+
+        // Build frames from history
+        for (let i = 0; i < history.length; i++) {
+            const step = history[i];
+            if (step.moveType === 'move') {
+                const prev = i > 0 ? history[i - 1].boardState : history[0].boardState;
+                const row = step.lastMoveRow, col = step.lastMoveColumn;
+                const player = step.player || 1;
+                if (row != null && col != null) {
+                    drawDropAnimation(prev, row, col, player);
+                }
+                drawBoard(step.boardState);
+                addFrame(400);
+            } else if (step.moveType === 'rotation') {
+                const prev = i > 0 ? history[i - 1].boardState : step.preRotationBoardState;
+                if (prev) await drawRotationFrames(prev);
+                if (step.preRotationBoardState && step.boardState) {
+                    drawGravityAnimation(step.preRotationBoardState, step.boardState);
+                }
+                drawBoard(step.boardState);
+                addFrame(400);
+            } else {
+                drawBoard(step.boardState);
+                addFrame(300);
+            }
+        }
+
+        // Final hold with winners
+        if (history.length) {
+            drawBoard(history[history.length - 1].boardState);
+            addFrame(800);
+        }
+
+        return new Promise((resolve, reject) => {
+            gif.on('finished', (blob) => resolve(blob));
+            gif.on('abort', () => reject(new Error('GIF encoding aborted')));
+            gif.render();
+        });
     }
 
     // Method to return to mode selection (useful for future "Return to Menu" functionality)

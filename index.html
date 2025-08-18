@@ -55,21 +55,22 @@
 
     <div id="game-container" class="hidden">
         <div class="top-bar">
-            <div class="control-group">
-                <label for="countdown">Turns until rotation:</label>
+            <div id="top-left-actions" class="top-left-actions hidden">
+                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
+                <button id="show-gif-btn" class="game-over-btn" title="Show animated GIF of this game">Show GIF</button>
+                <button id="new-game-btn" class="game-over-btn">New Game</button>
+            </div>
+            <div id="top-center-display" class="top-center-display"></div>
+            <div id="top-right-status" class="top-right-status">
+                <label>Turns until rotation:</label>
                 <span id="countdown"></span>
             </div>
-            <div id="settings-icon">⚙️</div>
         </div>
 
         <div id="turn-indicator">Player 1's turn</div>
         
         <div id="game-over-container" class="game-over-container hidden">
             <span id="game-over-text"></span>
-            <div class="game-over-buttons">
-                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
-                <button id="new-game-btn" class="game-over-btn">New Game</button>
-            </div>
         </div>
 
         <div id="grid-wrapper">

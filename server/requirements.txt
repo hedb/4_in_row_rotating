@@ -3,6 +3,7 @@ flask-cors==4.0.0
 google-cloud-functions==1.15.0
 google-cloud-firestore==2.15.0
 requests==2.31.0
+Pillow==10.4.0
 
 # For local testing
 pytest==8.0.0
