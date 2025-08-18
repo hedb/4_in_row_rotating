@@ -151,6 +151,11 @@ export class AIGameHandler {
         if (turnIndicator) {
             turnIndicator.style.display = 'none';
         }
+        // Hide rotation status on game end
+        const topRightStatus = document.getElementById('top-right-status');
+        if (topRightStatus) {
+            topRightStatus.style.display = 'none';
+        }
         
         // Show game over container and bind buttons (top bar)
         const gameOverContainer = document.getElementById('game-over-container');

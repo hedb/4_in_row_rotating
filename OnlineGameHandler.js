@@ -699,6 +699,11 @@ export class OnlineGameHandler {
         if (turnIndicator) {
             turnIndicator.style.display = 'none';
         }
+        // Hide rotation status on game end
+        const topRightStatus = document.getElementById('top-right-status');
+        if (topRightStatus) {
+            topRightStatus.style.display = 'none';
+        }
         
         // Build game history from server moves for analyze mode
         this.buildGameHistoryFromMoves();

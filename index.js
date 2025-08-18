@@ -71,6 +71,8 @@ class GameApp {
         // Hide mode selection and show game
         document.getElementById('mode-selection').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
+        const status = document.getElementById('top-right-status');
+        if (status) status.style.display = 'flex';
 
         // Initialize game components
         this.gameController = new GameController();
@@ -101,6 +103,8 @@ class GameApp {
         // Hide mode selection and show game
         document.getElementById('mode-selection').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
+        const status = document.getElementById('top-right-status');
+        if (status) status.style.display = 'flex';
 
         // Initialize game components
         this.gameController = new GameController();
@@ -132,6 +136,8 @@ class GameApp {
         this.gameController = new GameController();
         this.onlineGameHandler = new OnlineGameHandler(this.gameController);
         this.inputHandler = new InputHandler();
+        const status = document.getElementById('top-right-status');
+        if (status) status.style.display = 'flex';
 
         // Connect components
         this.inputHandler.setGameHandler(this.onlineGameHandler);
@@ -159,6 +165,8 @@ class GameApp {
         this.gameController = new GameController();
         this.onlineGameHandler = new OnlineGameHandler(this.gameController);
         this.inputHandler = new InputHandler();
+        const status = document.getElementById('top-right-status');
+        if (status) status.style.display = 'flex';
 
         // Connect components
         this.inputHandler.setGameHandler(this.onlineGameHandler);
