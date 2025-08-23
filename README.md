@@ -70,12 +70,12 @@ This project is a single-page application built with vanilla JavaScript (ES6 Mod
   - Winner highlighting with green rings
   - Configurable frame rates and delays
 - **UI Enhancements**:
-  - Two action buttons (Analyze Game, New Game) stacked vertically on left
-  - Center display area for automatically generated GIFs
-  - Rotation countdown status on right side
+  - **During gameplay**: Turn indicator on left, rotation countdown on right, spread across full width
+  - **After game ends**: Two buttons (Analyze Game, New Game) stacked vertically on left, GIF display in center
   - Buttons hidden during play, visible at game end
-  - Rotation status hidden at game end, visible during play
+  - Turn indicator and rotation status hidden at game end, visible during play
   - GIFs automatically generate and display when games end
+  - Player names changed from "Player 1/2" to "White/Black"
 
 **Version 0.9.4** – Analyze (Replay) mode and refined rotation playback:
 - New Analyze Game controls: step forward/back through the game with a red marker on the last stone

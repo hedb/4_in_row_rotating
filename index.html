@@ -55,18 +55,22 @@
 
     <div id="game-container" class="hidden">
         <div class="top-bar">
+            <!-- Game over layout (hidden during play) -->
             <div id="top-left-actions" class="top-left-actions hidden">
                 <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
                 <button id="new-game-btn" class="game-over-btn">New Game</button>
             </div>
             <div id="top-center-display" class="top-center-display"></div>
-            <div id="top-right-status" class="top-right-status">
-                <label>Turns until rotation:</label>
-                <span id="countdown"></span>
+            
+            <!-- Gameplay layout (visible during play) -->
+            <div id="gameplay-status" class="gameplay-status">
+                <div id="turn-indicator">White's turn</div>
+                <div class="rotation-info">
+                    <label>Turns until rotation:</label>
+                    <span id="countdown"></span>
+                </div>
             </div>
         </div>
-
-        <div id="turn-indicator">Player 1's turn</div>
         
         <div id="game-over-container" class="game-over-container hidden">
             <span id="game-over-text"></span>

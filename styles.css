@@ -84,10 +84,10 @@ button:active {
 }
 
 #turn-indicator {
-    margin: 15px 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     color: #555;
+    margin: 0;
 }
 
 .game-over-container {
@@ -271,12 +271,20 @@ button:active {
     border: 1px solid #ddd;
 }
 
-.top-right-status {
+.gameplay-status {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.rotation-info {
     display: flex;
     align-items: center;
     gap: 6px;
-    min-width: 170px;
-    justify-content: flex-end;
 }
 .control-group {
     display: flex;

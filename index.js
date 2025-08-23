@@ -226,12 +226,6 @@ const overlay = document.getElementById('overlay');
     initReplayMode() {
         if (!this.gameController) return;
 
-        // Hide game over container
-        const gameOverContainer = document.getElementById('game-over-container');
-        if (gameOverContainer) {
-            gameOverContainer.classList.add('hidden');
-        }
-
         // Hide turn indicator
         const turnIndicator = document.getElementById('turn-indicator');
         if (turnIndicator) {
@@ -383,15 +377,14 @@ const overlay = document.getElementById('overlay');
             replayControls.classList.add('hidden');
         }
 
-        // Show turn indicator
-        const turnIndicator = document.getElementById('turn-indicator');
-        if (turnIndicator) {
-            turnIndicator.style.display = 'block';
+        // Show turn indicator and rotation status
+        const gameplayStatus = document.getElementById('gameplay-status');
+        if (gameplayStatus) {
+            gameplayStatus.style.display = 'flex';
         }
     }
 
     showGameOverOptions() {
-        console.log('[GameApp] showGameOverOptions() called');
         // Show game over container
         const gameOverContainer = document.getElementById('game-over-container');
         const gameOverText = document.getElementById('game-over-text');
@@ -399,16 +392,7 @@ const overlay = document.getElementById('overlay');
         const analyzeBtn = document.getElementById('analyze-btn');
         const topLeft = document.getElementById('top-left-actions');
 
-        console.log('[GameApp] Elements found:', {
-            gameOverContainer: !!gameOverContainer,
-            gameOverText: !!gameOverText,
-            newGameBtn: !!newGameBtn,
-            analyzeBtn: !!analyzeBtn,
-            topLeft: !!topLeft
-        });
-
         if (gameOverContainer && gameOverText && newGameBtn && analyzeBtn && topLeft) {
-            console.log('[GameApp] showGameOverOptions(): preparing top bar actions');
             gameOverText.textContent = 'Game Over';
             gameOverContainer.classList.remove('hidden');
             topLeft.classList.remove('hidden');
@@ -420,48 +404,35 @@ const overlay = document.getElementById('overlay');
             newGameBtn.parentNode.replaceChild(nBtn, newGameBtn);
 
             aBtn.addEventListener('click', () => {
-                console.log('[GameApp] Analyze Game clicked');
                 this.initReplayMode();
             });
             nBtn.addEventListener('click', () => {
-                console.log('[GameApp] New Game clicked');
                 this.returnToModeSelection();
             });
 
             // Automatically generate and display GIF
-            console.log('[GameApp] About to call generateAndShowGif()');
             this.generateAndShowGif();
-        } else {
-            console.error('[GameApp] Missing required elements for game over options');
         }
     }
 
     showGifInTopPanel(blob) {
-        console.log('[GameApp] showGifInTopPanel() called with blob size:', blob.size);
         const center = document.getElementById('top-center-display');
         if (!center) {
-            console.error('[GameApp] top-center-display element not found');
             return;
         }
-        console.log('[GameApp] Found top-center-display element');
         const url = URL.createObjectURL(blob);
         center.innerHTML = '';
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'Game GIF';
         center.appendChild(img);
-        console.log('[GameApp] GIF image added to display');
     }
 
     async generateAndShowGif() {
         try {
-            console.log('[GameApp] Auto-generating GIF...');
             if (!this.gameController) {
-                console.error('[GameApp] No gameController available');
                 throw new Error('No game in progress');
             }
-            console.log('[GameApp] GameController found, history length:', this.gameController.gameHistory?.length);
-            console.log('[GameApp] Winners:', this.gameController.lastWinningStoneIds);
             
             const blob = await this.generateGifClientSide({
                 version: VERSION,
@@ -470,7 +441,6 @@ const overlay = document.getElementById('overlay');
                 history: this.gameController.gameHistory,
                 winners: this.gameController.lastWinningStoneIds || []
             });
-            console.log('[GameApp] GIF blob generated, size:', blob.size);
             this.showGifInTopPanel(blob);
         } catch (e) {
             console.error('[GameApp] Auto GIF generation failed', e);
@@ -508,20 +478,16 @@ const overlay = document.getElementById('overlay');
 
     async loadGifJs() {
         if (window.GIF) {
-            console.log('[GameApp] GIF library already loaded');
             return;
         }
-        console.log('[GameApp] Loading GIF library...');
         await new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = '/vendor/gif.js';
             script.async = true;
             script.onload = () => {
-                console.log('[GameApp] GIF library loaded successfully');
                 resolve();
             };
             script.onerror = () => {
-                console.error('[GameApp] Failed to load gif.js');
                 reject(new Error('Failed to load gif.js'));
             };
             document.head.appendChild(script);
@@ -529,7 +495,6 @@ const overlay = document.getElementById('overlay');
     }
 
     async generateGifClientSide(payload) {
-        console.log('[GameApp] generateGifClientSide() called with payload:', payload);
         await this.loadGifJs();
 
         const { gridSize, playerColors, history, winners } = payload;
@@ -737,6 +702,24 @@ const overlay = document.getElementById('overlay');
         // Clean up current game
         if (this.inputHandler) {
             this.inputHandler.unbindInputEvents();
+        }
+
+        // Clear GIF display
+        const centerDisplay = document.getElementById('top-center-display');
+        if (centerDisplay) {
+            centerDisplay.innerHTML = '';
+        }
+
+        // Hide game over buttons
+        const topLeftActions = document.getElementById('top-left-actions');
+        if (topLeftActions) {
+            topLeftActions.classList.add('hidden');
+        }
+
+        // Show gameplay status
+        const gameplayStatus = document.getElementById('gameplay-status');
+        if (gameplayStatus) {
+            gameplayStatus.style.display = 'flex';
         }
 
         // Reset state

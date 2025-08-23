@@ -146,15 +146,10 @@ export class AIGameHandler {
     }
 
     displayGameOverMessage(message) {
-        // Hide turn indicator
-        const turnIndicator = document.getElementById('turn-indicator');
-        if (turnIndicator) {
-            turnIndicator.style.display = 'none';
-        }
-        // Hide rotation status on game end
-        const topRightStatus = document.getElementById('top-right-status');
-        if (topRightStatus) {
-            topRightStatus.style.display = 'none';
+        // Hide turn indicator and rotation status on game end
+        const gameplayStatus = document.getElementById('gameplay-status');
+        if (gameplayStatus) {
+            gameplayStatus.style.display = 'none';
         }
         
         // Use GameApp's showGameOverOptions to handle UI and automatic GIF generation
@@ -177,10 +172,10 @@ export class AIGameHandler {
             gameOverContainer.classList.add('hidden');
         }
         
-        // Show turn indicator again
-        const turnIndicator = document.getElementById('turn-indicator');
-        if (turnIndicator) {
-            turnIndicator.style.display = 'block';
+        // Show turn indicator and rotation status again
+        const gameplayStatus = document.getElementById('gameplay-status');
+        if (gameplayStatus) {
+            gameplayStatus.style.display = 'flex';
         }
         
         // Return to mode selection
