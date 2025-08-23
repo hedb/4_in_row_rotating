@@ -58,6 +58,25 @@ This project is a single-page application built with vanilla JavaScript (ES6 Mod
 
 ## Current Status & Recent Updates
 
+**Version 0.8.1** – Client-side GIF generation and UI improvements:
+- **Automatic GIF Generation**: Added animated GIF export functionality using gif.js library - GIFs are automatically generated and displayed when games end
+- **Fixed Server Issues**: Resolved 500 errors in session creation and Firestore timestamp serialization
+- **Enhanced UI Layout**: Redesigned top bar with vertical button layout and center GIF display
+- **Improved Game Flow**: Buttons appear at game end, rotation status shows during active games
+- **GIF Animation Features**: 
+  - Stone drop animations with smooth interpolation
+  - Clockwise board rotation matching game mechanics
+  - Gravity animations after rotation with duplicate prevention
+  - Winner highlighting with green rings
+  - Configurable frame rates and delays
+- **UI Enhancements**:
+  - Two action buttons (Analyze Game, New Game) stacked vertically on left
+  - Center display area for automatically generated GIFs
+  - Rotation countdown status on right side
+  - Buttons hidden during play, visible at game end
+  - Rotation status hidden at game end, visible during play
+  - GIFs automatically generate and display when games end
+
 **Version 0.9.4** – Analyze (Replay) mode and refined rotation playback:
 - New Analyze Game controls: step forward/back through the game with a red marker on the last stone
 - Forward rotation replay: board rotates, stones fall vertically to post‑gravity positions (matches live gameplay), marker persists during fall
