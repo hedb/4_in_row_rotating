@@ -185,25 +185,61 @@ class GameApp {
 
     bindCommonUI() {
         // Version display
-    const versionDisplay = document.getElementById('version-display');
-    if (versionDisplay) {
-        versionDisplay.textContent = `v${VERSION}`;
-    }
+        const versionDisplay = document.getElementById('version-display');
+        if (versionDisplay) {
+            versionDisplay.textContent = `v${VERSION}`;
+        }
 
-        // Settings pane functionality
-const settingsIcon = document.getElementById('settings-icon');
-const settingsPane = document.getElementById('settings-pane');
-const closeSettingsButton = document.getElementById('close-settings');
-const overlay = document.getElementById('overlay');
+        // Settings modal functionality (easter egg)
+        const gridEasterEgg = document.getElementById('grid-easter-egg');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettingsBtn = document.getElementById('close-settings-btn');
 
-        const toggleSettingsPane = () => {
-    settingsPane.classList.toggle('hidden');
-    overlay.classList.toggle('hidden');
+        const showSettings = () => {
+            console.log('[Settings] Opening settings modal...');
+            if (settingsModal) {
+                settingsModal.classList.remove('hidden');
+                console.log('[Settings] Modal should now be visible');
+                
+                // Debug: Check modal styles
+                const computedStyle = window.getComputedStyle(settingsModal);
+                console.log('[Settings] Modal display:', computedStyle.display);
+                console.log('[Settings] Modal visibility:', computedStyle.visibility);
+                console.log('[Settings] Modal z-index:', computedStyle.zIndex);
+                console.log('[Settings] Modal position:', computedStyle.position);
+                console.log('[Settings] Modal classes:', settingsModal.className);
+                
+                // Update version display when modal opens
+                const versionDisplay = document.getElementById('version-display');
+                if (versionDisplay) {
+                    versionDisplay.textContent = `v${VERSION}`;
+                    console.log('[Settings] Version updated to:', `v${VERSION}`);
+                }
+            } else {
+                console.error('[Settings] Settings modal not found!');
+            }
         };
 
-        if (settingsIcon) settingsIcon.addEventListener('click', toggleSettingsPane);
-        if (closeSettingsButton) closeSettingsButton.addEventListener('click', toggleSettingsPane);
-        if (overlay) overlay.addEventListener('click', toggleSettingsPane);
+        const hideSettings = () => {
+            if (settingsModal) {
+                settingsModal.classList.add('hidden');
+            }
+        };
+
+        if (gridEasterEgg) {
+            gridEasterEgg.addEventListener('click', showSettings);
+        }
+        if (closeSettingsBtn) {
+            closeSettingsBtn.addEventListener('click', hideSettings);
+        }
+        if (settingsModal) {
+            settingsModal.addEventListener('click', (e) => {
+                // Close modal when clicking outside the content
+                if (e.target === settingsModal) {
+                    hideSettings();
+                }
+            });
+        }
 
         // Top-left global actions (work when visible)
         const analyzeBtn = document.getElementById('analyze-btn');

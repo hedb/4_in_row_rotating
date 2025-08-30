@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#2c3e50">
 </head>
 <body>
-    <h1>Four-in-a-Row with Rotating Grid</h1>
+    <h1>Four-in-a-Row with Rotating <span id="grid-easter-egg" class="grid-easter-egg">Grid</span></h1>
 
     <!-- Mode Selection Screen -->
     <div id="mode-selection" class="mode-selection">
@@ -77,6 +77,7 @@
             <span id="game-over-text"></span>
         </div>
 
+
         <div id="grid-wrapper">
             <div id="grid"></div>
         </div>
@@ -99,6 +100,22 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Settings Modal (moved outside game-container to ensure visibility on all screens) -->
+    <div id="settings-modal" class="settings-modal hidden">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h3>Settings</h3>
+                <button id="close-settings-btn" class="close-btn">×</button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>Version:</label>
+                    <span id="version-display"></span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="settings-pane" class="hidden">
