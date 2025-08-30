@@ -146,6 +146,12 @@ export class LocalGameHandler {
             gameplayStatus.style.display = 'none';
         }
         
+        // Set the game over message
+        const gameOverText = document.getElementById('game-over-text');
+        if (gameOverText) {
+            gameOverText.textContent = message;
+        }
+        
         // Use GameApp's showGameOverOptions to handle UI and automatic GIF generation
         if (window.gameApp) {
             window.gameApp.showGameOverOptions();

@@ -694,6 +694,12 @@ export class OnlineGameHandler {
             gameplayStatus.style.display = 'none';
         }
         
+        // Set the game over message
+        const gameOverText = document.getElementById('game-over-text');
+        if (gameOverText) {
+            gameOverText.textContent = message;
+        }
+        
         // Build game history from server moves for analyze mode
         this.buildGameHistoryFromMoves();
         

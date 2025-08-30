@@ -509,14 +509,57 @@ const overlay = document.getElementById('overlay');
             // Generate GIF locally (same as auto-display)
             const gifBlob = await this.generateGifClientSide(payload);
             
+            // Determine game outcome and create sharing message
+            const winner = this.gameController.winner;
+            const gameUrl = window.location.origin + window.location.pathname;
+            
+            let outcomeText = '';
+            let shareTitle = 'Four-in-a-Row Game';
+            
+            if (winner) {
+                const winnerName = winner === 1 ? 'White' : 'Black';
+                
+                // Determine if user won based on game mode
+                if (this.currentMode === 'ai') {
+                    // In AI mode, check if human player won
+                    const humanPlayerId = this.aiGameHandler ? this.aiGameHandler.humanPlayerId : 1;
+                    if (winner === humanPlayerId) {
+                        outcomeText = 'I won! 🎉';
+                        shareTitle = 'I Won at Four-in-a-Row!';
+                    } else {
+                        outcomeText = 'I lost to the computer 🤖';
+                        shareTitle = 'Challenging Game vs Computer';
+                    }
+                } else if (this.currentMode === 'online') {
+                    // In online mode, check if current player won
+                    const myPlayerId = this.onlineGameHandler ? this.onlineGameHandler.playerId : null;
+                    if (winner === myPlayerId) {
+                        outcomeText = 'I won! 🎉';
+                        shareTitle = 'I Won at Four-in-a-Row!';
+                    } else {
+                        outcomeText = 'I lost 😔';
+                        shareTitle = 'Great Game of Four-in-a-Row';
+                    }
+                } else {
+                    // Local mode - just show winner
+                    outcomeText = `${winnerName} won!`;
+                    shareTitle = 'Four-in-a-Row Game Result';
+                }
+            } else {
+                outcomeText = "It was a draw! 🤝";
+                shareTitle = 'Four-in-a-Row Draw';
+            }
+            
+            const shareText = `${outcomeText}\n\nPlay Four-in-a-Row with rotating grid: ${gameUrl}`;
+            
             // Try native sharing first (mobile)
             if (navigator.share && navigator.canShare) {
                 try {
-                    const files = [new File([gifBlob], '4-in-a-row-game.gif', { type: 'image/gif' })];
+                    const files = [new File([gifBlob], '4-in-a-row-replay.gif', { type: 'image/gif' })];
                     if (navigator.canShare({ files })) {
                         await navigator.share({
-                            title: '4-in-a-Row Game',
-                            text: 'Check out this amazing game!',
+                            title: shareTitle,
+                            text: shareText,
                             files: files
                         });
                         console.log('[GameApp] GIF shared via native API');
@@ -536,7 +579,7 @@ const overlay = document.getElementById('overlay');
 
             // Fallback: Download with helpful instructions
             console.log('[GameApp] Falling back to download');
-            this.downloadGifWithInstructions(gifBlob);
+            this.downloadGifWithInstructions(gifBlob, shareText);
             
         } catch (error) {
             console.error('[GameApp] Client-side GIF generation failed:', error);
@@ -573,24 +616,29 @@ const overlay = document.getElementById('overlay');
         */
     }
 
-    downloadGifWithInstructions(gifBlob) {
+    downloadGifWithInstructions(gifBlob, shareText = null) {
         const url = URL.createObjectURL(gifBlob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = '4-in-a-row-game.gif';
+        a.download = '4-in-a-row-replay.gif';
         document.body.appendChild(a);
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
         
         // Show helpful instructions for sharing
-        this.showShareInstructions();
+        this.showShareInstructions(shareText);
     }
 
-    showShareInstructions() {
+    showShareInstructions(shareText = null) {
         const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         let message = 'GIF downloaded! 📱\n\n';
+        
+        if (shareText) {
+            message += 'Suggested message to copy:\n';
+            message += `"${shareText}"\n\n`;
+        }
         
         if (isMobile) {
             message += 'To share to WhatsApp:\n';
