@@ -300,11 +300,8 @@ export class OnlineGameHandler {
             this.gameState = 'finished';
             this.stopPolling();
             
-            if (playerId === this.playerId) {
-                this.displayGameOverMessage('You win! 🎉');
-            } else {
-                this.displayGameOverMessage('You lose! 😔');
-            }
+            const playerName = playerId === 1 ? 'White' : 'Black';
+            this.displayGameOverMessage(`${playerName} wins! ${playerId === this.playerId ? '🎉' : '😔'}`);
         } else if (this.gameController.isBoardFull()) {
             this.gameController.setGameOver(true);
             this.gameState = 'finished';
@@ -385,11 +382,8 @@ export class OnlineGameHandler {
                     }
                 }
                 
-                if (winner === this.playerId) {
-                    this.displayGameOverMessage('You win after rotation! 🎉');
-                } else {
-                    this.displayGameOverMessage('You lose after rotation! 😔');
-                }
+                const playerName = winner === 1 ? 'White' : 'Black';
+                this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.playerId ? '🎉' : '😔'}`);
             } else {
                 // Reset countdown to full rotation frequency after rotation
                 this.updateCountdown(this.rotationFrequency);

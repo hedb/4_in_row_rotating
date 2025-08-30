@@ -146,6 +146,14 @@ button:active {
     background-color: #0056b3;
 }
 
+#share-gif-btn {
+    background-color: #e74c3c;
+}
+
+#share-gif-btn:hover {
+    background-color: #c0392b;
+}
+
 .new-game-btn {
     background-color: #1ca433;
     color: white;

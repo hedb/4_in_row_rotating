@@ -97,11 +97,9 @@ export class AIGameHandler {
         if (winners) {
             this.gameController.setGameOver(true);
             this.gameController.displayWinners(winners);
-            if (playerId === this.humanPlayerId) {
-                this.displayGameOverMessage('You win! 🎉');
-            } else {
-                this.displayGameOverMessage('Computer wins! 🤖');
-            }
+            const playerName = playerId === 1 ? 'White' : 'Black';
+            this.displayGameOverMessage(`${playerName} wins! ${playerId === this.humanPlayerId ? '🎉' : '🤖'}`);
+            
             return true;
         } else if (this.gameController.isBoardFull()) {
             this.gameController.setGameOver(true);
@@ -208,7 +206,8 @@ export class AIGameHandler {
                     }
                 }
                 
-                this.displayGameOverMessage(winner === this.humanPlayerId ? 'You win after rotation! 🎉' : 'Computer wins after rotation! 🤖');
+                const playerName = winner === 1 ? 'White' : 'Black';
+                this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.humanPlayerId ? '🎉' : '🤖'}`);
             } else {
                 // Continue the game
                 this.updateCountdown(this.rotationFrequency);

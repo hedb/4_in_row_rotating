@@ -3,6 +3,7 @@ import { LocalGameHandler } from './LocalGameHandler.js';
 import { AIGameHandler } from './AIGameHandler.js';
 import { OnlineGameHandler } from './OnlineGameHandler.js';
 import { InputHandler } from './InputHandler.js';
+import { ApiController } from './ApiController.js';
 import { VERSION } from './config.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
@@ -206,11 +207,18 @@ const overlay = document.getElementById('overlay');
 
         // Top-left global actions (work when visible)
         const analyzeBtn = document.getElementById('analyze-btn');
+        const shareGifBtn = document.getElementById('share-gif-btn');
         const newGameBtn = document.getElementById('new-game-btn');
         if (analyzeBtn) {
             analyzeBtn.addEventListener('click', () => {
                 console.log('[UI] Analyze Game clicked');
                 this.initReplayMode();
+            });
+        }
+        if (shareGifBtn) {
+            shareGifBtn.addEventListener('click', () => {
+                console.log('[UI] Share GIF clicked');
+                this.shareGameGif();
             });
         }
         if (newGameBtn) {
@@ -474,6 +482,133 @@ const overlay = document.getElementById('overlay');
             console.error('[GameApp] Client-side GIF generation failed', e2);
             alert('Failed to generate GIF.');
         }
+    }
+
+    async shareGameGif() {
+        if (!this.gameController) {
+            console.error('[GameApp] No game controller available for GIF sharing');
+            return;
+        }
+
+        const payload = {
+            version: VERSION,
+            gridSize: 6,
+            playerColors: { 1: '#FFFFFF', 2: '#000000' },
+            history: this.gameController.gameHistory,
+            winners: this.gameController.lastWinningStoneIds || []
+        };
+
+        if (!payload.history || payload.history.length === 0) {
+            console.error('[GameApp] No game data available for GIF sharing');
+            return;
+        }
+
+        try {
+            console.log('[GameApp] Generating client-side GIF for sharing...');
+            
+            // Generate GIF locally (same as auto-display)
+            const gifBlob = await this.generateGifClientSide(payload);
+            
+            // Try native sharing first (mobile)
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const files = [new File([gifBlob], '4-in-a-row-game.gif', { type: 'image/gif' })];
+                    if (navigator.canShare({ files })) {
+                        await navigator.share({
+                            title: '4-in-a-Row Game',
+                            text: 'Check out this amazing game!',
+                            files: files
+                        });
+                        console.log('[GameApp] GIF shared via native API');
+                        return;
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('[GameApp] User cancelled sharing');
+                        return; // Don't fallback if user cancelled
+                    }
+                    console.log('[GameApp] Native share failed, falling back to download:', error);
+                }
+            }
+            else {
+                console.log('[GameApp] Native share not supported, falling back to download');
+            }
+
+            // Fallback: Download with helpful instructions
+            console.log('[GameApp] Falling back to download');
+            this.downloadGifWithInstructions(gifBlob);
+            
+        } catch (error) {
+            console.error('[GameApp] Client-side GIF generation failed:', error);
+            alert(`Failed to generate GIF for sharing: ${error.message}`);
+        }
+
+        /* SERVER-SIDE IMPLEMENTATION (kept for future reference):
+        try {
+            console.log('[GameApp] Generating server-side GIF for sharing...');
+            
+            // Call server-side GIF generation endpoint using ApiController
+            const apiController = new ApiController();
+            const response = await fetch(`${apiController.baseUrl}/generate_gif`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            // Get the GIF blob from server
+            const gifBlob = await response.blob();
+            
+            // ... rest of sharing logic
+            
+        } catch (error) {
+            console.error('[GameApp] Server-side GIF generation failed:', error);
+            alert(`Failed to generate GIF for sharing: ${error.message}`);
+        }
+        */
+    }
+
+    downloadGifWithInstructions(gifBlob) {
+        const url = URL.createObjectURL(gifBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '4-in-a-row-game.gif';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        
+        // Show helpful instructions for sharing
+        this.showShareInstructions();
+    }
+
+    showShareInstructions() {
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        let message = 'GIF downloaded! 📱\n\n';
+        
+        if (isMobile) {
+            message += 'To share to WhatsApp:\n';
+            message += '1. Open WhatsApp\n';
+            message += '2. Tap the 📎 attachment button\n';
+            message += '3. Select "Gallery"\n';
+            message += '4. Find "4-in-a-row-game.gif"\n';
+            message += '5. Send! 🎮';
+        } else {
+            message += 'To share to WhatsApp:\n';
+            message += '1. Open WhatsApp Web\n';
+            message += '2. Drag & drop the GIF file\n';
+            message += '3. Or use the 📎 attachment button\n';
+            message += '4. Select the downloaded GIF\n';
+            message += '5. Send! 🎮';
+        }
+        
+        alert(message);
     }
 
     async loadGifJs() {
