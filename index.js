@@ -506,10 +506,25 @@ class GameApp {
         }
         const url = URL.createObjectURL(blob);
         center.innerHTML = '';
+        
+        // Create clickable GIF image
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'Game GIF';
+        img.addEventListener('click', () => {
+            this.shareGameGif();
+        });
         center.appendChild(img);
+        
+        // Add clickable share text below the GIF
+        const shareText = document.createElement('p');
+        shareText.className = 'share-text';
+        shareText.textContent = 'share';
+        shareText.style.cursor = 'pointer';
+        shareText.addEventListener('click', () => {
+            this.shareGameGif();
+        });
+        center.appendChild(shareText);
     }
 
     async generateAndShowGif() {
@@ -763,7 +778,8 @@ class GameApp {
         await this.loadGifJs();
 
         const { gridSize, playerColors, history, winners, headerText = '', footerText = '' } = payload;
-        const scale = 0.5; // shrink for perf
+        // Balanced scaling: reduce output size while keeping clarity reasonable
+        const scale = 0.75;
         const CELL = Math.max(10, Math.floor(60 * scale));
         const GAP = Math.max(1, Math.floor(5 * scale));
         const STONE = Math.max(8, Math.floor(50 * scale));
@@ -780,15 +796,23 @@ class GameApp {
         const HEIGHT = HEADER_HEIGHT + BOARD_HEIGHT + FOOTER_HEIGHT;
 
         const canvas = document.createElement('canvas');
-        canvas.width = WIDTH; canvas.height = HEIGHT;
+        // Render at device-1x to cut output dimensions and file size
+        const pixelRatio = 1.0;
+        canvas.width = Math.round(WIDTH * pixelRatio);
+        canvas.height = Math.round(HEIGHT * pixelRatio);
         const ctx = canvas.getContext('2d');
+        ctx.scale(pixelRatio, pixelRatio);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
 
         const gif = new window.GIF({
-            workers: 2,
-            quality: 10,
+            workers: 3,
+            // Higher numeric quality => more compression, smaller file
+            quality: 12,
             workerScript: '/vendor/gif.worker.js',
-            width: WIDTH,
-            height: HEIGHT,
+            // Match encoder dimensions to actual canvas to avoid cropping
+            width: canvas.width,
+            height: canvas.height,
             repeat: 0, // loop forever
             dither: false,
         });
@@ -867,8 +891,13 @@ class GameApp {
                 ctx.fillStyle = HEADER_COLOR;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                ctx.font = `${Math.max(12, Math.floor(22 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+                // Slightly larger, with offscreen supersampling from pixelRatio
+                ctx.font = `${Math.max(16, Math.floor(24 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+                // Add subtle shadow to improve contrast on varied backgrounds
+                ctx.shadowColor = 'rgba(0,0,0,0.08)';
+                ctx.shadowBlur = 1;
                 ctx.fillText(headerText, WIDTH / 2, HEADER_PAD);
+                ctx.shadowBlur = 0;
             }
         };
 
@@ -880,7 +909,7 @@ class GameApp {
                 ctx.fillStyle = FOOTER_COLOR;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                ctx.font = `${Math.max(10, Math.floor(18 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+                ctx.font = `${Math.max(14, Math.floor(20 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
                 ctx.fillText(footerText, WIDTH / 2, HEADER_HEIGHT + BOARD_HEIGHT + FOOTER_PAD);
             }
         };
