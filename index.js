@@ -4,6 +4,7 @@ import { AIGameHandler } from './AIGameHandler.js';
 import { OnlineGameHandler } from './OnlineGameHandler.js';
 import { InputHandler } from './InputHandler.js';
 import { ApiController } from './ApiController.js';
+import { Analytics } from './analytics.js';
 import { VERSION } from './config.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
@@ -16,6 +17,8 @@ class GameApp {
         this.onlineGameHandler = null;
         this.inputHandler = null;
         this.currentMode = null;
+        this.analyticsSessionStartMs = null;
+        this.analyticsSessionId = null;
 
         this.init();
     }
@@ -49,9 +52,21 @@ class GameApp {
             this.startLocalMode();
         });
 
-        document.getElementById('play-ai-btn').addEventListener('click', () => {
-            this.startAiMode();
-        });
+        // AI difficulty buttons
+        const aiNormal = document.getElementById('play-ai-normal-btn');
+        const aiHard = document.getElementById('play-ai-hard-btn');
+        if (aiNormal) {
+            aiNormal.addEventListener('click', () => {
+                const color = this.getSelectedPlayerColor();
+                this.startAiMode({ difficulty: 'normal', color });
+            });
+        }
+        if (aiHard) {
+            aiHard.addEventListener('click', () => {
+                const color = this.getSelectedPlayerColor();
+                this.startAiMode({ difficulty: 'hard', color });
+            });
+        }
 
         document.getElementById('play-online-btn').addEventListener('click', () => {
             this.startOnlineModeAsHost();
@@ -87,10 +102,13 @@ class GameApp {
         // Initialize local game
         this.localGameHandler.init();
 
+        // Analytics: start session and daily return
+        this.beginSession();
+
         console.log('[GameApp] Local mode started');
     }
 
-    startAiMode() {
+    startAiMode(options = {}) {
         this.currentMode = 'ai';
 
         // Clean up any existing input handlers
@@ -109,7 +127,10 @@ class GameApp {
 
         // Initialize game components
         this.gameController = new GameController();
-        this.aiGameHandler = new AIGameHandler(this.gameController);
+        this.aiGameHandler = new AIGameHandler(this.gameController, {
+            humanColor: options.color || 'white',
+            difficulty: options.difficulty || 'normal'
+        });
         this.inputHandler = new InputHandler();
 
         // Connect components
@@ -119,7 +140,15 @@ class GameApp {
         // Initialize AI game
         this.aiGameHandler.init();
 
+        // Analytics: start session and daily return
+        this.beginSession();
+
         console.log('[GameApp] AI mode started');
+    }
+
+    getSelectedPlayerColor() {
+        const white = document.getElementById('color-white');
+        return white && white.checked ? 'white' : 'black';
     }
 
     async startOnlineModeAsHost() {
@@ -494,7 +523,9 @@ class GameApp {
                 gridSize: 6,
                 playerColors: { 1: '#FFFFFF', 2: '#000000' },
                 history: this.gameController.gameHistory,
-                winners: this.gameController.lastWinningStoneIds || []
+                winners: this.gameController.lastWinningStoneIds || [],
+                headerText: this.computeGifFooter(),
+                footerText: 'https://with-a-twi.st'
             });
             this.showGifInTopPanel(blob);
         } catch (e) {
@@ -512,7 +543,9 @@ class GameApp {
             gridSize: 6,
             playerColors: { 1: '#FFFFFF', 2: '#000000' },
             history: this.gameController.gameHistory,
-            winners: this.gameController.lastWinningStoneIds || []
+            winners: this.gameController.lastWinningStoneIds || [],
+            headerText: this.computeGifFooter(),
+            footerText: 'https://with-a-twi.st'
         };
 
         try {
@@ -542,7 +575,9 @@ class GameApp {
             gridSize: 6,
             playerColors: { 1: '#FFFFFF', 2: '#000000' },
             history: this.gameController.gameHistory,
-            winners: this.gameController.lastWinningStoneIds || []
+            winners: this.gameController.lastWinningStoneIds || [],
+            headerText: this.computeGifFooter(),
+            footerText: 'https://with-a-twi.st'
         };
 
         if (!payload.history || payload.history.length === 0) {
@@ -727,14 +762,18 @@ class GameApp {
     async generateGifClientSide(payload) {
         await this.loadGifJs();
 
-        const { gridSize, playerColors, history, winners } = payload;
+        const { gridSize, playerColors, history, winners, footerTextTop = '', footerTextBottom = '' } = payload;
         const scale = 0.5; // shrink for perf
         const CELL = Math.max(10, Math.floor(60 * scale));
         const GAP = Math.max(1, Math.floor(5 * scale));
         const STONE = Math.max(8, Math.floor(50 * scale));
         const PAD = Math.max(4, Math.floor(10 * scale));
         const WIDTH = gridSize * CELL + (gridSize - 1) * GAP + 2 * PAD;
-        const HEIGHT = WIDTH;
+        const BOARD_HEIGHT = WIDTH;
+        const FOOTER_PAD = Math.max(8, Math.floor(16 * scale));
+        const FOOTER_LINE_HEIGHT = Math.max(12, Math.floor(24 * scale));
+        const FOOTER_HEIGHT = FOOTER_PAD + FOOTER_LINE_HEIGHT * 2 + FOOTER_PAD;
+        const HEIGHT = BOARD_HEIGHT + FOOTER_HEIGHT;
 
         const canvas = document.createElement('canvas');
         canvas.width = WIDTH; canvas.height = HEIGHT;
@@ -753,6 +792,8 @@ class GameApp {
         const BG = '#f7f8fc';
         const GRID_FILL = '#e0e0e0';
         const GRID_STROKE = '#dcdcdc';
+        const FOOTER_BG = '#ffffff';
+        const FOOTER_TEXT = '#2c3e50';
 
         const clear = () => {
             ctx.fillStyle = BG;
@@ -777,6 +818,7 @@ class GameApp {
         const drawBoard = (boardState) => {
             clear();
             drawGrid();
+            drawFooter();
             if (!boardState) return;
             for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
@@ -803,6 +845,25 @@ class GameApp {
 
         const addFrame = (delayMs) => {
             gif.addFrame(ctx, { copy: true, delay: delayMs });
+        };
+
+        const drawFooter = () => {
+            // Footer background area
+            ctx.fillStyle = FOOTER_BG;
+            ctx.fillRect(0, BOARD_HEIGHT, WIDTH, FOOTER_HEIGHT);
+            // URL (top line)
+            ctx.fillStyle = FOOTER_TEXT;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.font = `${Math.max(10, Math.floor(18 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+            if (footerTextTop) {
+                ctx.fillText(footerTextTop, WIDTH / 2, BOARD_HEIGHT + FOOTER_PAD);
+            }
+            // Outcome (bottom line)
+            ctx.font = `${Math.max(12, Math.floor(22 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+            if (footerTextBottom) {
+                ctx.fillText(footerTextBottom, WIDTH / 2, BOARD_HEIGHT + FOOTER_PAD + FOOTER_LINE_HEIGHT);
+            }
         };
 
         const drawDropAnimation = (prevBoard, row, col, playerId) => {
@@ -837,10 +898,13 @@ class GameApp {
                         const angle = -(Math.PI / 2) * ((i + 1) / steps); // CW 90deg to match game
                         clear();
                         ctx.save();
-                        ctx.translate(WIDTH / 2, HEIGHT / 2);
+                        ctx.translate(WIDTH / 2, BOARD_HEIGHT / 2);
                         ctx.rotate(angle);
-                        ctx.drawImage(baseImg, -WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT);
+                        // draw only the board portion from the source image into the rotated board area
+                        ctx.drawImage(baseImg, 0, 0, WIDTH, BOARD_HEIGHT, -WIDTH / 2, -BOARD_HEIGHT / 2, WIDTH, BOARD_HEIGHT);
                         ctx.restore();
+                        // keep footer static below the board
+                        drawFooter();
                         addFrame(delay);
                     }
                     resolve();
@@ -927,8 +991,27 @@ class GameApp {
         });
     }
 
+    computeGifFooter() {
+        const winner = this.gameController ? this.gameController.winner : null;
+        if (winner === 1 || winner === 2) {
+            if (this.currentMode === 'ai') {
+                const humanId = this.aiGameHandler ? this.aiGameHandler.humanPlayerId : 1;
+                return winner === humanId ? 'I won' : 'I lost';
+            }
+            if (this.currentMode && this.currentMode.startsWith('online')) {
+                const myId = this.onlineGameHandler ? this.onlineGameHandler.playerId : null;
+                if (myId) return winner === myId ? 'I won' : 'I lost';
+                return winner === 1 ? 'White won' : 'Black won';
+            }
+            return winner === 1 ? 'White won' : 'Black won';
+        }
+        return 'Draw';
+    }
+
     // Method to return to mode selection (useful for future "Return to Menu" functionality)
     returnToModeSelection() {
+        // Analytics: end active session as quit
+        this.endSession('quit');
         // Clean up current game
         if (this.inputHandler) {
             this.inputHandler.unbindInputEvents();
@@ -962,6 +1045,39 @@ class GameApp {
 
         // Show mode selection
         this.showModeSelection();
+    }
+
+    beginSession(sessionIdOverride = null) {
+        try {
+            // Ensure a module session exists for future events
+            Analytics.startSession();
+            this.analyticsSessionId = sessionIdOverride || this.analyticsSessionId || `session_${Date.now()}`;
+            this.analyticsSessionStartMs = Date.now();
+            Analytics.maybeTrackDailyReturn();
+            Analytics.trackEvent('game_start', {
+                session_id: this.analyticsSessionId,
+            });
+        } catch (e) {
+            console.warn('[Analytics] Failed to start session', e);
+        }
+    }
+
+    endSession(reason = 'quit') {
+        try {
+            if (!this.analyticsSessionId) return;
+            const durationSeconds = this.analyticsSessionStartMs ? Math.round((Date.now() - this.analyticsSessionStartMs) / 1000) : null;
+            Analytics.trackEvent('game_end', {
+                session_id: this.analyticsSessionId,
+                duration_seconds: durationSeconds,
+                reason,
+            });
+            Analytics.endSession();
+        } catch (e) {
+            console.warn('[Analytics] Failed to end session', e);
+        } finally {
+            this.analyticsSessionId = null;
+            this.analyticsSessionStartMs = null;
+        }
     }
 }
 

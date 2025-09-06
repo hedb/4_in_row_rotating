@@ -1,13 +1,15 @@
 // AIGameHandler.js
 
 import { AIPlayer } from './AIPlayer.js';
+import { Analytics } from './analytics.js';
 
 export class AIGameHandler {
-    constructor(gameController) {
+    constructor(gameController, options = {}) {
         this.gameController = gameController;
-        this.aiPlayer = new AIPlayer(gameController);
-        this.humanPlayerId = 1; // Human is player 1
-        this.aiPlayerId = 2;    // AI is player 2
+        this.humanStartsWhite = options.humanColor === 'black' ? false : true;
+        this.humanPlayerId = this.humanStartsWhite ? 1 : 2; // Human chosen color
+        this.aiPlayerId = this.humanPlayerId === 1 ? 2 : 1; // AI is the other color
+        this.aiPlayer = new AIPlayer(gameController, { difficulty: options.difficulty || 'normal' });
         this.currentPlayer = this.humanPlayerId;
         this.isAIThinking = false;
         this.turnCounter = 0;
@@ -22,6 +24,17 @@ export class AIGameHandler {
         this.gameController.enableInput();
         this.displayTurnMessage();
         this.updateCountdown(this.rotationFrequency);
+
+        try {
+            Analytics.trackEvent('game_start', {});
+            Analytics.maybeTrackDailyReturn();
+        } catch (_) {}
+
+        // If AI is set to start (human chose black), trigger AI turn
+        if (this.currentPlayer === this.aiPlayerId) {
+            this.gameController.disableInput();
+            this.aiTurn();
+        }
     }
 
     handlePlayerInput(selectedRow, col) {
@@ -101,12 +114,18 @@ export class AIGameHandler {
             this.gameController.displayWinners(winners);
             const playerName = playerId === 1 ? 'White' : 'Black';
             this.displayGameOverMessage(`${playerName} wins! ${playerId === this.humanPlayerId ? '🎉' : '🤖'}`);
+            try {
+                Analytics.trackEvent('game_end', { reason: 'completed' });
+            } catch (_) {}
             
             return true;
         } else if (this.gameController.isBoardFull()) {
             this.gameController.setGameOver(true);
             this.gameController.winner = null;
             this.displayGameOverMessage("It's a draw! 🤝");
+            try {
+                Analytics.trackEvent('game_end', { reason: 'completed' });
+            } catch (_) {}
             return true;
         }
         return false;
@@ -219,6 +238,9 @@ export class AIGameHandler {
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.humanPlayerId ? '🎉' : '🤖'}`);
+                try {
+                    Analytics.trackEvent('game_end', { reason: 'completed' });
+                } catch (_) {}
             } else {
                 // Continue the game
                 this.updateCountdown(this.rotationFrequency);

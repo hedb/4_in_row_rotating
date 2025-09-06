@@ -9,23 +9,38 @@
     <meta name="theme-color" content="#2c3e50">
 </head>
 <body>
-    <h1>Four-in-a-Row with Rotating <span id="grid-easter-egg" class="grid-easter-egg">Grid</span></h1>
+    <div style="margin-bottom: 20px; text-align:center;">
+        <img id="hero-logo" class="hero-logo" src="icons/icon-512.png" alt="Four-in-a-Row with Rotating Grid" />
+    </div>
 
     <!-- Mode Selection Screen -->
     <div id="mode-selection" class="mode-selection">
         <h2>Choose Game Mode</h2>
+
+        <!-- General color setting -->
+        <div class="color-setting">
+            <span class="color-label">Your color:</span>
+            <label class="color-radio"><input type="radio" name="player-color" id="color-white" value="white" checked> White</label>
+            <label class="color-radio"><input type="radio" name="player-color" id="color-black" value="black"> Black</label>
+        </div>
+
+        <!-- AI Mode block: difficulty buttons -->
+        <div class="ai-mode-block">
+            <div class="ai-title">Play vs. Computer</div>
+            <div class="ai-difficulty">
+                <button id="play-ai-normal-btn" class="mode-button ai-diff-btn">Normal</button>
+                <button id="play-ai-hard-btn" class="mode-button ai-diff-btn">Hard</button>
+            </div>
+        </div>
+
         <div class="mode-buttons">
-            <button id="play-ai-btn" class="mode-button">
-                <span class="mode-title">Play vs. Computer</span>
-                <span class="mode-description">Challenge the AI</span>
+            <button id="play-online-btn" class="mode-button">
+                <span class="mode-title">Play Online</span>
+                <span class="mode-description">Play with someone remotely</span>
             </button>
             <button id="play-local-btn" class="mode-button">
                 <span class="mode-title">Play Local</span>
                 <span class="mode-description">Two players on this device</span>
-            </button>
-            <button id="play-online-btn" class="mode-button">
-                <span class="mode-title">Play Online</span>
-                <span class="mode-description">Play with someone remotely</span>
             </button>
         </div>
     </div>

@@ -1,8 +1,9 @@
 // AIPlayer.js
 
 export class AIPlayer {
-    constructor(gameController) {
+    constructor(gameController, options = {}) {
         this.gameController = gameController;
+        this.difficulty = options.difficulty || 'normal'; // 'normal' | 'hard'
     }
 
     /**
@@ -30,7 +31,31 @@ export class AIPlayer {
             return blockingMove;
         }
 
-        // Priority 3: Random valid move
+        if (this.difficulty === 'hard') {
+            // Avoid giving opponent an immediate win next turn; prefer center columns
+            const safeMoves = [];
+            for (const col of validColumns) {
+                // Simulate AI move
+                const row = this.gameController.getNextAvailableRow(col);
+                if (row === null) continue;
+                this.gameController.board.grid[row][col] = { playerId: 2 };
+                // After this move, check if human (1) has any immediate winning response
+                const oppWinning = this.findWinningMove(this.getValidColumns(), 1);
+                // Undo
+                this.gameController.board.grid[row][col] = null;
+                if (oppWinning === null) {
+                    safeMoves.push(col);
+                }
+            }
+
+            const candidates = safeMoves.length ? safeMoves : validColumns;
+            // Center preference scoring
+            const center = Math.floor(this.gameController.board.size / 2);
+            candidates.sort((a, b) => Math.abs(a - center) - Math.abs(b - center));
+            return candidates[0];
+        }
+
+        // Normal: random valid move
         const randomIndex = Math.floor(Math.random() * validColumns.length);
         return validColumns[randomIndex];
     }

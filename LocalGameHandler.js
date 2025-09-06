@@ -1,3 +1,5 @@
+import { Analytics } from './analytics.js';
+
 export class LocalGameHandler {
     constructor(gameController) {
         this.gameController = gameController;
@@ -11,6 +13,10 @@ export class LocalGameHandler {
         this.turnCounter = 0;
         this.updateTurnIndicator();
         this.updateCountdown(this.rotationFrequency);
+        try {
+            Analytics.trackEvent('game_start', {});
+            Analytics.maybeTrackDailyReturn();
+        } catch (_) {}
     }
 
     handlePlayerInput(selectedRow, col) {
@@ -58,10 +64,16 @@ export class LocalGameHandler {
                 this.gameController.displayWinners(winners);
                 const playerName = this.currentPlayer === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins!`);
+                try {
+                    Analytics.trackEvent('game_end', { reason: 'completed' });
+                } catch (_) {}
             } else if (this.gameController.isBoardFull()) {
                 this.gameController.setGameOver(true);
                 this.gameController.winner = null;
                 this.displayGameOverMessage("It's a draw!");
+                try {
+                    Analytics.trackEvent('game_end', { reason: 'completed' });
+                } catch (_) {}
             } else {
                 this.switchPlayer();
             }
@@ -118,6 +130,9 @@ export class LocalGameHandler {
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation!`);
+                try {
+                    Analytics.trackEvent('game_end', { reason: 'completed' });
+                } catch (_) {}
             } else {
                 // Continue the game
                 this.updateCountdown(this.rotationFrequency);

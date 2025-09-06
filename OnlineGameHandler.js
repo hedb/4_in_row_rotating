@@ -1,4 +1,5 @@
 import { ApiController } from './ApiController.js';
+import { Analytics } from './analytics.js';
 
 export class OnlineGameHandler {
     constructor(gameController) {
@@ -60,6 +61,13 @@ export class OnlineGameHandler {
 
         this.sessionId = result.data.sessionId;
         this.playerId = result.data.playerId;
+        try {
+            // Analytics: treat host creating a session as game_start once game starts
+            Analytics.trackEvent('game_start', {
+                session_id: this.sessionId,
+            });
+            Analytics.maybeTrackDailyReturn();
+        } catch (_) {}
         
         // The host's local state MUST match the authoritative state from the server.
         const authoritativeState = result.data.gameState || result.data;
@@ -108,6 +116,12 @@ export class OnlineGameHandler {
 
         this.playerId = result.data.playerId;
         const gameState = result.data.gameState;
+        try {
+            Analytics.trackEvent('game_start', {
+                session_id: this.sessionId,
+            });
+            Analytics.maybeTrackDailyReturn();
+        } catch (_) {}
         console.log('[OnlineGameHandler] Guest joined successfully:', {
             playerId: this.playerId,
             gameStatus: gameState.status,
@@ -304,12 +318,24 @@ export class OnlineGameHandler {
             
             const playerName = playerId === 1 ? 'White' : 'Black';
             this.displayGameOverMessage(`${playerName} wins! ${playerId === this.playerId ? '🎉' : '😔'}`);
+            try {
+                Analytics.trackEvent('game_end', {
+                    session_id: this.sessionId,
+                    reason: 'completed',
+                });
+            } catch (_) {}
         } else if (this.gameController.isBoardFull()) {
             this.gameController.setGameOver(true);
             this.gameController.winner = null;
             this.gameState = 'finished';
             this.stopPolling();
             this.displayGameOverMessage("It's a draw! 🤝");
+            try {
+                Analytics.trackEvent('game_end', {
+                    session_id: this.sessionId,
+                    reason: 'completed',
+                });
+            } catch (_) {}
         }
     }
 
@@ -389,6 +415,12 @@ export class OnlineGameHandler {
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.playerId ? '🎉' : '😔'}`);
+                try {
+                    Analytics.trackEvent('game_end', {
+                        session_id: this.sessionId,
+                        reason: 'completed',
+                    });
+                } catch (_) {}
             } else {
                 // Reset countdown to full rotation frequency after rotation
                 this.updateCountdown(this.rotationFrequency);
@@ -743,6 +775,15 @@ export class OnlineGameHandler {
         
         // Reset game state
         this.gameState = null;
+        try {
+            // Treat leaving as quit if session was active
+            if (this.sessionId) {
+                Analytics.trackEvent('game_end', {
+                    session_id: this.sessionId,
+                    reason: 'quit',
+                });
+            }
+        } catch (_) {}
         this.sessionId = null;
         this.playerId = null;
         this.currentPlayer = 1;

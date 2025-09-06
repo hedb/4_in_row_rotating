@@ -14,6 +14,13 @@ h1 {
     margin-bottom: 20px;
 }
 
+.hero-logo {
+    width: 220px;
+    height: auto;
+    display: block;
+    margin: 10px auto 0 auto;
+}
+
 #game-container {
     background-color: white;
     border-radius: 12px;
@@ -430,25 +437,57 @@ select {
     font-size: 24px;
 }
 
+/* General color setting */
+.color-setting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+.color-label { color:#666; font-weight:500; }
+.color-radio { display:flex; align-items:center; gap:6px; }
+
+/* AI mode custom block */
+.ai-mode-block {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+}
+.ai-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+.ai-difficulty { display:flex; gap:14px; justify-content:center; }
+.ai-diff-btn { min-width: 140px; }
+
 .mode-buttons {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 14px;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 .mode-button {
     background-color: #f8f9fa;
     border: 2px solid #e9ecef;
     border-radius: 12px;
-    padding: 20px;
-    min-width: 200px;
+    padding: 16px 20px;
+    width: 100%;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .mode-button:hover {

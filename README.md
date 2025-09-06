@@ -12,6 +12,8 @@ This project is a modern, web-based implementation of the classic "Four-in-a-Row
 -   **Polished & Animated UI:** The game features a responsive interface with smooth, physics-based animations.
 -   **Instant Game Restart:** "New game?" button appears after every game for quick return to mode selection.
 -   **Configurable Settings:** A slide-out settings pane allows players to adjust the rotation frequency, manage the game, and view the current app version.
+-   **Native GIF Sharing:** Share an animated replay of your game via the device's native share sheet (Web Share API) with automatic fallback to file download.
+-   **Easter Egg Settings Modal:** Click the word "Grid" in the title to reveal a minimal settings modal that shows the app version.
 
 ## Technical Details
 
@@ -57,6 +59,19 @@ Because this project uses ES6 modules and a service worker, it must be run from 
 This project is a single-page application built with vanilla JavaScript (ES6 Modules), HTML, and CSS.
 
 ## Current Status & Recent Updates
+
+**Version 0.11.0** – Auto‑GIF, Winner Messaging, Share, and UI polish:
+- **Automatic GIF Display:** GIF is now generated client‑side and shown automatically when the game ends; the "Show GIF" button has been removed.
+- **Share GIF:** New "Share GIF" button uses the Web Share API Level 2 to share the locally generated GIF, including outcome text and a link to the game URL. If native share isn't available, the app downloads the GIF and shows simple instructions for manual sharing.
+- **Winner Messaging:** Consistent "White/Black" terminology across the UI. Game over banner now reads "Game Over: White won" / "Game Over: Black won" or draw. The message remains visible in replay mode.
+- **Reliable Outcome State:** The winner is persisted on the `GameController` so sharing text and the banner are always accurate; draws set the winner to `null`.
+- **Clean New Game State:** Starting a new game clears any previous GIF and restores the gameplay status area, ensuring a clean initial view.
+- **Gameplay vs. Game Over Layout:**
+  - During gameplay: horizontal status bar — turn indicator aligned left, rotation countdown aligned right.
+  - After game ends: left column shows two vertical buttons (Analyze Game, New Game); the GIF is centered to the right; the game over text remains visible.
+- **Settings Easter Egg:** Clicking "Grid" in the title opens a modal showing the app version. Fixed CSS specificity conflicts by scoping `.hidden` and ensuring the modal sits outside the hidden game container.
+- **Versioning:** Bumped to `0.11.0`. Remember to keep versions in both `config.js` and `sw.js` in sync to trigger PWA cache updates.
+- **Server GIF Endpoint:** Retained for potential high‑quality server‑side rendering, but sharing currently uses the client‑generated GIF by default.
 
 **Version 0.8.1** – Client-side GIF generation and UI improvements:
 - **Automatic GIF Generation**: Added animated GIF export functionality using gif.js library - GIFs are automatically generated and displayed when games end
