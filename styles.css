@@ -19,6 +19,12 @@ h1 {
     height: auto;
     display: block;
     margin: 10px auto 0 auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.hero-logo:hover {
+    transform: scale(1.05);
 }
 
 #game-container {

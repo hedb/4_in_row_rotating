@@ -220,7 +220,7 @@ class GameApp {
         }
 
         // Settings modal functionality (easter egg)
-        const gridEasterEgg = document.getElementById('grid-easter-egg');
+        const gridEasterEgg = document.getElementById('hero-logo');
         const settingsModal = document.getElementById('settings-modal');
         const closeSettingsBtn = document.getElementById('close-settings-btn');
 
@@ -762,7 +762,7 @@ class GameApp {
     async generateGifClientSide(payload) {
         await this.loadGifJs();
 
-        const { gridSize, playerColors, history, winners, footerTextTop = '', footerTextBottom = '' } = payload;
+        const { gridSize, playerColors, history, winners, headerText = '', footerText = '' } = payload;
         const scale = 0.5; // shrink for perf
         const CELL = Math.max(10, Math.floor(60 * scale));
         const GAP = Math.max(1, Math.floor(5 * scale));
@@ -770,10 +770,14 @@ class GameApp {
         const PAD = Math.max(4, Math.floor(10 * scale));
         const WIDTH = gridSize * CELL + (gridSize - 1) * GAP + 2 * PAD;
         const BOARD_HEIGHT = WIDTH;
+        // Header and footer layout
+        const HEADER_PAD = Math.max(8, Math.floor(16 * scale));
+        const HEADER_LINE_HEIGHT = Math.max(12, Math.floor(24 * scale));
+        const HEADER_HEIGHT = headerText ? (HEADER_PAD + HEADER_LINE_HEIGHT + HEADER_PAD) : HEADER_PAD;
         const FOOTER_PAD = Math.max(8, Math.floor(16 * scale));
         const FOOTER_LINE_HEIGHT = Math.max(12, Math.floor(24 * scale));
-        const FOOTER_HEIGHT = FOOTER_PAD + FOOTER_LINE_HEIGHT * 2 + FOOTER_PAD;
-        const HEIGHT = BOARD_HEIGHT + FOOTER_HEIGHT;
+        const FOOTER_HEIGHT = footerText ? (FOOTER_PAD + FOOTER_LINE_HEIGHT + FOOTER_PAD) : FOOTER_PAD;
+        const HEIGHT = HEADER_HEIGHT + BOARD_HEIGHT + FOOTER_HEIGHT;
 
         const canvas = document.createElement('canvas');
         canvas.width = WIDTH; canvas.height = HEIGHT;
@@ -792,8 +796,10 @@ class GameApp {
         const BG = '#f7f8fc';
         const GRID_FILL = '#e0e0e0';
         const GRID_STROKE = '#dcdcdc';
+        const HEADER_BG = '#ffffff';
+        const HEADER_COLOR = '#2c3e50';
         const FOOTER_BG = '#ffffff';
-        const FOOTER_TEXT = '#2c3e50';
+        const FOOTER_COLOR = '#2c3e50';
 
         const clear = () => {
             ctx.fillStyle = BG;
@@ -817,52 +823,65 @@ class GameApp {
 
         const drawBoard = (boardState) => {
             clear();
+            drawHeader();
+            // Draw board contents within translated context so y=0 is top of board area
+            ctx.save();
+            ctx.translate(0, HEADER_HEIGHT);
             drawGrid();
-            drawFooter();
-            if (!boardState) return;
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    const cell = boardState[r][c];
-                    if (!cell) continue;
-                    const color = playerColors[cell.playerId] || '#000000';
-                    const x = PAD + c * (CELL + GAP) + (CELL - STONE) / 2;
-                    const y = PAD + r * (CELL + GAP) + (CELL - STONE) / 2;
-                    ctx.beginPath();
-                    ctx.fillStyle = color;
-                    ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    // winner ring
-                    if (winners && winners.length >= 4 && winners.includes(cell.id)) {
-                        ctx.lineWidth = Math.max(2, Math.floor(5 * scale));
-                        ctx.strokeStyle = '#00a000';
+            if (boardState) {
+                for (let r = 0; r < gridSize; r++) {
+                    for (let c = 0; c < gridSize; c++) {
+                        const cell = boardState[r][c];
+                        if (!cell) continue;
+                        const color = playerColors[cell.playerId] || '#000000';
+                        const x = PAD + c * (CELL + GAP) + (CELL - STONE) / 2;
+                        const y = PAD + r * (CELL + GAP) + (CELL - STONE) / 2;
                         ctx.beginPath();
-                        ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2 + 2, 0, Math.PI * 2);
-                        ctx.stroke();
+                        ctx.fillStyle = color;
+                        ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2, 0, Math.PI * 2);
+                        ctx.fill();
+                        // winner ring
+                        if (winners && winners.length >= 4 && winners.includes(cell.id)) {
+                            ctx.lineWidth = Math.max(2, Math.floor(5 * scale));
+                            ctx.strokeStyle = '#00a000';
+                            ctx.beginPath();
+                            ctx.arc(x + STONE / 2, y + STONE / 2, STONE / 2 + 2, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
                     }
                 }
             }
+            ctx.restore();
+            drawFooter();
         };
 
         const addFrame = (delayMs) => {
             gif.addFrame(ctx, { copy: true, delay: delayMs });
         };
 
-        const drawFooter = () => {
-            // Footer background area
-            ctx.fillStyle = FOOTER_BG;
-            ctx.fillRect(0, BOARD_HEIGHT, WIDTH, FOOTER_HEIGHT);
-            // URL (top line)
-            ctx.fillStyle = FOOTER_TEXT;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'top';
-            ctx.font = `${Math.max(10, Math.floor(18 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
-            if (footerTextTop) {
-                ctx.fillText(footerTextTop, WIDTH / 2, BOARD_HEIGHT + FOOTER_PAD);
+        const drawHeader = () => {
+            // Header background area
+            ctx.fillStyle = HEADER_BG;
+            ctx.fillRect(0, 0, WIDTH, HEADER_HEIGHT);
+            if (headerText) {
+                ctx.fillStyle = HEADER_COLOR;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.font = `${Math.max(12, Math.floor(22 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+                ctx.fillText(headerText, WIDTH / 2, HEADER_PAD);
             }
-            // Outcome (bottom line)
-            ctx.font = `${Math.max(12, Math.floor(22 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
-            if (footerTextBottom) {
-                ctx.fillText(footerTextBottom, WIDTH / 2, BOARD_HEIGHT + FOOTER_PAD + FOOTER_LINE_HEIGHT);
+        };
+
+        const drawFooter = () => {
+            // Footer background area (below board)
+            ctx.fillStyle = FOOTER_BG;
+            ctx.fillRect(0, HEADER_HEIGHT + BOARD_HEIGHT, WIDTH, FOOTER_HEIGHT);
+            if (footerText) {
+                ctx.fillStyle = FOOTER_COLOR;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.font = `${Math.max(10, Math.floor(18 * scale))}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif`;
+                ctx.fillText(footerText, WIDTH / 2, HEADER_HEIGHT + BOARD_HEIGHT + FOOTER_PAD);
             }
         };
 
@@ -878,17 +897,20 @@ class GameApp {
                 const t = (i + 1) / steps;
                 const iy = Math.round(startY + (endY - startY) * t);
                 drawBoard(prevBoard);
+                ctx.save();
+                ctx.translate(0, HEADER_HEIGHT);
                 ctx.fillStyle = color;
                 ctx.beginPath();
                 ctx.arc(x + STONE / 2, iy + STONE / 2, STONE / 2, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.restore();
                 addFrame(delay);
             }
         };
 
         const drawRotationFrames = (prevBoard) => {
             const steps = 10, delay = 70;
-            // draw prev to an image
+            // draw prev to an image (includes header/footer)
             drawBoard(prevBoard);
             const baseImg = new Image();
             baseImg.src = canvas.toDataURL('image/png');
@@ -897,11 +919,12 @@ class GameApp {
                     for (let i = 0; i < steps; i++) {
                         const angle = -(Math.PI / 2) * ((i + 1) / steps); // CW 90deg to match game
                         clear();
+                        drawHeader();
                         ctx.save();
-                        ctx.translate(WIDTH / 2, BOARD_HEIGHT / 2);
+                        ctx.translate(WIDTH / 2, HEADER_HEIGHT + BOARD_HEIGHT / 2);
                         ctx.rotate(angle);
                         // draw only the board portion from the source image into the rotated board area
-                        ctx.drawImage(baseImg, 0, 0, WIDTH, BOARD_HEIGHT, -WIDTH / 2, -BOARD_HEIGHT / 2, WIDTH, BOARD_HEIGHT);
+                        ctx.drawImage(baseImg, 0, HEADER_HEIGHT, WIDTH, BOARD_HEIGHT, -WIDTH / 2, -BOARD_HEIGHT / 2, WIDTH, BOARD_HEIGHT);
                         ctx.restore();
                         // keep footer static below the board
                         drawFooter();
@@ -938,6 +961,8 @@ class GameApp {
                 const t = (s + 1) / steps;
                 // Draw board without the moving stones, then overlay them at intermediate positions
                 drawBoard(baseBoard);
+                ctx.save();
+                ctx.translate(0, HEADER_HEIGHT);
                 motions.forEach(m => {
                     const x = PAD + m.col * (CELL + GAP) + (CELL - STONE) / 2;
                     const sy = PAD + m.startRow * (CELL + GAP) + (CELL - STONE) / 2;
@@ -948,6 +973,7 @@ class GameApp {
                     ctx.arc(x + STONE / 2, iy + STONE / 2, STONE / 2, 0, Math.PI * 2);
                     ctx.fill();
                 });
+                ctx.restore();
                 addFrame(delay);
             }
         };

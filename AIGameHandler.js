@@ -6,11 +6,11 @@ import { Analytics } from './analytics.js';
 export class AIGameHandler {
     constructor(gameController, options = {}) {
         this.gameController = gameController;
-        this.humanStartsWhite = options.humanColor === 'black' ? false : true;
-        this.humanPlayerId = this.humanStartsWhite ? 1 : 2; // Human chosen color
+        this.humanColor = options.humanColor || 'white';
+        this.humanPlayerId = this.humanColor === 'white' ? 1 : 2; // Human chosen color
         this.aiPlayerId = this.humanPlayerId === 1 ? 2 : 1; // AI is the other color
         this.aiPlayer = new AIPlayer(gameController, { difficulty: options.difficulty || 'normal' });
-        this.currentPlayer = this.humanPlayerId;
+        this.currentPlayer = 1; // Always start with White (player 1)
         this.isAIThinking = false;
         this.turnCounter = 0;
         this.rotationFrequency = 3; // Default rotation frequency
@@ -18,7 +18,7 @@ export class AIGameHandler {
 
     init() {
         this.gameController.resetGame();
-        this.currentPlayer = this.humanPlayerId;
+        this.currentPlayer = 1; // Always start with White (player 1)
         this.isAIThinking = false;
         this.turnCounter = 0;
         this.gameController.enableInput();
@@ -30,7 +30,7 @@ export class AIGameHandler {
             Analytics.maybeTrackDailyReturn();
         } catch (_) {}
 
-        // If AI is set to start (human chose black), trigger AI turn
+        // If AI is White (player 1), it starts first
         if (this.currentPlayer === this.aiPlayerId) {
             this.gameController.disableInput();
             this.aiTurn();
