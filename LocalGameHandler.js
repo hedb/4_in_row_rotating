@@ -53,11 +53,14 @@ export class LocalGameHandler {
             const winners = this.gameController.checkForWin(targetRow, col, this.currentPlayer);
             if (winners) {
                 this.gameController.setGameOver(true);
+                // Persist winner on controller for UI/sharing
+                this.gameController.winner = this.currentPlayer;
                 this.gameController.displayWinners(winners);
                 const playerName = this.currentPlayer === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins!`);
             } else if (this.gameController.isBoardFull()) {
                 this.gameController.setGameOver(true);
+                this.gameController.winner = null;
                 this.displayGameOverMessage("It's a draw!");
             } else {
                 this.switchPlayer();
@@ -111,6 +114,8 @@ export class LocalGameHandler {
                     }
                 }
                 
+                // Persist winner after rotation
+                this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation!`);
             } else {

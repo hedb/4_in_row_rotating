@@ -296,6 +296,8 @@ export class OnlineGameHandler {
         const winners = this.gameController.checkForWin(row, col, playerId);
         if (winners) {
             this.gameController.setGameOver(true);
+            // Persist winner for UI/sharing
+            this.gameController.winner = playerId;
             this.gameController.displayWinners(winners);
             this.gameState = 'finished';
             this.stopPolling();
@@ -304,6 +306,7 @@ export class OnlineGameHandler {
             this.displayGameOverMessage(`${playerName} wins! ${playerId === this.playerId ? '🎉' : '😔'}`);
         } else if (this.gameController.isBoardFull()) {
             this.gameController.setGameOver(true);
+            this.gameController.winner = null;
             this.gameState = 'finished';
             this.stopPolling();
             this.displayGameOverMessage("It's a draw! 🤝");
@@ -382,6 +385,8 @@ export class OnlineGameHandler {
                     }
                 }
                 
+                // Persist winner after rotation
+                this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.playerId ? '🎉' : '😔'}`);
             } else {

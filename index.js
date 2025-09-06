@@ -437,7 +437,18 @@ class GameApp {
         const topLeft = document.getElementById('top-left-actions');
 
         if (gameOverContainer && gameOverText && newGameBtn && analyzeBtn && topLeft) {
-            gameOverText.textContent = 'Game Over';
+            // Prefer a detailed message if one was set by the handler
+            const existing = (gameOverText.textContent || '').trim();
+            if (!existing || existing.toLowerCase() === 'game over') {
+                // Derive winner label from game state if available
+                let suffix = '';
+                try {
+                    const winner = this.gameController && this.gameController.winner;
+                    if (winner === 1) suffix = ': White won';
+                    else if (winner === 2) suffix = ': Black won';
+                } catch (_) {}
+                gameOverText.textContent = `Game Over${suffix}`;
+            }
             gameOverContainer.classList.remove('hidden');
             topLeft.classList.remove('hidden');
 
