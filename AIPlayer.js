@@ -4,6 +4,8 @@ export class AIPlayer {
     constructor(gameController, options = {}) {
         this.gameController = gameController;
         this.difficulty = options.difficulty || 'normal'; // 'normal' | 'hard'
+        this.aiPlayerId = options.aiPlayerId || 2; // AI player ID
+        this.humanPlayerId = options.humanPlayerId || 1; // Human player ID
     }
 
     /**
@@ -20,13 +22,13 @@ export class AIPlayer {
         }
 
         // Priority 1: Try to win
-        const winningMove = this.findWinningMove(validColumns, 2); // AI is player 2
+        const winningMove = this.findWinningMove(validColumns, this.aiPlayerId);
         if (winningMove !== null) {
             return winningMove;
         }
 
         // Priority 2: Block player from winning
-        const blockingMove = this.findWinningMove(validColumns, 1); // Human is player 1
+        const blockingMove = this.findWinningMove(validColumns, this.humanPlayerId);
         if (blockingMove !== null) {
             return blockingMove;
         }
@@ -38,9 +40,9 @@ export class AIPlayer {
                 // Simulate AI move
                 const row = this.gameController.getNextAvailableRow(col);
                 if (row === null) continue;
-                this.gameController.board.grid[row][col] = { playerId: 2 };
-                // After this move, check if human (1) has any immediate winning response
-                const oppWinning = this.findWinningMove(this.getValidColumns(), 1);
+                this.gameController.board.grid[row][col] = { playerId: this.aiPlayerId };
+                // After this move, check if human has any immediate winning response
+                const oppWinning = this.findWinningMove(this.getValidColumns(), this.humanPlayerId);
                 // Undo
                 this.gameController.board.grid[row][col] = null;
                 if (oppWinning === null) {

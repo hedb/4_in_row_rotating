@@ -9,7 +9,11 @@ export class AIGameHandler {
         this.humanColor = options.humanColor || 'white';
         this.humanPlayerId = this.humanColor === 'white' ? 1 : 2; // Human chosen color
         this.aiPlayerId = this.humanPlayerId === 1 ? 2 : 1; // AI is the other color
-        this.aiPlayer = new AIPlayer(gameController, { difficulty: options.difficulty || 'normal' });
+        this.aiPlayer = new AIPlayer(gameController, { 
+            difficulty: options.difficulty || 'normal',
+            aiPlayerId: this.aiPlayerId,
+            humanPlayerId: this.humanPlayerId
+        });
         this.currentPlayer = 1; // Always start with White (player 1)
         this.isAIThinking = false;
         this.turnCounter = 0;

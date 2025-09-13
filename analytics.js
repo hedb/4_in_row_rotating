@@ -57,8 +57,17 @@ function getDeviceContext() {
 
 // Replace this with real endpoint/SDK later
 async function sendEvent(name, params) {
-	// No-op transport: log to console for now
-	// Hook here to forward to GA4 or your backend
+	// Forward to GA4 if available (and not on localhost), while still logging locally
+	try {
+		const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+		if (!isLocalhost && typeof window !== 'undefined' && typeof window.gtag === 'function') {
+			// Avoid sending a duplicate identifier as a parameter when using GA4 user_id
+			const { player_id, ...rest } = params || {};
+			window.gtag('event', name, rest);
+		}
+	} catch (_) {}
+
+	// Always keep console log for debugging
 	console.log('[analytics]', name, params);
 }
 
@@ -71,6 +80,17 @@ export const Analytics = (() => {
 
 	function startSession() {
 		currentSessionId = generateId('session');
+		// Set GA user context once per session if GA is present
+		try {
+			const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+			if (!isLocalhost && typeof window !== 'undefined' && typeof window.gtag === 'function') {
+				const playerId = getOrCreatePlayerId();
+				// Set stable user_id for cross-session attribution
+				window.gtag('set', { user_id: playerId });
+				// Set useful user properties (device, platform, PWA install status, language)
+				window.gtag('set', 'user_properties', getDeviceContext());
+			}
+		} catch (_) {}
 		return currentSessionId;
 	}
 
