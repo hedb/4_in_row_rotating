@@ -529,11 +529,27 @@ class GameApp {
         center.appendChild(col);
     }
 
+    showGifLoadingSpinner() {
+        const center = document.getElementById('top-center-display');
+        if (!center) {
+            return;
+        }
+        center.innerHTML = '';
+
+        // Just the spinner, centered
+        const spinner = document.createElement('div');
+        spinner.className = 'gif-loading-spinner';
+        center.appendChild(spinner);
+    }
+
     async generateAndShowGif() {
         try {
             if (!this.gameController) {
                 throw new Error('No game in progress');
             }
+            
+            // Show loading spinner while generating
+            this.showGifLoadingSpinner();
             
             const blob = await this.generateGifClientSide({
                 version: VERSION,

@@ -390,6 +390,18 @@ button:active {
     gap: 8px;
 }
 .gif-share-col { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.gif-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1ca433;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 .top-center-display img {
     max-height: 120px;
     border-radius: 8px;
