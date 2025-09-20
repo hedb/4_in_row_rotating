@@ -542,7 +542,7 @@ class GameApp {
                 history: this.gameController.gameHistory,
                 winners: this.gameController.lastWinningStoneIds || [],
                 headerText: this.computeGifFooter(),
-                footerText: 'https://with-a-twi.st'
+                footerText: ''
             });
             this.showGifInTopPanel(blob);
         } catch (e) {
@@ -562,7 +562,7 @@ class GameApp {
             history: this.gameController.gameHistory,
             winners: this.gameController.lastWinningStoneIds || [],
             headerText: this.computeGifFooter(),
-            footerText: 'https://with-a-twi.st'
+            footerText: ''
         };
 
         try {
@@ -594,7 +594,7 @@ class GameApp {
             history: this.gameController.gameHistory,
             winners: this.gameController.lastWinningStoneIds || [],
             headerText: this.computeGifFooter(),
-            footerText: 'https://with-a-twi.st'
+            footerText: ''
         };
 
         if (!payload.history || payload.history.length === 0) {
@@ -659,6 +659,7 @@ class GameApp {
                         await navigator.share({
                             title: shareTitle,
                             text: shareText,
+                            url: gameUrl,
                             files: files
                         });
                         console.log('[GameApp] GIF shared via native API');
