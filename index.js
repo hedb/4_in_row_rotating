@@ -506,25 +506,27 @@ class GameApp {
         }
         const url = URL.createObjectURL(blob);
         center.innerHTML = '';
-        
-        // Create clickable GIF image
+
+        // Column wrapper to center GIF and caption together
+        const col = document.createElement('div');
+        col.className = 'gif-share-col';
+
+        // Create GIF image (clickable to share)
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'Game GIF';
-        img.addEventListener('click', () => {
-            this.shareGameGif();
-        });
-        center.appendChild(img);
-        
-        // Add clickable share text below the GIF
-        const shareText = document.createElement('p');
-        shareText.className = 'share-text';
-        shareText.textContent = 'share';
-        shareText.style.cursor = 'pointer';
-        shareText.addEventListener('click', () => {
-            this.shareGameGif();
-        });
-        center.appendChild(shareText);
+        img.addEventListener('click', () => this.shareGameGif());
+        col.appendChild(img);
+
+        // Caption below GIF
+        const caption = document.createElement('p');
+        caption.className = 'share-text';
+        caption.textContent = 'Click to share';
+        caption.style.cursor = 'pointer';
+        caption.addEventListener('click', () => this.shareGameGif());
+        col.appendChild(caption);
+
+        center.appendChild(col);
     }
 
     async generateAndShowGif() {
