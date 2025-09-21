@@ -19,6 +19,8 @@ class GameApp {
         this.currentMode = null;
         this.analyticsSessionStartMs = null;
         this.analyticsSessionId = null;
+        this.isGeneratingGif = false;
+        this.userHasMovedAway = false;
 
         this.init();
     }
@@ -500,6 +502,12 @@ class GameApp {
     }
 
     showGifInTopPanel(blob) {
+        // Don't show GIF if user has moved away
+        if (this.userHasMovedAway) {
+            console.log('[GameApp] Skipping GIF display - user has moved away');
+            return;
+        }
+
         const center = document.getElementById('top-center-display');
         if (!center) {
             return;
@@ -548,6 +556,8 @@ class GameApp {
                 throw new Error('No game in progress');
             }
             
+            this.isGeneratingGif = true;
+            
             // Show loading spinner while generating
             this.showGifLoadingSpinner();
             
@@ -560,8 +570,11 @@ class GameApp {
                 headerText: this.computeGifFooter(),
                 footerText: ''
             });
+            
+            this.isGeneratingGif = false;
             this.showGifInTopPanel(blob);
         } catch (e) {
+            this.isGeneratingGif = false;
             console.error('[GameApp] Auto GIF generation failed', e);
             // Don't show alert for auto-generation, just log the error
         }
@@ -1084,6 +1097,9 @@ class GameApp {
 
     // Method to return to mode selection (useful for future "Return to Menu" functionality)
     returnToModeSelection() {
+        // Mark that user has moved away to prevent GIF insertion
+        this.userHasMovedAway = true;
+        
         // Analytics: end active session as quit
         this.endSession('quit');
         // Clean up current game
@@ -1116,6 +1132,8 @@ class GameApp {
         this.onlineGameHandler = null;
         this.inputHandler = null;
         this.currentMode = null;
+        this.isGeneratingGif = false;
+        this.userHasMovedAway = false; // Reset for next game
 
         // Show mode selection
         this.showModeSelection();

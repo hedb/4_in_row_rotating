@@ -528,6 +528,7 @@ export class BoardRenderer {
 
 
     animateStoneDrop(startRow, col, targetRow, stone, callback) {
+        console.log('[BoardRenderer] animateStoneDrop start', { startRow, col, targetRow, stoneId: stone.id, playerId: stone.playerId });
         const stoneColor = PLAYER_COLORS[stone.playerId];
         const stoneElement = document.createElement('div');
         stoneElement.classList.add('stone');
@@ -548,10 +549,14 @@ export class BoardRenderer {
         if (startRow === targetRow) {
             // No animation needed, directly proceed
             setTimeout(() => {
-                // Remove the temporary stone element
-                this.gridElement.removeChild(stoneElement);
+                // Remove the temporary stone element safely from its actual parent
+                const parent = stoneElement.parentNode;
+                if (parent) {
+                    try { parent.removeChild(stoneElement); } catch (_) {}
+                }
                 this.board.placeStone(targetRow, col, stone);
                 this.drawBoard();
+                console.log('[BoardRenderer] animateStoneDrop immediate path complete');
                 callback(); // Proceed with game logic
             }, 0);
         } else {
@@ -574,8 +579,13 @@ export class BoardRenderer {
 
             // Listen for the transition to end
             stoneElement.addEventListener('transitionend', () => {
-                // Remove the animated stone
-                this.gridElement.removeChild(stoneElement);
+                console.log('[BoardRenderer] animateStoneDrop transitionend');
+                // Remove the animated stone safely from its actual parent
+                const parent = stoneElement.parentNode;
+                if (parent) {
+                    try { parent.removeChild(stoneElement); } catch (_) {}
+                }
+                console.log('[BoardRenderer] animateStoneDrop completed');
                 callback(); // Proceed with game logic
             });
         }
@@ -600,7 +610,9 @@ export class BoardRenderer {
 
         if (startRow === targetRow) {
             // No animation needed
-            this.gridElement.removeChild(stoneElement); // Clean up temporary element
+            if (stoneElement.parentNode === this.gridElement) {
+                this.gridElement.removeChild(stoneElement); // Clean up temporary element
+            }
             if (callback) callback();
             return;
         }
@@ -619,8 +631,9 @@ export class BoardRenderer {
             stoneElement.style.opacity = '0';
             // Clean up the element from the DOM after a short delay
             setTimeout(() => {
-                if (stoneElement.parentElement) {
-                    this.gridElement.removeChild(stoneElement);
+                const parent = stoneElement.parentNode;
+                if (parent) {
+                    try { parent.removeChild(stoneElement); } catch (_) {}
                 }
             }, 100);
             if (callback) callback();
@@ -658,7 +671,7 @@ export class BoardRenderer {
         stoneElement.style.top = `${endTop}px`;
 
         stoneElement.addEventListener('transitionend', () => {
-            if (stoneElement.parentElement) {
+            if (stoneElement.parentNode === this.gridElement) {
                 this.gridElement.removeChild(stoneElement);
             }
             if (callback) callback();

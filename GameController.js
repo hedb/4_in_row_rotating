@@ -49,10 +49,12 @@ export class GameController {
 
     disableInput() {
         this.inputEnabled = false;
+        console.log('[GameController] Input disabled');
     }
 
     enableInput() {
             this.inputEnabled = true;
+            console.log('[GameController] Input enabled');
     }
 
     // === GAME HISTORY METHODS ===
@@ -480,21 +482,28 @@ export class GameController {
     // === GAME ACTION METHODS ===
 
     makeMove(selectedRow, col, targetRow, playerId, onComplete) {
+        console.log('[GameController] makeMove called', { selectedRow, col, targetRow, playerId });
         const stone = new Stone(playerId);
         
         // Update current player for history tracking
         this.currentPlayer = playerId;
         
         this.boardRenderer.animateStoneDrop(selectedRow, col, targetRow, stone, () => {
+            console.log('[GameController] animateStoneDrop completed');
             this.board.placeStone(targetRow, col, stone);
             this.boardRenderer.drawBoard();
             
             // Capture game state after move (if not in replay mode)
             if (!this.replayMode) {
                 this.captureGameState('move', targetRow, col);
+                console.log('[GameController] State captured after move');
             }
             
-            onComplete();
+            try {
+                onComplete && onComplete();
+            } finally {
+                console.log('[GameController] makeMove callback finished');
+            }
         });
     }
 

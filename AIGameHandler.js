@@ -21,6 +21,7 @@ export class AIGameHandler {
     }
 
     init() {
+        console.log('[AI] init start', { humanColor: this.humanColor, humanPlayerId: this.humanPlayerId, aiPlayerId: this.aiPlayerId });
         this.gameController.resetGame();
         this.currentPlayer = 1; // Always start with White (player 1)
         this.isAIThinking = false;
@@ -36,6 +37,7 @@ export class AIGameHandler {
 
         // If AI is White (player 1), it starts first
         if (this.currentPlayer === this.aiPlayerId) {
+            console.log('[AI] AI starts (White). Disabling input and taking turn');
             this.gameController.disableInput();
             this.aiTurn();
         }
@@ -83,6 +85,7 @@ export class AIGameHandler {
     }
 
     aiTurn() {
+        console.log('[AI] aiTurn');
         this.isAIThinking = true;
         this.gameController.disableInput();
         this.displayTurnMessage();
@@ -90,18 +93,22 @@ export class AIGameHandler {
         // Add a small delay to simulate thinking
         setTimeout(() => {
             const col = this.aiPlayer.findBestMove();
+            console.log('[AI] Best move column', { col });
             if (col !== null) {
                 const targetRow = this.gameController.getNextAvailableRow(col);
+                console.log('[AI] Computed targetRow', { targetRow });
                 // Place the stone at the top row (0) so it falls down like in local multiplayer
                 const selectedRow = 0; 
 
                 this.gameController.makeMove(selectedRow, col, targetRow, this.aiPlayerId, () => {
+                    console.log('[AI] makeMove callback (AI)');
                     this.isAIThinking = false;
                     if (!this.checkForGameEnd(targetRow, col, this.aiPlayerId)) {
                         this.switchPlayer();
                     }
                     // Only enable input if it's the human's turn next
                     if (this.currentPlayer === this.humanPlayerId) {
+                        console.log('[AI] Enabling input for human after AI turn');
                         this.gameController.enableInput();
                     }
                 });
@@ -136,6 +143,7 @@ export class AIGameHandler {
     }
 
     switchPlayer() {
+        console.log('[AI] switchPlayer start', { currentPlayer: this.currentPlayer, turnCounter: this.turnCounter });
         this.currentPlayer = (this.currentPlayer === this.humanPlayerId) ? this.aiPlayerId : this.humanPlayerId;
         this.turnCounter++;
         this.displayTurnMessage();
@@ -148,8 +156,10 @@ export class AIGameHandler {
         } else {
             this.updateCountdown(this.rotationFrequency - (this.turnCounter % this.rotationFrequency));
             if (this.currentPlayer === this.aiPlayerId && !this.gameController.isGameOver()) {
+                console.log('[AI] Handing turn to AI');
                 this.aiTurn();
             } else {
+                console.log('[AI] Handing turn to human. Enabling input');
                 this.gameController.enableInput();
             }
         }
@@ -214,11 +224,13 @@ export class AIGameHandler {
     }
 
     rotateGrid() {
+        console.log('[AI] rotateGrid requested');
         if (this.gameController.isGameOver()) {
             return;
         }
 
         this.gameController.rotateGrid(() => {
+            console.log('[AI] rotateGrid completed callback');
             // Check for any win conditions after rotation
             const winner = this.gameController.checkForWinAfterRotation();
             if (winner) {
@@ -249,8 +261,10 @@ export class AIGameHandler {
                 // Continue the game
                 this.updateCountdown(this.rotationFrequency);
                 if (this.currentPlayer === this.aiPlayerId && !this.gameController.isGameOver()) {
+                    console.log('[AI] After rotation: AI to move');
                     this.aiTurn();
                 } else {
+                    console.log('[AI] After rotation: Human to move. Enabling input');
                     this.gameController.enableInput();
                 }
             }
