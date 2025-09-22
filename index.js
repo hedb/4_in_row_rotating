@@ -57,6 +57,7 @@ class GameApp {
         // AI difficulty buttons
         const aiNormal = document.getElementById('play-ai-normal-btn');
         const aiHard = document.getElementById('play-ai-hard-btn');
+        const aiOuch = document.getElementById('play-ai-ouch-btn');
         if (aiNormal) {
             aiNormal.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
@@ -67,6 +68,12 @@ class GameApp {
             aiHard.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'hard', color });
+            });
+        }
+        if (aiOuch) {
+            aiOuch.addEventListener('click', () => {
+                const color = this.getSelectedPlayerColor();
+                this.startAiMode({ difficulty: 'ouch', color });
             });
         }
 
