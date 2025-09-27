@@ -6,8 +6,14 @@ import { InputHandler } from './InputHandler.js';
 import { ApiController } from './ApiController.js';
 import { Analytics } from './analytics.js';
 import { VERSION } from './config.js';
+import { logBuffer } from './LogBuffer.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
+console.log('[LogBuffer] Log buffer system initialized');
+console.log('[LogBuffer] Testing different log levels...');
+console.warn('[LogBuffer] This is a warning message');
+console.error('[LogBuffer] This is an error message for testing');
+console.info('[LogBuffer] This is an info message');
 
 class GameApp {
     constructor() {
@@ -21,6 +27,7 @@ class GameApp {
         this.analyticsSessionId = null;
         this.isGeneratingGif = false;
         this.userHasMovedAway = false;
+        this.isStartingMode = false;
 
         this.init();
     }
@@ -50,36 +57,52 @@ class GameApp {
         gameContainer.classList.add('hidden');
 
         // Bind mode selection buttons
-        document.getElementById('play-local-btn').addEventListener('click', () => {
-            this.startLocalMode();
-        });
+        const localBtn = document.getElementById('play-local-btn');
+        if (localBtn) {
+            const newLocalBtn = localBtn.cloneNode(true);
+            localBtn.parentNode.replaceChild(newLocalBtn, localBtn);
+            newLocalBtn.addEventListener('click', () => {
+                this.startLocalMode();
+            });
+        }
 
         // AI difficulty buttons
         const aiNormal = document.getElementById('play-ai-normal-btn');
         const aiHard = document.getElementById('play-ai-hard-btn');
         const aiOuch = document.getElementById('play-ai-ouch-btn');
         if (aiNormal) {
-            aiNormal.addEventListener('click', () => {
+            const newAiNormal = aiNormal.cloneNode(true);
+            aiNormal.parentNode.replaceChild(newAiNormal, aiNormal);
+            newAiNormal.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'normal', color });
             });
         }
         if (aiHard) {
-            aiHard.addEventListener('click', () => {
+            const newAiHard = aiHard.cloneNode(true);
+            aiHard.parentNode.replaceChild(newAiHard, aiHard);
+            newAiHard.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'hard', color });
             });
         }
         if (aiOuch) {
-            aiOuch.addEventListener('click', () => {
+            const newAiOuch = aiOuch.cloneNode(true);
+            aiOuch.parentNode.replaceChild(newAiOuch, aiOuch);
+            newAiOuch.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'ouch', color });
             });
         }
 
-        document.getElementById('play-online-btn').addEventListener('click', () => {
-            this.startOnlineModeAsHost();
-        });
+        const onlineBtn = document.getElementById('play-online-btn');
+        if (onlineBtn) {
+            const newOnlineBtn = onlineBtn.cloneNode(true);
+            onlineBtn.parentNode.replaceChild(newOnlineBtn, onlineBtn);
+            newOnlineBtn.addEventListener('click', () => {
+                this.startOnlineModeAsHost();
+            });
+        }
     }
 
     startLocalMode() {
@@ -118,41 +141,54 @@ class GameApp {
     }
 
     startAiMode(options = {}) {
-        this.currentMode = 'ai';
-
-        // Clean up any existing input handlers
-        if (this.inputHandler) {
-            this.inputHandler.unbindInputEvents();
+        if (this.isStartingMode) {
+            console.warn('[GameApp] AI mode start already in progress');
+            return;
         }
+        if (this.currentMode === 'ai' && this.aiGameHandler) {
+            console.warn('[GameApp] AI mode already active');
+            return;
+        }
+        this.isStartingMode = true;
+        try {
+            this.currentMode = 'ai';
 
-        // Clean up any lingering UI elements
-        this.cleanupGameUI();
+            // Clean up any existing input handlers
+            if (this.inputHandler) {
+                this.inputHandler.unbindInputEvents();
+            }
 
-        // Hide mode selection and show game
-        document.getElementById('mode-selection').classList.add('hidden');
-        document.getElementById('game-container').classList.remove('hidden');
-        const status = document.getElementById('top-right-status');
-        if (status) status.style.display = 'flex';
+            // Clean up any lingering UI elements
+            this.cleanupGameUI();
 
-        // Initialize game components
-        this.gameController = new GameController();
-        this.aiGameHandler = new AIGameHandler(this.gameController, {
-            humanColor: options.color || 'white',
-            difficulty: options.difficulty || 'normal'
-        });
-        this.inputHandler = new InputHandler();
+            // Hide mode selection and show game
+            document.getElementById('mode-selection').classList.add('hidden');
+            document.getElementById('game-container').classList.remove('hidden');
+            const status = document.getElementById('top-right-status');
+            if (status) status.style.display = 'flex';
 
-        // Connect components
-        this.inputHandler.setGameHandler(this.aiGameHandler);
-        this.inputHandler.bindInputEvents();
+            // Initialize game components
+            this.gameController = new GameController();
+            this.aiGameHandler = new AIGameHandler(this.gameController, {
+                humanColor: options.color || 'white',
+                difficulty: options.difficulty || 'normal'
+            });
+            this.inputHandler = new InputHandler();
 
-        // Initialize AI game
-        this.aiGameHandler.init();
+            // Connect components
+            this.inputHandler.setGameHandler(this.aiGameHandler);
+            this.inputHandler.bindInputEvents();
 
-        // Analytics: start session and daily return
-        this.beginSession();
+            // Initialize AI game
+            this.aiGameHandler.init();
 
-        console.log('[GameApp] AI mode started');
+            // Analytics: start session and daily return
+            this.beginSession();
+
+            console.log('[GameApp] AI mode started');
+        } finally {
+            this.isStartingMode = false;
+        }
     }
 
     getSelectedPlayerColor() {
@@ -253,6 +289,9 @@ class GameApp {
                     versionDisplay.textContent = `v${VERSION}`;
                     console.log('[Settings] Version updated to:', `v${VERSION}`);
                 }
+                
+                // Update log statistics
+                this.updateLogStats();
             } else {
                 console.error('[Settings] Settings modal not found!');
             }
@@ -276,6 +315,24 @@ class GameApp {
                 if (e.target === settingsModal) {
                     hideSettings();
                 }
+            });
+        }
+
+        // Log control functionality
+        const copyLogsBtn = document.getElementById('copy-logs-btn');
+        const clearLogsBtn = document.getElementById('clear-logs-btn');
+
+        if (copyLogsBtn) {
+            copyLogsBtn.addEventListener('click', async () => {
+                console.log('[Settings] Copy logs clicked');
+                await this.copyLogsToClipboard();
+            });
+        }
+
+        if (clearLogsBtn) {
+            clearLogsBtn.addEventListener('click', () => {
+                console.log('[Settings] Clear logs clicked');
+                this.clearLogs();
             });
         }
 
@@ -1177,6 +1234,81 @@ class GameApp {
             this.analyticsSessionId = null;
             this.analyticsSessionStartMs = null;
         }
+    }
+
+    // === LOG MANAGEMENT FUNCTIONALITY ===
+
+    updateLogStats() {
+        const logStatsElement = document.getElementById('log-stats');
+        if (!logStatsElement) return;
+
+        const stats = logBuffer.getStats();
+        const logText = `Logs: ${stats.totalEntries}/${stats.maxSize} entries
+Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
+        
+        logStatsElement.textContent = logText;
+    }
+
+    async copyLogsToClipboard() {
+        const copyButton = document.getElementById('copy-logs-btn');
+        if (!copyButton) return;
+
+        // Update button state to show copying
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copying...';
+        copyButton.classList.add('copying');
+        copyButton.disabled = true;
+
+        try {
+            const result = await logBuffer.copyLogsToClipboard();
+            
+            if (result.success) {
+                copyButton.textContent = 'Copied!';
+                console.log(`[Settings] Logs copied to clipboard using ${result.method}`);
+                
+                // Reset button after short delay
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('copying');
+                    copyButton.disabled = false;
+                }, 1500);
+            } else {
+                throw new Error(result.error || 'Unknown error');
+            }
+        } catch (error) {
+            copyButton.textContent = 'Failed';
+            copyButton.classList.remove('copying');
+            console.error('[Settings] Failed to copy logs:', error);
+            
+            // Reset button after delay
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.disabled = false;
+            }, 2000);
+        }
+    }
+
+    clearLogs() {
+        const clearButton = document.getElementById('clear-logs-btn');
+        if (!clearButton) return;
+
+        // Update button state
+        const originalText = clearButton.textContent;
+        clearButton.textContent = 'Cleared';
+        clearButton.disabled = true;
+
+        // Clear the logs
+        logBuffer.clearLogs();
+        console.log('[Settings] Log buffer cleared');
+
+        // Update stats display
+        this.updateLogStats();
+
+        // Reset button after short delay
+        setTimeout(() => {
+            clearButton.textContent = originalText;
+            clearButton.disabled = false;
+        }, 1000);
     }
 }
 
