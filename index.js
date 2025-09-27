@@ -6,8 +6,14 @@ import { InputHandler } from './InputHandler.js';
 import { ApiController } from './ApiController.js';
 import { Analytics } from './analytics.js';
 import { VERSION } from './config.js';
+import { logBuffer } from './LogBuffer.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
+console.log('[LogBuffer] Log buffer system initialized');
+console.log('[LogBuffer] Testing different log levels...');
+console.warn('[LogBuffer] This is a warning message');
+console.error('[LogBuffer] This is an error message for testing');
+console.info('[LogBuffer] This is an info message');
 
 class GameApp {
     constructor() {
@@ -253,6 +259,9 @@ class GameApp {
                     versionDisplay.textContent = `v${VERSION}`;
                     console.log('[Settings] Version updated to:', `v${VERSION}`);
                 }
+                
+                // Update log statistics
+                this.updateLogStats();
             } else {
                 console.error('[Settings] Settings modal not found!');
             }
@@ -276,6 +285,24 @@ class GameApp {
                 if (e.target === settingsModal) {
                     hideSettings();
                 }
+            });
+        }
+
+        // Log control functionality
+        const copyLogsBtn = document.getElementById('copy-logs-btn');
+        const clearLogsBtn = document.getElementById('clear-logs-btn');
+
+        if (copyLogsBtn) {
+            copyLogsBtn.addEventListener('click', async () => {
+                console.log('[Settings] Copy logs clicked');
+                await this.copyLogsToClipboard();
+            });
+        }
+
+        if (clearLogsBtn) {
+            clearLogsBtn.addEventListener('click', () => {
+                console.log('[Settings] Clear logs clicked');
+                this.clearLogs();
             });
         }
 
@@ -1177,6 +1204,81 @@ class GameApp {
             this.analyticsSessionId = null;
             this.analyticsSessionStartMs = null;
         }
+    }
+
+    // === LOG MANAGEMENT FUNCTIONALITY ===
+
+    updateLogStats() {
+        const logStatsElement = document.getElementById('log-stats');
+        if (!logStatsElement) return;
+
+        const stats = logBuffer.getStats();
+        const logText = `Logs: ${stats.totalEntries}/${stats.maxSize} entries
+Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
+        
+        logStatsElement.textContent = logText;
+    }
+
+    async copyLogsToClipboard() {
+        const copyButton = document.getElementById('copy-logs-btn');
+        if (!copyButton) return;
+
+        // Update button state to show copying
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copying...';
+        copyButton.classList.add('copying');
+        copyButton.disabled = true;
+
+        try {
+            const result = await logBuffer.copyLogsToClipboard();
+            
+            if (result.success) {
+                copyButton.textContent = 'Copied!';
+                console.log(`[Settings] Logs copied to clipboard using ${result.method}`);
+                
+                // Reset button after short delay
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('copying');
+                    copyButton.disabled = false;
+                }, 1500);
+            } else {
+                throw new Error(result.error || 'Unknown error');
+            }
+        } catch (error) {
+            copyButton.textContent = 'Failed';
+            copyButton.classList.remove('copying');
+            console.error('[Settings] Failed to copy logs:', error);
+            
+            // Reset button after delay
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.disabled = false;
+            }, 2000);
+        }
+    }
+
+    clearLogs() {
+        const clearButton = document.getElementById('clear-logs-btn');
+        if (!clearButton) return;
+
+        // Update button state
+        const originalText = clearButton.textContent;
+        clearButton.textContent = 'Cleared';
+        clearButton.disabled = true;
+
+        // Clear the logs
+        logBuffer.clearLogs();
+        console.log('[Settings] Log buffer cleared');
+
+        // Update stats display
+        this.updateLogStats();
+
+        // Reset button after short delay
+        setTimeout(() => {
+            clearButton.textContent = originalText;
+            clearButton.disabled = false;
+        }, 1000);
     }
 }
 
