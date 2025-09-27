@@ -21,6 +21,7 @@ class GameApp {
         this.analyticsSessionId = null;
         this.isGeneratingGif = false;
         this.userHasMovedAway = false;
+        this.isStartingMode = false;
 
         this.init();
     }
@@ -50,36 +51,52 @@ class GameApp {
         gameContainer.classList.add('hidden');
 
         // Bind mode selection buttons
-        document.getElementById('play-local-btn').addEventListener('click', () => {
-            this.startLocalMode();
-        });
+        const localBtn = document.getElementById('play-local-btn');
+        if (localBtn) {
+            const newLocalBtn = localBtn.cloneNode(true);
+            localBtn.parentNode.replaceChild(newLocalBtn, localBtn);
+            newLocalBtn.addEventListener('click', () => {
+                this.startLocalMode();
+            });
+        }
 
         // AI difficulty buttons
         const aiNormal = document.getElementById('play-ai-normal-btn');
         const aiHard = document.getElementById('play-ai-hard-btn');
         const aiOuch = document.getElementById('play-ai-ouch-btn');
         if (aiNormal) {
-            aiNormal.addEventListener('click', () => {
+            const newAiNormal = aiNormal.cloneNode(true);
+            aiNormal.parentNode.replaceChild(newAiNormal, aiNormal);
+            newAiNormal.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'normal', color });
             });
         }
         if (aiHard) {
-            aiHard.addEventListener('click', () => {
+            const newAiHard = aiHard.cloneNode(true);
+            aiHard.parentNode.replaceChild(newAiHard, aiHard);
+            newAiHard.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'hard', color });
             });
         }
         if (aiOuch) {
-            aiOuch.addEventListener('click', () => {
+            const newAiOuch = aiOuch.cloneNode(true);
+            aiOuch.parentNode.replaceChild(newAiOuch, aiOuch);
+            newAiOuch.addEventListener('click', () => {
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'ouch', color });
             });
         }
 
-        document.getElementById('play-online-btn').addEventListener('click', () => {
-            this.startOnlineModeAsHost();
-        });
+        const onlineBtn = document.getElementById('play-online-btn');
+        if (onlineBtn) {
+            const newOnlineBtn = onlineBtn.cloneNode(true);
+            onlineBtn.parentNode.replaceChild(newOnlineBtn, onlineBtn);
+            newOnlineBtn.addEventListener('click', () => {
+                this.startOnlineModeAsHost();
+            });
+        }
     }
 
     startLocalMode() {
@@ -118,41 +135,54 @@ class GameApp {
     }
 
     startAiMode(options = {}) {
-        this.currentMode = 'ai';
-
-        // Clean up any existing input handlers
-        if (this.inputHandler) {
-            this.inputHandler.unbindInputEvents();
+        if (this.isStartingMode) {
+            console.warn('[GameApp] AI mode start already in progress');
+            return;
         }
+        if (this.currentMode === 'ai' && this.aiGameHandler) {
+            console.warn('[GameApp] AI mode already active');
+            return;
+        }
+        this.isStartingMode = true;
+        try {
+            this.currentMode = 'ai';
 
-        // Clean up any lingering UI elements
-        this.cleanupGameUI();
+            // Clean up any existing input handlers
+            if (this.inputHandler) {
+                this.inputHandler.unbindInputEvents();
+            }
 
-        // Hide mode selection and show game
-        document.getElementById('mode-selection').classList.add('hidden');
-        document.getElementById('game-container').classList.remove('hidden');
-        const status = document.getElementById('top-right-status');
-        if (status) status.style.display = 'flex';
+            // Clean up any lingering UI elements
+            this.cleanupGameUI();
 
-        // Initialize game components
-        this.gameController = new GameController();
-        this.aiGameHandler = new AIGameHandler(this.gameController, {
-            humanColor: options.color || 'white',
-            difficulty: options.difficulty || 'normal'
-        });
-        this.inputHandler = new InputHandler();
+            // Hide mode selection and show game
+            document.getElementById('mode-selection').classList.add('hidden');
+            document.getElementById('game-container').classList.remove('hidden');
+            const status = document.getElementById('top-right-status');
+            if (status) status.style.display = 'flex';
 
-        // Connect components
-        this.inputHandler.setGameHandler(this.aiGameHandler);
-        this.inputHandler.bindInputEvents();
+            // Initialize game components
+            this.gameController = new GameController();
+            this.aiGameHandler = new AIGameHandler(this.gameController, {
+                humanColor: options.color || 'white',
+                difficulty: options.difficulty || 'normal'
+            });
+            this.inputHandler = new InputHandler();
 
-        // Initialize AI game
-        this.aiGameHandler.init();
+            // Connect components
+            this.inputHandler.setGameHandler(this.aiGameHandler);
+            this.inputHandler.bindInputEvents();
 
-        // Analytics: start session and daily return
-        this.beginSession();
+            // Initialize AI game
+            this.aiGameHandler.init();
 
-        console.log('[GameApp] AI mode started');
+            // Analytics: start session and daily return
+            this.beginSession();
+
+            console.log('[GameApp] AI mode started');
+        } finally {
+            this.isStartingMode = false;
+        }
     }
 
     getSelectedPlayerColor() {
