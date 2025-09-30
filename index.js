@@ -28,6 +28,7 @@ class GameApp {
         this.isGeneratingGif = false;
         this.userHasMovedAway = false;
         this.isStartingMode = false;
+        this.gifAlreadyGenerated = false; // Track if GIF has been generated for current game
 
         this.init();
     }
@@ -560,8 +561,10 @@ class GameApp {
                 this.returnToModeSelection();
             });
 
-            // Automatically generate and display GIF
-            this.generateAndShowGif();
+            // Automatically generate and display GIF only if not already generated
+            if (!this.gifAlreadyGenerated) {
+                this.generateAndShowGif();
+            }
         }
     }
 
@@ -636,6 +639,7 @@ class GameApp {
             });
             
             this.isGeneratingGif = false;
+            this.gifAlreadyGenerated = true; // Mark GIF as generated
             this.showGifInTopPanel(blob);
         } catch (e) {
             this.isGeneratingGif = false;
@@ -1198,6 +1202,7 @@ class GameApp {
         this.currentMode = null;
         this.isGeneratingGif = false;
         this.userHasMovedAway = false; // Reset for next game
+        this.gifAlreadyGenerated = false; // Reset GIF generation flag for new game
 
         // Show mode selection
         this.showModeSelection();
