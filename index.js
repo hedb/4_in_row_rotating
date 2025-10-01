@@ -28,6 +28,7 @@ class GameApp {
         this.isGeneratingGif = false;
         this.userHasMovedAway = false;
         this.isStartingMode = false;
+        this.currentGifGenerationId = 0; // Track GIF generation sessions
 
         this.init();
     }
@@ -566,12 +567,6 @@ class GameApp {
     }
 
     showGifInTopPanel(blob) {
-        // Don't show GIF if user has moved away
-        if (this.userHasMovedAway) {
-            console.log('[GameApp] Skipping GIF display - user has moved away');
-            return;
-        }
-
         const center = document.getElementById('top-center-display');
         if (!center) {
             return;
@@ -620,6 +615,10 @@ class GameApp {
                 throw new Error('No game in progress');
             }
             
+            // Increment generation ID to track this specific GIF generation
+            const generationId = ++this.currentGifGenerationId;
+            console.log(`[GameApp] Starting GIF generation ${generationId}`);
+            
             this.isGeneratingGif = true;
             
             // Show loading spinner while generating
@@ -636,7 +635,14 @@ class GameApp {
             });
             
             this.isGeneratingGif = false;
-            this.showGifInTopPanel(blob);
+            
+            // Only show GIF if this generation is still the current one
+            if (generationId === this.currentGifGenerationId) {
+                console.log(`[GameApp] Showing GIF for generation ${generationId}`);
+                this.showGifInTopPanel(blob);
+            } else {
+                console.log(`[GameApp] Discarding GIF for generation ${generationId} (current: ${this.currentGifGenerationId})`);
+            }
         } catch (e) {
             this.isGeneratingGif = false;
             console.error('[GameApp] Auto GIF generation failed', e);
@@ -1161,8 +1167,9 @@ class GameApp {
 
     // Method to return to mode selection (useful for future "Return to Menu" functionality)
     returnToModeSelection() {
-        // Mark that user has moved away to prevent GIF insertion
-        this.userHasMovedAway = true;
+        // Increment generation ID to invalidate any ongoing GIF generation
+        this.currentGifGenerationId++;
+        console.log(`[GameApp] Switching to new game - invalidating GIF generation (new ID: ${this.currentGifGenerationId})`);
         
         // Analytics: end active session as quit
         this.endSession('quit');
@@ -1197,7 +1204,6 @@ class GameApp {
         this.inputHandler = null;
         this.currentMode = null;
         this.isGeneratingGif = false;
-        this.userHasMovedAway = false; // Reset for next game
 
         // Show mode selection
         this.showModeSelection();
