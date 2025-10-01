@@ -561,8 +561,10 @@ class GameApp {
                 this.returnToModeSelection();
             });
 
-            // Automatically generate and display GIF
-            this.generateAndShowGif();
+            // Automatically generate and display GIF only if not already generated
+            if (!this.gifAlreadyGenerated) {
+                this.generateAndShowGif();
+            }
         }
     }
 
