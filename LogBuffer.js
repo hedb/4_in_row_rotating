@@ -1,4 +1,12 @@
 /**
+ * Check if debug mode is enabled via URL parameter
+ */
+function isDebugModeEnabled() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('debug') === 'true';
+}
+
+/**
  * LogBuffer - A circular buffer to store the latest log messages
  * Stores the latest 100 log messages for debugging on mobile devices
  */
@@ -65,10 +73,12 @@ export class LogBuffer {
         
         levels.forEach(level => {
             console[level] = (...args) => {
-                // Call original console method first
-                this.originalConsole[level](...args);
+                // Only call original console method if debug mode is enabled
+                if (isDebugModeEnabled()) {
+                    this.originalConsole[level](...args);
+                }
                 
-                // Add to our buffer
+                // Always add to our buffer (regardless of debug mode)
                 this.addLogEntry(level, new Date().toISOString(), args);
             };
         });
