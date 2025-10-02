@@ -29,6 +29,7 @@ class GameApp {
         this.userHasMovedAway = false;
         this.isStartingMode = false;
         this.currentGifGenerationId = 0; // Track GIF generation sessions
+        this.gifAlreadyGenerated = false; // Track if GIF has been generated for current game
 
         this.init();
     }
@@ -562,8 +563,16 @@ class GameApp {
             });
 
             // Automatically generate and display GIF only if not already generated
-            if (!this.gifAlreadyGenerated) {
+            // Also check if there's already content in the center display to avoid duplicate generation
+            const centerDisplay = document.getElementById('top-center-display');
+            const hasExistingGif = centerDisplay && centerDisplay.innerHTML.trim() !== '';
+            
+            if (!this.gifAlreadyGenerated && !hasExistingGif) {
                 this.generateAndShowGif();
+            } else if (hasExistingGif && !this.gifAlreadyGenerated) {
+                // If there's already a GIF displayed but flag wasn't set, set it now
+                this.gifAlreadyGenerated = true;
+                console.log('[GameApp] Found existing GIF in center display, marking as generated');
             }
         }
     }
@@ -642,6 +651,7 @@ class GameApp {
             if (generationId === this.currentGifGenerationId) {
                 console.log(`[GameApp] Showing GIF for generation ${generationId}`);
                 this.showGifInTopPanel(blob);
+                this.gifAlreadyGenerated = true; // Mark that GIF has been generated and displayed
             } else {
                 console.log(`[GameApp] Discarding GIF for generation ${generationId} (current: ${this.currentGifGenerationId})`);
             }
@@ -1206,6 +1216,7 @@ class GameApp {
         this.inputHandler = null;
         this.currentMode = null;
         this.isGeneratingGif = false;
+        this.gifAlreadyGenerated = false; // Reset GIF generation flag for new game
 
         // Show mode selection
         this.showModeSelection();
