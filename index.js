@@ -7,6 +7,7 @@ import { ApiController } from './ApiController.js';
 import { Analytics } from './analytics.js';
 import { VERSION } from './config.js';
 import { logBuffer } from './LogBuffer.js';
+import { HapticFeedback } from './HapticFeedback.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
 console.log('[LogBuffer] Log buffer system initialized');
@@ -35,6 +36,9 @@ class GameApp {
     }
 
     init() {
+        // Initialize haptic feedback system
+        console.log('[GameApp] Haptic feedback support:', HapticFeedback.getInfo());
+        
         // Check for session ID in URL (for online mode auto-join)
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
@@ -64,6 +68,7 @@ class GameApp {
             const newLocalBtn = localBtn.cloneNode(true);
             localBtn.parentNode.replaceChild(newLocalBtn, localBtn);
             newLocalBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.startLocalMode();
             });
         }
@@ -76,6 +81,7 @@ class GameApp {
             const newAiNormal = aiNormal.cloneNode(true);
             aiNormal.parentNode.replaceChild(newAiNormal, aiNormal);
             newAiNormal.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'normal', color });
             });
@@ -84,6 +90,7 @@ class GameApp {
             const newAiHard = aiHard.cloneNode(true);
             aiHard.parentNode.replaceChild(newAiHard, aiHard);
             newAiHard.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'hard', color });
             });
@@ -92,6 +99,7 @@ class GameApp {
             const newAiOuch = aiOuch.cloneNode(true);
             aiOuch.parentNode.replaceChild(newAiOuch, aiOuch);
             newAiOuch.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'ouch', color });
             });
@@ -102,6 +110,7 @@ class GameApp {
             const newOnlineBtn = onlineBtn.cloneNode(true);
             onlineBtn.parentNode.replaceChild(newOnlineBtn, onlineBtn);
             newOnlineBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.startOnlineModeAsHost();
             });
         }
@@ -306,10 +315,16 @@ class GameApp {
         };
 
         if (gridEasterEgg) {
-            gridEasterEgg.addEventListener('click', showSettings);
+            gridEasterEgg.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                showSettings();
+            });
         }
         if (closeSettingsBtn) {
-            closeSettingsBtn.addEventListener('click', hideSettings);
+            closeSettingsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                hideSettings();
+            });
         }
         if (settingsModal) {
             settingsModal.addEventListener('click', (e) => {
@@ -326,6 +341,7 @@ class GameApp {
 
         if (copyLogsBtn) {
             copyLogsBtn.addEventListener('click', async () => {
+                HapticFeedback.buttonPress();
                 console.log('[Settings] Copy logs clicked');
                 await this.copyLogsToClipboard();
             });
@@ -333,6 +349,7 @@ class GameApp {
 
         if (clearLogsBtn) {
             clearLogsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[Settings] Clear logs clicked');
                 this.clearLogs();
             });
@@ -344,18 +361,21 @@ class GameApp {
         const newGameBtn = document.getElementById('new-game-btn');
         if (analyzeBtn) {
             analyzeBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] Analyze Game clicked');
                 this.initReplayMode();
             });
         }
         if (shareGifBtn) {
             shareGifBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] Share GIF clicked');
                 this.shareGameGif();
             });
         }
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] New Game clicked');
                 this.returnToModeSelection();
             });
@@ -400,19 +420,28 @@ class GameApp {
         if (prevBtn) {
             const newPrevBtn = prevBtn.cloneNode(true);
             prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
-            newPrevBtn.addEventListener('click', () => this.replayPrevStep());
+            newPrevBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.replayPrevStep();
+            });
         }
 
         if (nextBtn) {
             const newNextBtn = nextBtn.cloneNode(true);
             nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-            newNextBtn.addEventListener('click', () => this.replayNextStep());
+            newNextBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.replayNextStep();
+            });
         }
 
         if (exitBtn) {
             const newExitBtn = exitBtn.cloneNode(true);
             exitBtn.parentNode.replaceChild(newExitBtn, exitBtn);
-            newExitBtn.addEventListener('click', () => this.exitReplayMode());
+            newExitBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.exitReplayMode();
+            });
         }
     }
 
@@ -556,9 +585,11 @@ class GameApp {
             newGameBtn.parentNode.replaceChild(nBtn, newGameBtn);
 
             aBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.initReplayMode();
             });
             nBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.returnToModeSelection();
             });
 
@@ -593,7 +624,10 @@ class GameApp {
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'Game GIF';
-        img.addEventListener('click', () => this.shareGameGif());
+        img.addEventListener('click', () => {
+            HapticFeedback.buttonPress();
+            this.shareGameGif();
+        });
         col.appendChild(img);
 
         // Caption below GIF
@@ -601,7 +635,10 @@ class GameApp {
         caption.className = 'share-text';
         caption.textContent = 'Click to share';
         caption.style.cursor = 'pointer';
-        caption.addEventListener('click', () => this.shareGameGif());
+        caption.addEventListener('click', () => {
+            HapticFeedback.buttonPress();
+            this.shareGameGif();
+        });
         col.appendChild(caption);
 
         center.appendChild(col);

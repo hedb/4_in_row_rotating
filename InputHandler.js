@@ -1,3 +1,5 @@
+import { HapticFeedback } from './HapticFeedback.js';
+
 export class InputHandler {
     constructor() {
         this.gameHandler = null; // Will be set by the active game handler
@@ -50,6 +52,7 @@ export class InputHandler {
             return;
         }
         
+        HapticFeedback.buttonPress();
         if (this.gameHandler.rotateGrid) {
             console.log('[InputHandler] Rotating via handler');
             this.gameHandler.rotateGrid();
@@ -83,6 +86,7 @@ export class InputHandler {
         console.log('[InputHandler] Reset clicked');
         if (!this.gameHandler) return;
         
+        HapticFeedback.buttonPress();
         if (this.gameHandler.resetGame) {
             console.log('[InputHandler] Resetting via handler');
             this.gameHandler.resetGame();
@@ -93,6 +97,7 @@ export class InputHandler {
         console.log('[InputHandler] Rotation frequency change');
         if (!this.gameHandler) return;
         
+        HapticFeedback.buttonPress();
         const frequency = parseInt(event.target.value, 10);
         
         if (this.gameHandler.setRotationFrequency) {

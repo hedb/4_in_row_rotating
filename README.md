@@ -10,6 +10,7 @@ This project is a modern, web-based implementation of the classic "Four-in-a-Row
 -   **Turn-Based Grid Rotation:** The 6x6 grid rotates after a configurable number of player turns.
 -   **AI Opponent:** Intelligent computer player with strategic decision-making and visual stone-dropping animations.
 -   **Polished & Animated UI:** The game features a responsive interface with smooth, physics-based animations.
+-   **Haptic Feedback:** Tactile feedback for stone placement, grid rotation, wins, and UI interactions (Android Chrome only - gracefully degrades on iOS Safari).
 -   **Instant Game Restart:** "New game?" button appears after every game for quick return to mode selection.
 -   **Configurable Settings:** A slide-out settings pane allows players to adjust the rotation frequency, manage the game, and view the current app version.
 -   **Native GIF Sharing:** Share an animated replay of your game via the device's native share sheet (Web Share API) with automatic fallback to file download.
@@ -43,6 +44,22 @@ The game is a PWA with offline capabilities, powered by a service worker (`sw.js
 -   **Replay Rotation Fidelity:** Replay rotation mirrors live behavior – forward rotation plays rotate→gravity (P2→P3); backward rotation plays reverse‑gravity (P3→P2)→rotate back. Stones are tracked by stable ids to ensure correct movement and highlighting.
 -   **Robust Rendering:** To prevent rendering glitches on mobile devices, the grid wrapper uses `will-change: transform`, `backface-visibility: hidden`, and `transform: translateZ(0)`.
 -   **Decoupled Animation Logic:** The JavaScript animation code is carefully decoupled from the CSS, listening for `transitionend` on the rotating wrapper and animating stone positions independently.
+
+### Haptic Feedback
+
+The game includes comprehensive haptic feedback through the `HapticFeedback.js` utility class, enhancing the tactile experience on supported devices:
+
+-   **Platform Support:** Works on Android Chrome via the Vibration API; gracefully degrades on iOS Safari (where the API is not supported).
+-   **Feedback Types:**
+    -   **Light (50ms):** Stone placement, opponent moves, button presses
+    -   **Medium (100ms):** Important actions, menu selections
+    -   **Strong (200ms):** Game start, major state changes
+    -   **Success Pattern:** Winning the game (multi-pulse celebration)
+    -   **Error Pattern:** Invalid moves, occupied cells, full columns
+    -   **Draw Pattern:** Game draws and ties
+    -   **Rotation Pattern:** Grid rotation events (rhythmic pulse sequence)
+-   **Smart Integration:** Feedback is triggered at key interaction points across all game modes (local, AI, online) and UI elements.
+-   **Feature Detection:** Automatically detects device support and logs compatibility information for debugging.
 
 ## How to Run Locally
 
