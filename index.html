@@ -91,8 +91,8 @@
         <div class="top-bar">
             <!-- Game over layout (hidden during play) -->
             <div id="top-left-actions" class="top-left-actions hidden">
-                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
                 <button id="new-game-btn" class="game-over-btn">New Game</button>
+                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
             </div>
             <div id="top-center-display" class="top-center-display"></div>
             
@@ -105,7 +105,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="game-over-container" class="game-over-container hidden">
             <span id="game-over-text"></span>
         </div>
@@ -117,19 +117,25 @@
 
         <!-- Replay Controls -->
         <div id="replay-controls" class="replay-controls hidden">
-            <div class="replay-info">
-                <span id="replay-step-info">Step 1, White turn</span>
-            </div>
-            <div class="replay-buttons">
-                <button id="replay-prev-btn" class="replay-btn" title="Previous step">
-                    <span class="replay-icon">⏮</span>
-                </button>
-                <button id="replay-next-btn" class="replay-btn" title="Next step">
-                    <span class="replay-icon">⏭</span>
-                </button>
-            </div>
-            <div class="replay-actions">
-                <button id="exit-replay-btn" class="exit-replay-btn">Exit Replay</button>
+            <div class="replay-content">
+                <div class="replay-left">
+                    <div class="replay-info">
+                        <span id="replay-step-info">Step 1, White turn</span>
+                    </div>
+                    <div class="navigation-group">
+                        <button id="replay-prev-btn" class="replay-btn" title="Previous step">
+                            <span class="replay-icon">⏮</span>
+                        </button>
+                        <button id="replay-next-btn" class="replay-btn" title="Next step">
+                            <span class="replay-icon">⏭</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="replay-center">
+                    <button id="exit-replay-btn" class="replay-btn" title="Exit replay">
+                        <span class="replay-icon">↩</span>
+                    </button>
+                </div>
             </div>
         </div>
 
