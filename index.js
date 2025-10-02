@@ -275,6 +275,78 @@ class GameApp {
             versionDisplay.textContent = `v${VERSION}`;
         }
 
+        // Mode settings modal functionality
+        const settingsIcon = document.getElementById('settings-icon');
+        const modeSettingsModal = document.getElementById('mode-settings-modal');
+        const closeModeSettingsBtn = document.getElementById('close-mode-settings-btn');
+
+        const showModeSettings = () => {
+            console.log('[ModeSettings] Opening mode settings modal...');
+            if (modeSettingsModal) {
+                modeSettingsModal.classList.remove('hidden');
+                console.log('[ModeSettings] Modal should now be visible');
+                
+                // Update version display when modal opens
+                const modeVersionDisplay = document.getElementById('mode-version-display');
+                if (modeVersionDisplay) {
+                    modeVersionDisplay.textContent = `v${VERSION}`;
+                    console.log('[ModeSettings] Version updated to:', `v${VERSION}`);
+                }
+                
+                // Update log statistics
+                this.updateModeLogStats();
+            } else {
+                console.error('[ModeSettings] Mode settings modal not found!');
+            }
+        };
+
+        const hideModeSettings = () => {
+            if (modeSettingsModal) {
+                modeSettingsModal.classList.add('hidden');
+            }
+        };
+
+        if (settingsIcon) {
+            settingsIcon.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                showModeSettings();
+            });
+        }
+        if (closeModeSettingsBtn) {
+            closeModeSettingsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                hideModeSettings();
+            });
+        }
+        if (modeSettingsModal) {
+            modeSettingsModal.addEventListener('click', (e) => {
+                // Close modal when clicking outside the content
+                if (e.target === modeSettingsModal) {
+                    hideModeSettings();
+                }
+            });
+        }
+
+        // Mode settings log control functionality
+        const modeCopyLogsBtn = document.getElementById('mode-copy-logs-btn');
+        const modeClearLogsBtn = document.getElementById('mode-clear-logs-btn');
+
+        if (modeCopyLogsBtn) {
+            modeCopyLogsBtn.addEventListener('click', async () => {
+                HapticFeedback.buttonPress();
+                console.log('[ModeSettings] Copy logs clicked');
+                await this.copyLogsToClipboard();
+            });
+        }
+
+        if (modeClearLogsBtn) {
+            modeClearLogsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                console.log('[ModeSettings] Clear logs clicked');
+                this.clearLogs();
+            });
+        }
+
         // Settings modal functionality (easter egg)
         const gridEasterEgg = document.getElementById('hero-logo');
         const settingsModal = document.getElementById('settings-modal');
@@ -1296,6 +1368,17 @@ class GameApp {
 
     updateLogStats() {
         const logStatsElement = document.getElementById('log-stats');
+        if (!logStatsElement) return;
+
+        const stats = logBuffer.getStats();
+        const logText = `Logs: ${stats.totalEntries}/${stats.maxSize} entries
+Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
+        
+        logStatsElement.textContent = logText;
+    }
+
+    updateModeLogStats() {
+        const logStatsElement = document.getElementById('mode-log-stats');
         if (!logStatsElement) return;
 
         const stats = logBuffer.getStats();
