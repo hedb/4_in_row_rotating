@@ -1,5 +1,6 @@
 import { ApiController } from './ApiController.js';
 import { Analytics } from './analytics.js';
+import { HapticFeedback } from './HapticFeedback.js';
 
 export class OnlineGameHandler {
     constructor(gameController) {
@@ -227,17 +228,20 @@ export class OnlineGameHandler {
 
         // Validate move locally first
         if (this.gameController.isCellOccupied(selectedRow, col)) {
+            HapticFeedback.error();
             alert('Cell is already occupied!');
             return;
         }
 
         const targetRow = this.gameController.getNextAvailableRow(col);
         if (targetRow === null) {
+            HapticFeedback.error();
             alert('Column is full!');
             return;
         }
 
         if (selectedRow > targetRow) {
+            HapticFeedback.error();
             alert('You cannot place a stone below the lowest available position!');
             return;
         }
@@ -254,6 +258,9 @@ export class OnlineGameHandler {
             return;
         }
 
+        // Provide haptic feedback for successful move submission
+        HapticFeedback.light();
+        
         // Apply move locally with animation (use the actual clicked row)
         await this.applyMoveToBoard({
             player: this.playerId,
@@ -309,6 +316,7 @@ export class OnlineGameHandler {
     checkForGameEnd(row, col, playerId) {
         const winners = this.gameController.checkForWin(row, col, playerId);
         if (winners) {
+            HapticFeedback.success();
             this.gameController.setGameOver(true);
             // Persist winner for UI/sharing
             this.gameController.winner = playerId;
@@ -325,6 +333,7 @@ export class OnlineGameHandler {
                 });
             } catch (_) {}
         } else if (this.gameController.isBoardFull()) {
+            HapticFeedback.draw();
             this.gameController.setGameOver(true);
             this.gameController.winner = null;
             this.gameState = 'finished';
@@ -386,6 +395,9 @@ export class OnlineGameHandler {
         this.isRotating = true;
         console.log('[OnlineGameHandler] Starting grid rotation at move count:', this.moveCount);
 
+        // Provide haptic feedback for grid rotation
+        HapticFeedback.rotation();
+        
         this.gameController.rotateGrid(() => {
             console.log('[OnlineGameHandler] Grid rotation completed');
             this.isRotating = false;
@@ -412,6 +424,7 @@ export class OnlineGameHandler {
                 }
                 
                 // Persist winner after rotation
+                HapticFeedback.success();
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.playerId ? '🎉' : '😔'}`);
@@ -489,6 +502,9 @@ export class OnlineGameHandler {
             // Apply new moves
             for (const move of moves) {
                 if (move.player !== this.playerId) {
+                    // Provide subtle haptic feedback for opponent moves
+                    HapticFeedback.light();
+                    
                     // Opponent's move - always animate from top row
                     await this.applyMoveToBoard({
                         ...move,

@@ -1,4 +1,5 @@
 import { Analytics } from './analytics.js';
+import { HapticFeedback } from './HapticFeedback.js';
 
 export class LocalGameHandler {
     constructor(gameController) {
@@ -32,6 +33,7 @@ export class LocalGameHandler {
         this.gameController.disableInput();
 
         if (this.gameController.isCellOccupied(selectedRow, col)) {
+            HapticFeedback.error();
             alert('Cell is already occupied!');
             this.gameController.enableInput();
             return;
@@ -40,17 +42,22 @@ export class LocalGameHandler {
         const targetRow = this.gameController.getNextAvailableRow(col);
 
         if (targetRow === null) {
+            HapticFeedback.error();
             alert('Column is full!');
             this.gameController.enableInput();
             return;
         }
 
         if (selectedRow > targetRow) {
+            HapticFeedback.error();
             alert('You cannot place a stone below the lowest available position!');
             this.gameController.enableInput();
             return;
         }
 
+        // Provide haptic feedback for successful stone placement
+        HapticFeedback.light();
+        
         // Make the move through GameController
         this.gameController.makeMove(selectedRow, col, targetRow, this.currentPlayer, () => {
             // This callback is executed after the move animation completes
@@ -58,6 +65,7 @@ export class LocalGameHandler {
             // Check for a win
             const winners = this.gameController.checkForWin(targetRow, col, this.currentPlayer);
             if (winners) {
+                HapticFeedback.success();
                 this.gameController.setGameOver(true);
                 // Persist winner on controller for UI/sharing
                 this.gameController.winner = this.currentPlayer;
@@ -68,6 +76,7 @@ export class LocalGameHandler {
                     Analytics.trackEvent('game_end', { reason: 'completed' });
                 } catch (_) {}
             } else if (this.gameController.isBoardFull()) {
+                HapticFeedback.draw();
                 this.gameController.setGameOver(true);
                 this.gameController.winner = null;
                 this.displayGameOverMessage("It's a draw!");
@@ -103,6 +112,9 @@ export class LocalGameHandler {
             return;
         }
 
+        // Provide haptic feedback for grid rotation
+        HapticFeedback.rotation();
+        
         this.gameController.rotateGrid(() => {
             // This callback is executed after rotation and gravity animations complete
             
@@ -127,6 +139,7 @@ export class LocalGameHandler {
                 }
                 
                 // Persist winner after rotation
+                HapticFeedback.success();
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation!`);

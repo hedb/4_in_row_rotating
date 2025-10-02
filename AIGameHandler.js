@@ -2,6 +2,7 @@
 
 import { AIPlayer } from './AIPlayer.js';
 import { Analytics } from './analytics.js';
+import { HapticFeedback } from './HapticFeedback.js';
 
 export class AIGameHandler {
     constructor(gameController, options = {}) {
@@ -56,6 +57,7 @@ export class AIGameHandler {
         this.gameController.disableInput();
 
         if (this.gameController.isCellOccupied(selectedRow, col)) {
+            HapticFeedback.error();
             alert('Cell is already occupied!');
             this.gameController.enableInput();
             return;
@@ -64,17 +66,22 @@ export class AIGameHandler {
         const targetRow = this.gameController.getNextAvailableRow(col);
 
         if (targetRow === null) {
+            HapticFeedback.error();
             alert('Column is full!');
             this.gameController.enableInput();
             return;
         }
 
         if (selectedRow > targetRow) {
+            HapticFeedback.error();
             alert('You cannot place a stone below the lowest available position!');
             this.gameController.enableInput();
             return;
         }
 
+        // Provide haptic feedback for successful human stone placement
+        HapticFeedback.light();
+        
         this.gameController.makeMove(selectedRow, col, targetRow, this.humanPlayerId, () => {
             if (this.checkForGameEnd(targetRow, col, this.humanPlayerId)) {
                 this.gameController.enableInput();
@@ -100,6 +107,9 @@ export class AIGameHandler {
                 // Place the stone at the top row (0) so it falls down like in local multiplayer
                 const selectedRow = 0; 
 
+                // Provide subtle haptic feedback for AI moves
+                HapticFeedback.light();
+                
                 this.gameController.makeMove(selectedRow, col, targetRow, this.aiPlayerId, () => {
                     console.log('[AI] makeMove callback (AI)');
                     this.isAIThinking = false;
@@ -119,6 +129,7 @@ export class AIGameHandler {
     checkForGameEnd(row, col, playerId) {
         const winners = this.gameController.checkForWin(row, col, playerId);
         if (winners) {
+            HapticFeedback.success();
             this.gameController.setGameOver(true);
             // Persist winner for UI/sharing
             this.gameController.winner = playerId;
@@ -131,6 +142,7 @@ export class AIGameHandler {
             
             return true;
         } else if (this.gameController.isBoardFull()) {
+            HapticFeedback.draw();
             this.gameController.setGameOver(true);
             this.gameController.winner = null;
             this.displayGameOverMessage("It's a draw! 🤝");
@@ -229,6 +241,9 @@ export class AIGameHandler {
             return;
         }
 
+        // Provide haptic feedback for grid rotation
+        HapticFeedback.rotation();
+        
         this.gameController.rotateGrid(() => {
             console.log('[AI] rotateGrid completed callback');
             // Check for any win conditions after rotation
@@ -251,6 +266,7 @@ export class AIGameHandler {
                 }
                 
                 // Persist winner after rotation
+                HapticFeedback.success();
                 this.gameController.winner = winner;
                 const playerName = winner === 1 ? 'White' : 'Black';
                 this.displayGameOverMessage(`${playerName} wins after rotation! ${winner === this.humanPlayerId ? '🎉' : '🤖'}`);

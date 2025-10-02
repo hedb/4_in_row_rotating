@@ -7,6 +7,7 @@ import { ApiController } from './ApiController.js';
 import { Analytics } from './analytics.js';
 import { VERSION } from './config.js';
 import { logBuffer } from './LogBuffer.js';
+import { HapticFeedback } from './HapticFeedback.js';
 
 console.log(`[Main App] Loaded with VERSION: ${VERSION}`);
 console.log('[LogBuffer] Log buffer system initialized');
@@ -28,11 +29,16 @@ class GameApp {
         this.isGeneratingGif = false;
         this.userHasMovedAway = false;
         this.isStartingMode = false;
+        this.currentGifGenerationId = 0; // Track GIF generation sessions
+        this.gifAlreadyGenerated = false; // Track if GIF has been generated for current game
 
         this.init();
     }
 
     init() {
+        // Initialize haptic feedback system
+        console.log('[GameApp] Haptic feedback support:', HapticFeedback.getInfo());
+        
         // Check for session ID in URL (for online mode auto-join)
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
@@ -62,6 +68,7 @@ class GameApp {
             const newLocalBtn = localBtn.cloneNode(true);
             localBtn.parentNode.replaceChild(newLocalBtn, localBtn);
             newLocalBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.startLocalMode();
             });
         }
@@ -74,6 +81,7 @@ class GameApp {
             const newAiNormal = aiNormal.cloneNode(true);
             aiNormal.parentNode.replaceChild(newAiNormal, aiNormal);
             newAiNormal.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'normal', color });
             });
@@ -82,6 +90,7 @@ class GameApp {
             const newAiHard = aiHard.cloneNode(true);
             aiHard.parentNode.replaceChild(newAiHard, aiHard);
             newAiHard.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'hard', color });
             });
@@ -90,6 +99,7 @@ class GameApp {
             const newAiOuch = aiOuch.cloneNode(true);
             aiOuch.parentNode.replaceChild(newAiOuch, aiOuch);
             newAiOuch.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 const color = this.getSelectedPlayerColor();
                 this.startAiMode({ difficulty: 'ouch', color });
             });
@@ -100,6 +110,7 @@ class GameApp {
             const newOnlineBtn = onlineBtn.cloneNode(true);
             onlineBtn.parentNode.replaceChild(newOnlineBtn, onlineBtn);
             newOnlineBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.startOnlineModeAsHost();
             });
         }
@@ -264,6 +275,78 @@ class GameApp {
             versionDisplay.textContent = `v${VERSION}`;
         }
 
+        // Mode settings modal functionality
+        const settingsIcon = document.getElementById('settings-icon');
+        const modeSettingsModal = document.getElementById('mode-settings-modal');
+        const closeModeSettingsBtn = document.getElementById('close-mode-settings-btn');
+
+        const showModeSettings = () => {
+            console.log('[ModeSettings] Opening mode settings modal...');
+            if (modeSettingsModal) {
+                modeSettingsModal.classList.remove('hidden');
+                console.log('[ModeSettings] Modal should now be visible');
+                
+                // Update version display when modal opens
+                const modeVersionDisplay = document.getElementById('mode-version-display');
+                if (modeVersionDisplay) {
+                    modeVersionDisplay.textContent = `v${VERSION}`;
+                    console.log('[ModeSettings] Version updated to:', `v${VERSION}`);
+                }
+                
+                // Update log statistics
+                this.updateModeLogStats();
+            } else {
+                console.error('[ModeSettings] Mode settings modal not found!');
+            }
+        };
+
+        const hideModeSettings = () => {
+            if (modeSettingsModal) {
+                modeSettingsModal.classList.add('hidden');
+            }
+        };
+
+        if (settingsIcon) {
+            settingsIcon.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                showModeSettings();
+            });
+        }
+        if (closeModeSettingsBtn) {
+            closeModeSettingsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                hideModeSettings();
+            });
+        }
+        if (modeSettingsModal) {
+            modeSettingsModal.addEventListener('click', (e) => {
+                // Close modal when clicking outside the content
+                if (e.target === modeSettingsModal) {
+                    hideModeSettings();
+                }
+            });
+        }
+
+        // Mode settings log control functionality
+        const modeCopyLogsBtn = document.getElementById('mode-copy-logs-btn');
+        const modeClearLogsBtn = document.getElementById('mode-clear-logs-btn');
+
+        if (modeCopyLogsBtn) {
+            modeCopyLogsBtn.addEventListener('click', async () => {
+                HapticFeedback.buttonPress();
+                console.log('[ModeSettings] Copy logs clicked');
+                await this.copyLogsToClipboard();
+            });
+        }
+
+        if (modeClearLogsBtn) {
+            modeClearLogsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                console.log('[ModeSettings] Clear logs clicked');
+                this.clearLogs();
+            });
+        }
+
         // Settings modal functionality (easter egg)
         const gridEasterEgg = document.getElementById('hero-logo');
         const settingsModal = document.getElementById('settings-modal');
@@ -304,10 +387,16 @@ class GameApp {
         };
 
         if (gridEasterEgg) {
-            gridEasterEgg.addEventListener('click', showSettings);
+            gridEasterEgg.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                showSettings();
+            });
         }
         if (closeSettingsBtn) {
-            closeSettingsBtn.addEventListener('click', hideSettings);
+            closeSettingsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                hideSettings();
+            });
         }
         if (settingsModal) {
             settingsModal.addEventListener('click', (e) => {
@@ -324,6 +413,7 @@ class GameApp {
 
         if (copyLogsBtn) {
             copyLogsBtn.addEventListener('click', async () => {
+                HapticFeedback.buttonPress();
                 console.log('[Settings] Copy logs clicked');
                 await this.copyLogsToClipboard();
             });
@@ -331,6 +421,7 @@ class GameApp {
 
         if (clearLogsBtn) {
             clearLogsBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[Settings] Clear logs clicked');
                 this.clearLogs();
             });
@@ -342,18 +433,21 @@ class GameApp {
         const newGameBtn = document.getElementById('new-game-btn');
         if (analyzeBtn) {
             analyzeBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] Analyze Game clicked');
                 this.initReplayMode();
             });
         }
         if (shareGifBtn) {
             shareGifBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] Share GIF clicked');
                 this.shareGameGif();
             });
         }
         if (newGameBtn) {
             newGameBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 console.log('[UI] New Game clicked');
                 this.returnToModeSelection();
             });
@@ -398,19 +492,28 @@ class GameApp {
         if (prevBtn) {
             const newPrevBtn = prevBtn.cloneNode(true);
             prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
-            newPrevBtn.addEventListener('click', () => this.replayPrevStep());
+            newPrevBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.replayPrevStep();
+            });
         }
 
         if (nextBtn) {
             const newNextBtn = nextBtn.cloneNode(true);
             nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-            newNextBtn.addEventListener('click', () => this.replayNextStep());
+            newNextBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.replayNextStep();
+            });
         }
 
         if (exitBtn) {
             const newExitBtn = exitBtn.cloneNode(true);
             exitBtn.parentNode.replaceChild(newExitBtn, exitBtn);
-            newExitBtn.addEventListener('click', () => this.exitReplayMode());
+            newExitBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.exitReplayMode();
+            });
         }
     }
 
@@ -554,24 +657,30 @@ class GameApp {
             newGameBtn.parentNode.replaceChild(nBtn, newGameBtn);
 
             aBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.initReplayMode();
             });
             nBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
                 this.returnToModeSelection();
             });
 
-            // Automatically generate and display GIF
-            this.generateAndShowGif();
+            // Automatically generate and display GIF only if not already generated
+            // Also check if there's already content in the center display to avoid duplicate generation
+            const centerDisplay = document.getElementById('top-center-display');
+            const hasExistingGif = centerDisplay && centerDisplay.innerHTML.trim() !== '';
+            
+            if (!this.gifAlreadyGenerated && !hasExistingGif) {
+                this.generateAndShowGif();
+            } else if (hasExistingGif && !this.gifAlreadyGenerated) {
+                // If there's already a GIF displayed but flag wasn't set, set it now
+                this.gifAlreadyGenerated = true;
+                console.log('[GameApp] Found existing GIF in center display, marking as generated');
+            }
         }
     }
 
     showGifInTopPanel(blob) {
-        // Don't show GIF if user has moved away
-        if (this.userHasMovedAway) {
-            console.log('[GameApp] Skipping GIF display - user has moved away');
-            return;
-        }
-
         const center = document.getElementById('top-center-display');
         if (!center) {
             return;
@@ -587,7 +696,10 @@ class GameApp {
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'Game GIF';
-        img.addEventListener('click', () => this.shareGameGif());
+        img.addEventListener('click', () => {
+            HapticFeedback.buttonPress();
+            this.shareGameGif();
+        });
         col.appendChild(img);
 
         // Caption below GIF
@@ -595,7 +707,10 @@ class GameApp {
         caption.className = 'share-text';
         caption.textContent = 'Click to share';
         caption.style.cursor = 'pointer';
-        caption.addEventListener('click', () => this.shareGameGif());
+        caption.addEventListener('click', () => {
+            HapticFeedback.buttonPress();
+            this.shareGameGif();
+        });
         col.appendChild(caption);
 
         center.appendChild(col);
@@ -620,6 +735,10 @@ class GameApp {
                 throw new Error('No game in progress');
             }
             
+            // Increment generation ID to track this specific GIF generation
+            const generationId = ++this.currentGifGenerationId;
+            console.log(`[GameApp] Starting GIF generation ${generationId}`);
+            
             this.isGeneratingGif = true;
             
             // Show loading spinner while generating
@@ -636,7 +755,15 @@ class GameApp {
             });
             
             this.isGeneratingGif = false;
-            this.showGifInTopPanel(blob);
+            
+            // Only show GIF if this generation is still the current one
+            if (generationId === this.currentGifGenerationId) {
+                console.log(`[GameApp] Showing GIF for generation ${generationId}`);
+                this.showGifInTopPanel(blob);
+                this.gifAlreadyGenerated = true; // Mark that GIF has been generated and displayed
+            } else {
+                console.log(`[GameApp] Discarding GIF for generation ${generationId} (current: ${this.currentGifGenerationId})`);
+            }
         } catch (e) {
             this.isGeneratingGif = false;
             console.error('[GameApp] Auto GIF generation failed', e);
@@ -1161,8 +1288,9 @@ class GameApp {
 
     // Method to return to mode selection (useful for future "Return to Menu" functionality)
     returnToModeSelection() {
-        // Mark that user has moved away to prevent GIF insertion
-        this.userHasMovedAway = true;
+        // Increment generation ID to invalidate any ongoing GIF generation
+        this.currentGifGenerationId++;
+        console.log(`[GameApp] Switching to new game - invalidating GIF generation (new ID: ${this.currentGifGenerationId})`);
         
         // Analytics: end active session as quit
         this.endSession('quit');
@@ -1197,7 +1325,7 @@ class GameApp {
         this.inputHandler = null;
         this.currentMode = null;
         this.isGeneratingGif = false;
-        this.userHasMovedAway = false; // Reset for next game
+        this.gifAlreadyGenerated = false; // Reset GIF generation flag for new game
 
         // Show mode selection
         this.showModeSelection();
@@ -1240,6 +1368,17 @@ class GameApp {
 
     updateLogStats() {
         const logStatsElement = document.getElementById('log-stats');
+        if (!logStatsElement) return;
+
+        const stats = logBuffer.getStats();
+        const logText = `Logs: ${stats.totalEntries}/${stats.maxSize} entries
+Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
+        
+        logStatsElement.textContent = logText;
+    }
+
+    updateModeLogStats() {
+        const logStatsElement = document.getElementById('mode-log-stats');
         if (!logStatsElement) return;
 
         const stats = logBuffer.getStats();

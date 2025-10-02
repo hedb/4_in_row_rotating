@@ -33,7 +33,10 @@
 
     <!-- Mode Selection Screen -->
     <div id="mode-selection" class="mode-selection">
-        <h2>Choose Game Mode</h2>
+        <div class="mode-selection-header">
+            <h2>Choose Game Mode</h2>
+            <button id="settings-icon" class="settings-icon" title="Settings">⚙️</button>
+        </div>
 
         <!-- General color setting -->
         <div class="color-setting">
@@ -91,8 +94,8 @@
         <div class="top-bar">
             <!-- Game over layout (hidden during play) -->
             <div id="top-left-actions" class="top-left-actions hidden">
-                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
                 <button id="new-game-btn" class="game-over-btn">New Game</button>
+                <button id="analyze-btn" class="game-over-btn">Analyze Game</button>
             </div>
             <div id="top-center-display" class="top-center-display"></div>
             
@@ -105,7 +108,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="game-over-container" class="game-over-container hidden">
             <span id="game-over-text"></span>
         </div>
@@ -117,19 +120,25 @@
 
         <!-- Replay Controls -->
         <div id="replay-controls" class="replay-controls hidden">
-            <div class="replay-info">
-                <span id="replay-step-info">Step 1, White turn</span>
-            </div>
-            <div class="replay-buttons">
-                <button id="replay-prev-btn" class="replay-btn" title="Previous step">
-                    <span class="replay-icon">⏮</span>
-                </button>
-                <button id="replay-next-btn" class="replay-btn" title="Next step">
-                    <span class="replay-icon">⏭</span>
-                </button>
-            </div>
-            <div class="replay-actions">
-                <button id="exit-replay-btn" class="exit-replay-btn">Exit Replay</button>
+            <div class="replay-content">
+                <div class="replay-left">
+                    <div class="replay-info">
+                        <span id="replay-step-info">Step 1, White turn</span>
+                    </div>
+                    <div class="navigation-group">
+                        <button id="replay-prev-btn" class="replay-btn" title="Previous step">
+                            <span class="replay-icon">⏮</span>
+                        </button>
+                        <button id="replay-next-btn" class="replay-btn" title="Next step">
+                            <span class="replay-icon">⏭</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="replay-center">
+                    <button id="exit-replay-btn" class="replay-btn" title="Exit replay">
+                        <span class="replay-icon">↩</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -156,6 +165,47 @@
                 </div>
                 <div class="setting-item">
                     <div id="log-stats" class="log-stats"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Selection Settings Modal -->
+    <div id="mode-settings-modal" class="settings-modal hidden">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h3>Game Settings</h3>
+                <button id="close-mode-settings-btn" class="close-btn">×</button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>Version:</label>
+                    <span id="mode-version-display"></span>
+                </div>
+                <div class="setting-item">
+                    <label>Rotation Frequency:</label>
+                    <select id="mode-rotation-frequency">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Debug Logs:</label>
+                    <div class="log-controls">
+                        <button id="mode-copy-logs-btn" class="copy-logs-btn">Copy Logs</button>
+                        <button id="mode-clear-logs-btn" class="clear-logs-btn">Clear</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div id="mode-log-stats" class="log-stats"></div>
                 </div>
             </div>
         </div>
