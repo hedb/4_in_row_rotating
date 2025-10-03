@@ -408,6 +408,21 @@ def main() -> None:
     t_after_summary = time.perf_counter()
     print(f"[time] summary_counts: {(t_after_summary - t_json_end)*1000:.1f} ms")
 
+    # Print summary counts by node label and edge type
+    try:
+        from collections import Counter
+        node_counts = Counter(labels_map.values())
+        print("[gen] Node counts by label:")
+        for label, cnt in sorted(node_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {label}: {cnt}")
+
+        edge_counts = Counter(rel for (_s, _c, _d, rel, _p, _r) in transitions)
+        print("[gen] Edge counts by type:")
+        for rel_type, cnt in sorted(edge_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {rel_type}: {cnt}")
+    except Exception as e:
+        print(f"[gen] Failed to print summary counts: {e}")
+
     # Optionally load into Neo4j if password is provided via env var
     pwd = os.environ.get('LOCAL_NEO4J_PASSWORD')
     graph_json = os.path.join(base_dir, 'output', 'graph.json')
