@@ -33,6 +33,7 @@ GRID_SIZE: int = 6
 EMPTY: int = 0
 WHITE: int = 1
 BLACK: int = 2
+WIN_LENGTH: int = 4
 
 
 def ensure_output_dir(base: str) -> str:
@@ -102,6 +103,12 @@ class Board:
     def to_hashable(self) -> Tuple[Tuple[int, ...], ...]:
         return tuple(tuple(row) for row in self.grid)
 
+    @staticmethod
+    def from_key(key: Tuple[Tuple[int, ...], ...]) -> "Board":
+        b = Board(len(key))
+        b.grid = [list(r) for r in key]
+        return b
+
 
 def all_sequences(columns: int, length: int) -> Iterable[Tuple[int, ...]]:
     """Yield all sequences of given length with values in range(columns)."""
@@ -150,7 +157,15 @@ def generate_states_after_3_moves_rotated() -> List[List[str]]:
     return ordered
 
 
-def build_state_graph_depth3(base_dir: str) -> Tuple[Dict[Tuple[Tuple[int, ...], ...], Tuple[int, str]], List[Tuple[int, int, int]], List[Tuple[Tuple[int, ...], ...]]]:
+def build_state_graph(
+    moves_per_rotation: int = 3,
+    total_moves: int = 3,
+) -> Tuple[
+    Dict[Tuple[Tuple[int, ...], ...], Tuple[int, str]],
+    List[Tuple[int, int, int, str, str, bool]],
+    List[Tuple[Tuple[int, ...], ...]],
+    Dict[Tuple[Tuple[int, ...], ...], str],
+]:
     """
     Build a graph of all states encountered from empty by applying all 6^3
     sequences of columns (W,B,W) with gravity each move and a rotation+gravity
@@ -159,7 +174,9 @@ def build_state_graph_depth3(base_dir: str) -> Tuple[Dict[Tuple[Tuple[int, ...],
 
     Returns:
         state_index: { state_key -> (numeric_id, uuid_str) }
-        transitions: [ (src_numeric_id, column_1_to_6, dst_numeric_id) ]
+        transitions: [ (src_numeric_id, column_1_to_6, dst_numeric_id, rel_type, player_char, rotation) ]
+        order: list of keys in first-seen order
+        labels_map: { state_key -> label_string }
     """
     # Helpers
     def register(board: Board) -> Tuple[int, str]:
@@ -176,37 +193,116 @@ def build_state_graph_depth3(base_dir: str) -> Tuple[Dict[Tuple[Tuple[int, ...],
 
     # Init containers
     state_index: Dict[Tuple[Tuple[int, ...], ...], Tuple[int, str]] = {}
-    transitions: List[Tuple[int, int, int]] = []
+    transitions: List[Tuple[int, int, int, str, str, bool]] = []
     order: List[Tuple[Tuple[int, ...], ...]] = []
+    labels_map: Dict[Tuple[Tuple[int, ...], ...], str] = {}
     next_id: int = 1
 
-    # Register initial empty state
-    start = Board(GRID_SIZE)
-    register(start)
+    # Helpers for win checks
+    def check_player_win(key: Tuple[Tuple[int, ...], ...], player: int) -> bool:
+        n = len(key)
+        p = player
+        # horizontal, vertical, diag down-right, diag up-right
+        for r in range(n):
+            for c in range(n):
+                if key[r][c] != p:
+                    continue
+                # horiz
+                if c + WIN_LENGTH <= n and all(key[r][c + k] == p for k in range(WIN_LENGTH)):
+                    return True
+                # vert
+                if r + WIN_LENGTH <= n and all(key[r + k][c] == p for k in range(WIN_LENGTH)):
+                    return True
+                # diag down-right
+                if r + WIN_LENGTH <= n and c + WIN_LENGTH <= n and all(key[r + k][c + k] == p for k in range(WIN_LENGTH)):
+                    return True
+                # diag up-right
+                if r - (WIN_LENGTH - 1) >= 0 and c + WIN_LENGTH <= n and all(key[r - k][c + k] == p for k in range(WIN_LENGTH)):
+                    return True
+        return False
 
-    players = (WHITE, BLACK, WHITE)
+    def winners_after_key(key: Tuple[Tuple[int, ...], ...]) -> Tuple[bool, bool]:
+        return check_player_win(key, WHITE), check_player_win(key, BLACK)
 
-    for seq in all_sequences(columns=GRID_SIZE, length=3):
-        cur = start.clone()
-        src_id, _ = register(cur)
-        # Step through moves, emit transitions per move
-        for idx, col in enumerate(seq):
-            moved = cur.clone()
-            if not moved.drop_stone(col, players[idx]):
-                # invalid move, stop this path
-                break
-            # On 3rd move (idx=2), rotate then gravity
-            if idx == 2:
-                moved.rotate_ccw()
-                moved.apply_gravity()
-            dst_id, _ = register(moved)
-            # Column recorded 1..6
-            transitions.append((src_id, col + 1, dst_id))
-            # Advance
-            cur = moved
-            src_id = dst_id
+    # Initialize frontier with empty state
+    start_board = Board(GRID_SIZE)
+    start_key = start_board.to_hashable()
+    register(start_board)
+    labels_map[start_key] = f"Board_0"
+    frontier: List[Tuple[Tuple[int, ...], ...]] = [start_key]
 
-    return state_index, transitions, order
+    # Expand across moves
+    for move_num in range(1, total_moves + 1):
+        player = WHITE if (move_num % 2 == 1) else BLACK
+        next_frontier: List[Tuple[Tuple[int, ...], ...]] = []
+        for key in frontier:
+            # Skip expanding terminal nodes
+            label_here = labels_map.get(key, f"Board_{sum(1 for r in key for v in r if v != EMPTY)}")
+            if label_here in ("Board_W_W", "Board_B_W", "Board_Draw"):
+                continue
+
+            # Prepare source id
+            src_id, _ = state_index[key]
+            for col in range(GRID_SIZE):
+                # Drop on a copy
+                b = Board.from_key(key)
+                if not b.drop_stone(col, player):
+                    continue  # column full
+                # Pre-rotation win check
+                pre_key = b.to_hashable()
+                pre_white, pre_black = winners_after_key(pre_key)
+                rotation = False
+                final_board_key = pre_key
+                terminal_label: str = ''
+                if pre_white or pre_black:
+                    # terminal before rotation
+                    terminal_label = "Board_W_W" if pre_white else "Board_B_W"
+                else:
+                    # Apply rotation at rotation steps
+                    if move_num % moves_per_rotation == 0:
+                        rotation = True
+                        b.rotate_ccw()
+                        b.apply_gravity()
+                        post_key = b.to_hashable()
+                        post_white, post_black = winners_after_key(post_key)
+                        if post_white and post_black:
+                            terminal_label = "Board_Draw"
+                        elif post_white:
+                            terminal_label = "Board_W_W"
+                        elif post_black:
+                            terminal_label = "Board_B_W"
+                        final_board_key = post_key
+
+                # Register destination
+                dst_board = Board.from_key(final_board_key)
+                dst_id, _ = register(dst_board)
+                stones_now = sum(1 for r in final_board_key for v in r if v != EMPTY)
+                if terminal_label:
+                    labels_map[final_board_key] = terminal_label
+                else:
+                    labels_map.setdefault(final_board_key, f"Board_{stones_now}")
+
+                # Relationship type
+                rel_type = (
+                    f"M_R_{'W' if player == WHITE else 'B'}" if rotation else f"M_{'W' if player == WHITE else 'B'}"
+                )
+                player_char = 'W' if player == WHITE else 'B'
+                transitions.append((src_id, col + 1, dst_id, rel_type, player_char, rotation))
+
+                # Add to next frontier if not terminal
+                if not terminal_label:
+                    next_frontier.append(final_board_key)
+
+        # Deduplicate next frontier
+        seen_nf: Set[Tuple[Tuple[int, ...], ...]] = set()
+        dedup_nf: List[Tuple[Tuple[int, ...], ...]] = []
+        for k in next_frontier:
+            if k not in seen_nf:
+                seen_nf.add(k)
+                dedup_nf.append(k)
+        frontier = dedup_nf
+
+    return state_index, transitions, order, labels_map
 
 
 def write_outputs(base_dir: str, states: List[List[str]]) -> None:
@@ -231,7 +327,8 @@ def serialize_board_from_key(key: Tuple[Tuple[int, ...], ...]) -> List[str]:
 def write_state_graph_json(base_dir: str,
                            state_index: Dict[Tuple[Tuple[int, ...], ...], Tuple[int, str]],
                            order: List[Tuple[Tuple[int, ...], ...]],
-                           transitions: List[Tuple[int, int, int]]) -> str:
+                           transitions: List[Tuple[int, int, int, str, str, bool]],
+                           labels_map: Dict[Tuple[Tuple[int, ...], ...], str]) -> str:
     out_dir = ensure_output_dir(base_dir)
     path = os.path.join(out_dir, 'graph.json')
 
@@ -244,21 +341,19 @@ def write_state_graph_json(base_dir: str,
             "id": nid,
             "board": serialize_board_from_key(key),
             "stones_no": stones,
-            "label": f"Board_{stones}",
+            "label": labels_map.get(key, f"Board_{stones}"),
         })
 
     # Build edge list: source, column, target, relationship_type
     edges = []
-    for src, col, dst in transitions:
-        # Determine relationship type based on move sequence
-        # All transitions in our 3-move sequences end with rotation, so use M_R_W or M_R_B
-        # We need to determine which player made the move that led to this transition
-        # For simplicity, we'll use M_R_W for all since our sequences are W,B,W
+    for src, col, dst, rel_type, player_char, rotation in transitions:
         edges.append({
             "source": src,
             "column": col,
             "target": dst,
-            "relationship_type": "M_R_W",  # All our transitions include rotation
+            "relationship_type": rel_type,
+            "player": player_char,
+            "rotation": rotation,
         })
 
     payload = {"nodes": nodes, "edges": edges}
@@ -275,14 +370,31 @@ def main() -> None:
     ensure_output_dir(base_dir)
     print(f"[gen] Output directory ensured: {os.path.join(base_dir, 'output')}")
 
-    # Build state graph and transitions from empty across depth-3 sequences
-    print("[gen] Building state graph and transitions for depth-3 sequences...")
-    state_index, transitions, order = build_state_graph_depth3(base_dir)
+    # Build state graph (parameterized)
+    moves_per_rotation = 3
+    total_moves = 9
+    print(f"[gen] Building state graph: moves_per_rotation={moves_per_rotation}, total_moves={total_moves}...")
+    state_index, transitions, order, labels_map = build_state_graph(moves_per_rotation, total_moves)
     print(f"[gen] Encountered states: {len(state_index)} | Transitions: {len(transitions)}")
 
     # Write unified JSON graph (nodes + edges)
-    graph_json_path = write_state_graph_json(base_dir, state_index, order, transitions)
+    graph_json_path = write_state_graph_json(base_dir, state_index, order, transitions, labels_map)
     print(f"[gen] Wrote unified graph JSON: {graph_json_path}")
+
+    # Print summary counts by node label and edge type
+    try:
+        from collections import Counter
+        node_counts = Counter(labels_map.values())
+        print("[gen] Node counts by label:")
+        for label, cnt in sorted(node_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {label}: {cnt}")
+
+        edge_counts = Counter(rel for (_s, _c, _d, rel, _p, _r) in transitions)
+        print("[gen] Edge counts by type:")
+        for rel_type, cnt in sorted(edge_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {rel_type}: {cnt}")
+    except Exception as e:
+        print(f"[gen] Failed to print summary counts: {e}")
 
     # Optionally load into Neo4j if password is provided via env var
     pwd = os.environ.get('LOCAL_NEO4J_PASSWORD')
@@ -414,22 +526,10 @@ def load_graph_json_to_neo4j(uri: str, user: str, password: str, graph_json_path
             # Purge database
             print("[neo4j] Deleting all nodes and relationships...")
             session.run("MATCH (n) DETACH DELETE n")
-            # Ensure unique constraint
-            print("[neo4j] Ensuring unique constraint on :State(id)...")
-            try:
-                session.run(
-                    "CREATE CONSTRAINT state_id_unique IF NOT EXISTS FOR (s:State) REQUIRE s.id IS UNIQUE"
-                )
-                print("[neo4j] Constraint ensured (modern syntax).")
-            except Exception as e1:
-                print(f"[neo4j] Modern constraint syntax failed, trying legacy... ({e1})")
-                try:
-                    session.run("CREATE CONSTRAINT ON (s:State) ASSERT s.id IS UNIQUE")
-                    print("[neo4j] Constraint ensured (legacy syntax).")
-                except Exception as e2:
-                    print(f"[neo4j] Failed to ensure constraint with both syntaxes: {e2}")
+            # Skipping unique constraint since nodes have dynamic labels only
+            print("[neo4j] Skipping unique constraint (dynamic labels)")
 
-            # Write nodes with dynamic labels (without APOC)
+            # Write nodes with dynamic labels only (no :State base label)
             print("[neo4j] Writing nodes with Board_X labels...")
             for node in nodes:
                 # Create node with dynamic label by constructing the cypher dynamically
@@ -446,8 +546,8 @@ def load_graph_json_to_neo4j(uri: str, user: str, password: str, graph_json_path
                 rel_type = edge["relationship_type"]
                 session.run(
                     f"MATCH (src {{id: $source}}) MATCH (dst {{id: $target}}) "
-                    f"MERGE (src)-[r:{rel_type} {{column: $column}}]->(dst)",
-                    source=edge["source"], target=edge["target"], column=edge["column"]
+                    f"MERGE (src)-[r:{rel_type} {{column: $column, player: $player, rotation: $rotation}}]->(dst)",
+                    source=edge["source"], target=edge["target"], column=edge["column"], player=edge["player"], rotation=edge["rotation"]
                 )
 
         print("[neo4j] Graph JSON load completed.")
