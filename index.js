@@ -410,6 +410,7 @@ class GameApp {
         // Log control functionality
         const copyLogsBtn = document.getElementById('copy-logs-btn');
         const clearLogsBtn = document.getElementById('clear-logs-btn');
+        const copyBoardBtn = document.getElementById('copy-board-btn');
 
         if (copyLogsBtn) {
             copyLogsBtn.addEventListener('click', async () => {
@@ -424,6 +425,16 @@ class GameApp {
                 HapticFeedback.buttonPress();
                 console.log('[Settings] Clear logs clicked');
                 this.clearLogs();
+            });
+        }
+
+        if (copyBoardBtn) {
+            const newCopyBoardBtn = copyBoardBtn.cloneNode(true);
+            copyBoardBtn.parentNode.replaceChild(newCopyBoardBtn, copyBoardBtn);
+            newCopyBoardBtn.addEventListener('click', async () => {
+                HapticFeedback.buttonPress();
+                console.log('[Settings] Copy board clicked');
+                await this.copyBoardAsciiToClipboard();
             });
         }
 
@@ -1423,6 +1434,61 @@ Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
             setTimeout(() => {
                 copyButton.textContent = originalText;
                 copyButton.disabled = false;
+            }, 2000);
+        }
+    }
+
+    // === BOARD ASCII EXPORT ===
+    buildBoardAscii() {
+        if (!this.gameController || !this.gameController.board) {
+            return '';
+        }
+        const grid = this.gameController.board.grid;
+        // Top-to-bottom, left-to-right; '_' empty, 'W' player 1, 'B' player 2
+        const lines = grid.map(row => row.map(cell => {
+            if (!cell) return '_';
+            return cell.playerId === 1 ? 'W' : 'B';
+        }).join(''));
+        return lines.join('\n');
+    }
+
+    async copyBoardAsciiToClipboard() {
+        const btn = document.getElementById('copy-board-btn');
+        if (!btn) return;
+
+        const originalText = btn.textContent;
+        btn.textContent = 'Copying...';
+        btn.classList.add('copying');
+        btn.disabled = true;
+
+        try {
+            const ascii = this.buildBoardAscii();
+            if (!ascii) throw new Error('No board available');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(ascii);
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = ascii;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('copying');
+                btn.disabled = false;
+            }, 1500);
+        } catch (err) {
+            console.error('[Settings] Failed to copy board ASCII:', err);
+            btn.textContent = 'Failed';
+            btn.classList.remove('copying');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
             }, 2000);
         }
     }
