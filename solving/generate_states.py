@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import os
 from typing import List, Tuple, Iterable, Set, Dict
+import time
 import uuid
 import json
 
@@ -372,7 +373,7 @@ def main() -> None:
 
     # Build state graph (parameterized)
     moves_per_rotation = 3
-    total_moves = 9
+    total_moves = 10
     print(f"[gen] Building state graph: moves_per_rotation={moves_per_rotation}, total_moves={total_moves}...")
     state_index, transitions, order, labels_map = build_state_graph(moves_per_rotation, total_moves)
     print(f"[gen] Encountered states: {len(state_index)} | Transitions: {len(transitions)}")
@@ -525,32 +526,89 @@ def load_graph_json_to_neo4j(uri: str, user: str, password: str, graph_json_path
         with driver.session() as session:
             # Purge database
             print("[neo4j] Deleting all nodes and relationships...")
+            t_del_start = time.perf_counter()
             session.run("MATCH (n) DETACH DELETE n")
+            t_del_end = time.perf_counter()
+            print(f"[time.neo4j] delete_all: {(t_del_end - t_del_start)*1000:.1f} ms")
+
             # Skipping unique constraint since nodes have dynamic labels only
             print("[neo4j] Skipping unique constraint (dynamic labels)")
 
-            # Write nodes with dynamic labels only (no :State base label)
-            print("[neo4j] Writing nodes with Board_X labels...")
-            for node in nodes:
-                # Create node with dynamic label by constructing the cypher dynamically
-                label = node["label"]
-                session.run(
-                    f"MERGE (s:{label} {{id: $id}}) SET s.stones_no = $stones_no, s.board = $board",
-                    id=node["id"], stones_no=node["stones_no"], board=node["board"]
-                )
+            # Batch helpers
+            from collections import defaultdict
+            def chunked(lst, size):
+                for i in range(0, len(lst), size):
+                    yield lst[i:i+size]
 
-            # Write edges with dynamic relationship types (without APOC)
-            print("[neo4j] Writing relationships with dynamic types...")
-            for edge in edges:
-                # Create relationship with dynamic type by constructing the cypher dynamically
-                rel_type = edge["relationship_type"]
-                session.run(
-                    f"MATCH (src {{id: $source}}) MATCH (dst {{id: $target}}) "
-                    f"MERGE (src)-[r:{rel_type} {{column: $column, player: $player, rotation: $rotation}}]->(dst)",
-                    source=edge["source"], target=edge["target"], column=edge["column"], player=edge["player"], rotation=edge["rotation"]
-                )
+            # Group nodes by label and write in batches
+            print("[neo4j] Writing nodes with Board_X labels (batched)...")
+            t_nodes_start = time.perf_counter()
+            label_to_nodes = defaultdict(list)
+            for n in nodes:
+                label_to_nodes[n["label"]].append({
+                    "id": n["id"],
+                    "stones_no": n["stones_no"],
+                    "board": n["board"],
+                })
+            total_nodes_written = 0
+            for label, rows in label_to_nodes.items():
+                t_lbl_start = time.perf_counter()
+                for batch in chunked(rows, 1000):
+                    session.run(
+                        f"UNWIND $rows AS row MERGE (s:{label} {{id: row.id}}) SET s.stones_no = row.stones_no, s.board = row.board",
+                        rows=batch,
+                    )
+                    total_nodes_written += len(batch)
+                t_lbl_end = time.perf_counter()
+                print(f"  [nodes] {label}: {len(rows)} in {(t_lbl_end - t_lbl_start)*1000:.1f} ms")
+            t_nodes_end = time.perf_counter()
+            print(f"[time.neo4j] write_nodes_total: {(t_nodes_end - t_nodes_start)*1000:.1f} ms | nodes={total_nodes_written}")
+
+            # Group edges by relationship type and write in batches
+            print("[neo4j] Writing relationships with dynamic types (batched)...")
+            t_edges_start = time.perf_counter()
+            type_to_edges = defaultdict(list)
+            for e in edges:
+                type_to_edges[e["relationship_type"]].append({
+                    "source": e["source"],
+                    "target": e["target"],
+                    "column": e["column"],
+                    "player": e["player"],
+                    "rotation": bool(e["rotation"]),
+                })
+            total_edges_written = 0
+            for rel_type, rows in type_to_edges.items():
+                t_rt_start = time.perf_counter()
+                for batch in chunked(rows, 1000):
+                    session.run(
+                        f"UNWIND $rows AS row MATCH (src {{id: row.source}}) MATCH (dst {{id: row.target}}) "
+                        f"MERGE (src)-[:{rel_type} {{column: row.column, player: row.player, rotation: row.rotation}}]->(dst)",
+                        rows=batch,
+                    )
+                    total_edges_written += len(batch)
+                t_rt_end = time.perf_counter()
+                print(f"  [edges] {rel_type}: {len(rows)} in {(t_rt_end - t_rt_start)*1000:.1f} ms")
+            t_edges_end = time.perf_counter()
+            print(f"[time.neo4j] write_edges_total: {(t_edges_end - t_edges_start)*1000:.1f} ms | edges={total_edges_written}")
 
         print("[neo4j] Graph JSON load completed.")
+
+        print ( '''
+
+Print grouping of all nodes:
+    MATCH (n)
+    UNWIND labels(n) AS label
+    RETURN label, count(*) AS cnt
+    ORDER BY label;
+
+Graph paths leading to the draws
+    MATCH p1=(s)-[r]->(d:Board_Draw)
+    WITH DISTINCT s, collect(p1) AS drawPaths
+    MATCH p2=(s)-[m]->(t)
+    RETURN drawPaths, p2    
+
+        ''')
+
     finally:
         driver.close()
 
