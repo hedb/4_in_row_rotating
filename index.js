@@ -1,4 +1,5 @@
 import { GameController } from './GameController.js';
+import { Stone } from './Stone.js';
 import { LocalGameHandler } from './LocalGameHandler.js';
 import { AIGameHandler } from './AIGameHandler.js';
 import { OnlineGameHandler } from './OnlineGameHandler.js';
@@ -351,6 +352,12 @@ class GameApp {
         const gridEasterEgg = document.getElementById('hero-logo');
         const settingsModal = document.getElementById('settings-modal');
         const closeSettingsBtn = document.getElementById('close-settings-btn');
+        const rotationCounterInput = document.getElementById('rotation-counter-input');
+        const applyRotationCounterBtn = document.getElementById('apply-rotation-counter-btn');
+        const currentRotationCounter = document.getElementById('current-rotation-counter');
+        const nextTurnColorSel = document.getElementById('next-turn-color');
+        const applyNextTurnBtn = document.getElementById('apply-next-turn-btn');
+        const nextTurnNote = document.getElementById('next-turn-note');
 
         const showSettings = () => {
             console.log('[Settings] Opening settings modal...');
@@ -375,6 +382,14 @@ class GameApp {
                 
                 // Update log statistics
                 this.updateLogStats();
+
+                // Initialize rotation counter display
+                this.refreshRotationCounterUI();
+
+                // Initialize next-turn note
+                if (nextTurnNote) {
+                    nextTurnNote.textContent = this.describeNextTurnState();
+                }
             } else {
                 console.error('[Settings] Settings modal not found!');
             }
@@ -411,6 +426,11 @@ class GameApp {
         const copyLogsBtn = document.getElementById('copy-logs-btn');
         const clearLogsBtn = document.getElementById('clear-logs-btn');
         const copyBoardBtn = document.getElementById('copy-board-btn');
+        const loadBoardBtn = document.getElementById('load-board-btn');
+        const loadBoardContainer = document.getElementById('load-board-container');
+        const loadBoardInput = document.getElementById('load-board-input');
+        const applyLoadBoardBtn = document.getElementById('apply-load-board-btn');
+        const cancelLoadBoardBtn = document.getElementById('cancel-load-board-btn');
 
         if (copyLogsBtn) {
             copyLogsBtn.addEventListener('click', async () => {
@@ -435,6 +455,69 @@ class GameApp {
                 HapticFeedback.buttonPress();
                 console.log('[Settings] Copy board clicked');
                 await this.copyBoardAsciiToClipboard();
+            });
+        }
+
+        // Load Board UI show/hide
+        if (loadBoardBtn && loadBoardContainer) {
+            const newLoadBoardBtn = loadBoardBtn.cloneNode(true);
+            loadBoardBtn.parentNode.replaceChild(newLoadBoardBtn, loadBoardBtn);
+            newLoadBoardBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                if (loadBoardContainer.classList.contains('hidden')) {
+                    loadBoardContainer.classList.remove('hidden');
+                    if (loadBoardInput) {
+                        loadBoardInput.value = '';
+                        loadBoardInput.placeholder = 'board: ["______", "______", "_____W", "_____W", "____WW", "_B_BBB"]';
+                    }
+                } else {
+                    loadBoardContainer.classList.add('hidden');
+                }
+            });
+        }
+
+        if (cancelLoadBoardBtn && loadBoardContainer) {
+            const newCancelBtn = cancelLoadBoardBtn.cloneNode(true);
+            cancelLoadBoardBtn.parentNode.replaceChild(newCancelBtn, cancelLoadBoardBtn);
+            newCancelBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                loadBoardContainer.classList.add('hidden');
+            });
+        }
+
+        if (applyLoadBoardBtn) {
+            const newApplyBtn = applyLoadBoardBtn.cloneNode(true);
+            applyLoadBoardBtn.parentNode.replaceChild(newApplyBtn, applyLoadBoardBtn);
+            newApplyBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                try {
+                    const text = loadBoardInput ? loadBoardInput.value : '';
+                    this.applyBoardFromText(text);
+                    if (loadBoardContainer) loadBoardContainer.classList.add('hidden');
+                } catch (e) {
+                    console.error('[Settings] Failed to load board', e);
+                    alert(`Failed to load board: ${e.message}`);
+                }
+            });
+        }
+
+        // Rotation Counter handlers
+        if (applyRotationCounterBtn) {
+            const newApplyRotBtn = applyRotationCounterBtn.cloneNode(true);
+            applyRotationCounterBtn.parentNode.replaceChild(newApplyRotBtn, applyRotationCounterBtn);
+            newApplyRotBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.applyRotationCounterFromInput();
+            });
+        }
+
+        // Next Turn / Your Color handlers
+        if (applyNextTurnBtn) {
+            const newApplyNextBtn = applyNextTurnBtn.cloneNode(true);
+            applyNextTurnBtn.parentNode.replaceChild(newApplyNextBtn, applyNextTurnBtn);
+            newApplyNextBtn.addEventListener('click', () => {
+                HapticFeedback.buttonPress();
+                this.applyNextTurnColor(nextTurnColorSel ? nextTurnColorSel.value : 'white');
             });
         }
 
@@ -1459,6 +1542,228 @@ Buffer: ${stats.bufferFull ? 'Full' : 'Growing'}`;
             return cell.playerId === 1 ? 'W' : 'B';
         }).join(''));
         return lines.join('\n');
+    }
+
+    // === BOARD IMPORT FROM TEXT ===
+    parseBoardArrayText(text) {
+        // Accept formats like:
+        // board: ["______", "______", "_____W", "_____W", "____WW", "_B_BBB"]
+        // or just ["______", ...] or newline-separated strings
+        if (!text) throw new Error('Empty input');
+        const trimmed = text.trim();
+        let arr = null;
+        try {
+            // Try to extract JSON array between [ and ]
+            const start = trimmed.indexOf('[');
+            const end = trimmed.lastIndexOf(']');
+            if (start >= 0 && end > start) {
+                const jsonPart = trimmed.slice(start, end + 1);
+                arr = JSON.parse(jsonPart);
+            } else {
+                // Fallback: split lines
+                const lines = trimmed.split(/\r?\n/).map(s => s.replace(/\s+/g, '')).filter(Boolean);
+                if (lines.length === 0) throw new Error('No data found');
+                arr = lines;
+            }
+        } catch (e) {
+            throw new Error('Invalid format. Ensure it is a JSON array of strings.');
+        }
+
+        if (!Array.isArray(arr)) throw new Error('Parsed input is not an array');
+        if (arr.length !== 6) throw new Error('Array must contain exactly 6 rows');
+        const rows = arr.map((row, idx) => {
+            if (typeof row !== 'string') throw new Error(`Row ${idx + 1} is not a string`);
+            if (row.length !== 6) throw new Error(`Row ${idx + 1} must be length 6`);
+            if (!/^[_WB]{6}$/.test(row)) throw new Error(`Row ${idx + 1} has invalid characters (use _, W, B)`);
+            return row;
+        });
+        return rows;
+    }
+
+    refreshRotationCounterUI() {
+        const currentRotationCounter = document.getElementById('current-rotation-counter');
+        if (!currentRotationCounter) return;
+        try {
+            const val = this.getTurnsUntilRotation();
+            currentRotationCounter.textContent = typeof val === 'number' ? String(val) : '-';
+        } catch (_) {
+            currentRotationCounter.textContent = '-';
+        }
+    }
+
+    getTurnsUntilRotation() {
+        // Best-effort read based on active mode handlers
+        // Prefer handler-specific counters if available
+        if (this.currentMode === 'local' && this.localGameHandler) {
+            const freq = this.localGameHandler.rotationFrequency || 3;
+            const turns = this.localGameHandler.turnCounter || 0;
+            if (turns === 0) return freq;
+            const rem = freq - (turns % freq);
+            return rem === 0 ? freq : rem;
+        }
+        if (this.currentMode === 'ai' && this.aiGameHandler) {
+            const freq = this.aiGameHandler.rotationFrequency || 3;
+            const turns = this.aiGameHandler.turnCounter || 0;
+            if (turns === 0) return freq;
+            const rem = freq - (turns % freq);
+            return rem === 0 ? freq : rem;
+        }
+        if (this.currentMode && this.currentMode.startsWith('online') && this.onlineGameHandler) {
+            // For online games, read from OnlineGameHandler's computed logic
+            // It exposes moveCount and rotationFrequency; compute similarly
+            const freq = this.onlineGameHandler.rotationFrequency || 3;
+            const moves = this.onlineGameHandler.moveCount || 0;
+            if (moves === 0) return freq;
+            const rem = freq - (moves % freq);
+            return rem === 0 ? freq : rem;
+        }
+        // Default when no game active: show UI default (3)
+        return 3;
+    }
+
+    applyRotationCounterFromInput() {
+        const input = document.getElementById('rotation-counter-input');
+        if (!input) return;
+        const raw = input.value.trim();
+        if (raw === '') {
+            alert('Enter a number (0 or positive integer)');
+            return;
+        }
+        const num = parseInt(raw, 10);
+        if (!Number.isFinite(num) || num < 0) {
+            alert('Invalid number. Use 0 or a positive integer.');
+            return;
+        }
+
+        // If 0, trigger immediate rotation on next move exact behavior is mode-specific.
+        // We interpret as: set handler's counters so that countdown shows given value.
+        const applyToLocal = () => {
+            const h = this.localGameHandler;
+            if (!h) return false;
+            const freq = h.rotationFrequency || 3;
+            // We want remaining = num => turnCounter % freq = freq - num (mod freq)
+            // Compute a non-negative modulo result
+            const desiredRem = Math.max(0, Math.min(freq, num));
+            const mod = (freq - (desiredRem % freq)) % freq;
+            // Adjust turnCounter to produce this remainder without changing completed cycles drastically
+            // Keep same floor(turnCounter/freq), only change remainder
+            const k = Math.floor((h.turnCounter || 0) / freq);
+            h.turnCounter = k * freq + mod;
+            h.updateCountdown(desiredRem === 0 ? freq : desiredRem);
+            return true;
+        };
+
+        const applyToAI = () => {
+            const h = this.aiGameHandler;
+            if (!h) return false;
+            const freq = h.rotationFrequency || 3;
+            const desiredRem = Math.max(0, Math.min(freq, num));
+            const mod = (freq - (desiredRem % freq)) % freq;
+            const k = Math.floor((h.turnCounter || 0) / freq);
+            h.turnCounter = k * freq + mod;
+            h.updateCountdown(desiredRem === 0 ? freq : desiredRem);
+            return true;
+        };
+
+        const applyToOnline = () => {
+            // Avoid desync by not forcing state in online mode; just update input and display
+            if (!this.onlineGameHandler) return false;
+            alert('Rotation counter cannot be overridden in online mode.');
+            return true;
+        };
+
+        let applied = false;
+        if (this.currentMode === 'local') applied = applyToLocal();
+        else if (this.currentMode === 'ai') applied = applyToAI();
+        else if (this.currentMode && this.currentMode.startsWith('online')) applied = applyToOnline();
+
+        if (applied) {
+            this.refreshRotationCounterUI();
+        }
+    }
+
+    describeNextTurnState() {
+        try {
+            if (this.currentMode === 'local' && this.localGameHandler) {
+                const cur = this.localGameHandler.currentPlayer || 1;
+                return `Local: ${cur === 1 ? 'White' : 'Black'} to move`;
+            }
+            if (this.currentMode === 'ai' && this.aiGameHandler) {
+                const cur = this.aiGameHandler.currentPlayer || 1;
+                const you = this.aiGameHandler.humanPlayerId === 1 ? 'White' : 'Black';
+                return `AI: ${cur === 1 ? 'White' : 'Black'} to move (You: ${you})`;
+            }
+            if (this.currentMode && this.currentMode.startsWith('online') && this.onlineGameHandler) {
+                return 'Online: server-synced turn (read-only)';
+            }
+        } catch (_) {}
+        return '';
+    }
+
+    applyNextTurnColor(color) {
+        if (!color) color = 'white';
+        const desiredHumanId = color === 'black' ? 2 : 1;
+
+        if (this.currentMode === 'local' && this.localGameHandler) {
+            // In local mode, set current player to the chosen color so it's their turn next
+            this.localGameHandler.currentPlayer = desiredHumanId;
+            // Also reflect in UI immediately
+            const turnIndicator = document.getElementById('turn-indicator');
+            if (turnIndicator) {
+                turnIndicator.textContent = desiredHumanId === 1 ? "White's turn" : "Black's turn";
+            }
+        } else if (this.currentMode === 'ai' && this.aiGameHandler) {
+            // Set who the human is, and set current player accordingly so it's user's turn next
+            this.aiGameHandler.humanPlayerId = desiredHumanId;
+            this.aiGameHandler.aiPlayerId = desiredHumanId === 1 ? 2 : 1;
+            this.aiGameHandler.currentPlayer = desiredHumanId;
+            // Update the AI player's internal mirror if needed
+            if (this.aiGameHandler.aiPlayer) {
+                this.aiGameHandler.aiPlayer.aiPlayerId = this.aiGameHandler.aiPlayerId;
+                this.aiGameHandler.aiPlayer.humanPlayerId = this.aiGameHandler.humanPlayerId;
+            }
+            // Update turn indicator
+            const turnIndicator = document.getElementById('turn-indicator');
+            if (turnIndicator) {
+                turnIndicator.textContent = 'Your turn';
+            }
+            // Ensure input is enabled for human
+            this.gameController && this.gameController.enableInput && this.gameController.enableInput();
+        } else if (this.currentMode && this.currentMode.startsWith('online') && this.onlineGameHandler) {
+            alert('Cannot change player/turn in online mode.');
+            return;
+        }
+
+        // Update note in settings
+        const nextTurnNote = document.getElementById('next-turn-note');
+        if (nextTurnNote) {
+            nextTurnNote.textContent = this.describeNextTurnState();
+        }
+    }
+
+    applyBoardFromText(text) {
+        if (!this.gameController || !this.gameController.board) {
+            throw new Error('No active game to load board into');
+        }
+        const rows = this.parseBoardArrayText(text);
+        // Reset board
+        this.gameController.board.resetBoard();
+        // Build stones according to mapping: '_' empty, 'W' -> playerId 1, 'B' -> playerId 2
+        for (let r = 0; r < rows.length; r++) {
+            const line = rows[r];
+            for (let c = 0; c < line.length; c++) {
+                const ch = line[c];
+                if (ch === '_') continue;
+                const playerId = ch === 'W' ? 1 : 2;
+                const stone = new Stone(playerId);
+                // Place directly without animation
+                this.gameController.board.placeStone(r, c, stone);
+            }
+        }
+        // Redraw board
+        this.gameController.boardRenderer.drawBoard();
+        // Capture state into history
+        this.gameController.captureGameState('game_start', null, null);
     }
 
     async copyBoardAsciiToClipboard() {

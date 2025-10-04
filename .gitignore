@@ -3,4 +3,6 @@
 /angularfire-start
 /sharing_tests
 .DS_Store
+/solving/output/neo4j_from_json
+solving/import.report
 /solving/output
