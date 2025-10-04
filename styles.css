@@ -15,10 +15,10 @@ h1 {
 }
 
 .hero-logo {
-    width: 150px;
+    width: 200px;
     height: auto;
     display: block;
-    margin: 5px auto 0 auto;
+    margin: 30px auto 30px auto;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
