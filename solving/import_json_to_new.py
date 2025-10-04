@@ -83,7 +83,7 @@ def write_csvs_from_json(graph_json_path: str, output_dir: str, rels_chunk_size:
     def open_nodes_writer():
         f = open(nodes_path, 'w', encoding='utf-8', newline='')
         w = csv.writer(f)
-        w.writerow(["id:ID(State)", ":LABEL", "stones_no:INT"])  # minimal props
+        w.writerow(["id:ID(State)", ":LABEL", "stones_no:INT", "board:STRING[]"])
         return f, w
 
     def open_rels_writer(path: str):
@@ -117,7 +117,11 @@ def write_csvs_from_json(graph_json_path: str, output_dir: str, rels_chunk_size:
                     continue
                 stones_no = int(payload.get("stones_no", 0))
                 label = payload.get("label", f"Board_{stones_no}")
-                nw.writerow([nid, f"State;{label}", stones_no])
+                board = payload.get("board", [])  # array of 6 strings
+                # Only use the specific Board_* label, not State
+                # Neo4j CSV array format: semicolon-separated by default
+                board_str = ";".join(board) if board else ""
+                nw.writerow([nid, label, stones_no, board_str])
                 seen_node_ids[nid] = True
 
         # Second pass for edges. If we used fallback json, we can iterate again quickly; if ijson, we reopen.
@@ -129,6 +133,8 @@ def write_csvs_from_json(graph_json_path: str, output_dir: str, rels_chunk_size:
             col = int(payload.get("column", 0))
             player = str(payload.get("player", ""))
             rotation = payload.get("rotation", False)
+            # Use the actual relationship type from the JSON (M_W, M_B, M_R_W, M_R_B)
+            rel_type = payload.get("relationship_type", "MOVE")
 
             if rel_rows_in_current >= rels_chunk_size:
                 rf.close()
@@ -138,7 +144,7 @@ def write_csvs_from_json(graph_json_path: str, output_dir: str, rels_chunk_size:
                 rf, rw = open_rels_writer(rel_path)
                 rel_files.append(rel_path)
 
-            rw.writerow([src, dst, "MOVE", col, player, "true" if rotation else "false"])
+            rw.writerow([src, dst, rel_type, col, player, "true" if rotation else "false"])
             rel_rows_in_current += 1
 
         return {"nodes": [nodes_path], "rels": rel_files}

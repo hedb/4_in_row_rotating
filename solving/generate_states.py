@@ -471,9 +471,13 @@ def main() -> None:
             t_load_end = time.perf_counter()
             print(f"[time] neo4j_load_total: {(t_load_end - t_load_start)*1000:.1f} ms")
         except Exception as e:
-            print(f"[neo4j] Load failed: {e}")
+            print(f"[neo4j] Online load failed: {e}")
+            print("[neo4j] Tip: For large graphs, use the fast offline CSV importer instead:")
+            print(f"         python3 {os.path.join(base_dir, 'import_json_to_new.py')}")
     else:
-        print("[neo4j] LOCAL_NEO4J_PASSWORD not set. Skipping Neo4j load.")
+        print("[neo4j] LOCAL_NEO4J_PASSWORD not set. Skipping online Neo4j load.")
+        print("[neo4j] For fast offline import of large graphs, use:")
+        print(f"         python3 {os.path.join(base_dir, 'import_json_to_new.py')}")
 
 
 # -------------------------------
@@ -669,6 +673,83 @@ Graph paths leading to the draws
     WITH DISTINCT s, collect(p1) AS drawPaths
     MATCH p2=(s)-[m]->(t)
     RETURN drawPaths, p2    
+
+Graph paths leading to the Board_B_D_W after rotation
+        // Pick 10 Board_B_D_W nodes that have M_R_B edges leading to them
+        MATCH (d:Board_B_D_W)
+        WHERE exists { MATCH ()-[:M_R_B]->(d) }
+        WITH d LIMIT 10
+
+        // Find all M_R_B paths leading to these kernel nodes
+        MATCH p1=(s)-[r:M_R_B]->(d)
+        WITH DISTINCT s, d, collect(p1) AS drawPaths
+
+        // Get all other paths from those source nodes
+        MATCH p2=(s)-[m]->(t)
+        RETURN s, d, drawPaths, collect(p2) AS otherPaths
+
+ 
+ table with source node IDs and counts of their outgoing moves grouped by move_type:state_type:
+        // Pick 10 Board_B_D_W nodes reached via M_R_B
+MATCH (d:Board_B_D_W)
+WHERE exists { MATCH ()-[:M_R_B]->(d) }
+WITH d LIMIT 10
+
+// Find source nodes
+MATCH (s)-[:M_R_B]->(d)
+WITH DISTINCT s
+
+// Get all outgoing edges and their target labels
+MATCH (s)-[m]->(t)
+WITH s, type(m) AS moveType, labels(t) AS targetLabels, count(*) AS cnt
+
+// Extract the primary label (first one that starts with Board_)
+WITH s, moveType, 
+     CASE 
+       WHEN any(lbl IN targetLabels WHERE lbl IN ['Board_W_W', 'Board_W_D_W', 'Board_B_W', 'Board_B_D_W', 'Board_Draw'])
+       THEN [lbl IN targetLabels WHERE lbl IN ['Board_W_W', 'Board_W_D_W', 'Board_B_W', 'Board_B_D_W', 'Board_Draw']][0]
+       ELSE 'game_state'
+     END AS stateType,
+     cnt
+
+// Create the column key
+WITH s, moveType + ':' + stateType AS columnKey, cnt
+
+// Pivot to wide format
+RETURN s.id AS source_id,
+       sum(CASE WHEN columnKey = 'M_W:Board_W_W' THEN cnt ELSE 0 END) AS `M_W:Board_W_W`,
+       sum(CASE WHEN columnKey = 'M_W:Board_W_D_W' THEN cnt ELSE 0 END) AS `M_W:Board_W_D_W`,
+       sum(CASE WHEN columnKey = 'M_W:Board_B_W' THEN cnt ELSE 0 END) AS `M_W:Board_B_W`,
+       sum(CASE WHEN columnKey = 'M_W:Board_B_D_W' THEN cnt ELSE 0 END) AS `M_W:Board_B_D_W`,
+       sum(CASE WHEN columnKey = 'M_W:Board_Draw' THEN cnt ELSE 0 END) AS `M_W:Board_Draw`,
+       sum(CASE WHEN columnKey = 'M_W:game_state' THEN cnt ELSE 0 END) AS `M_W:game_state`,
+       sum(CASE WHEN columnKey = 'M_B:Board_W_W' THEN cnt ELSE 0 END) AS `M_B:Board_W_W`,
+       sum(CASE WHEN columnKey = 'M_B:Board_W_D_W' THEN cnt ELSE 0 END) AS `M_B:Board_W_D_W`,
+       sum(CASE WHEN columnKey = 'M_B:Board_B_W' THEN cnt ELSE 0 END) AS `M_B:Board_B_W`,
+       sum(CASE WHEN columnKey = 'M_B:Board_B_D_W' THEN cnt ELSE 0 END) AS `M_B:Board_B_D_W`,
+       sum(CASE WHEN columnKey = 'M_B:Board_Draw' THEN cnt ELSE 0 END) AS `M_B:Board_Draw`,
+       sum(CASE WHEN columnKey = 'M_B:game_state' THEN cnt ELSE 0 END) AS `M_B:game_state`,
+       sum(CASE WHEN columnKey = 'M_R_W:Board_W_W' THEN cnt ELSE 0 END) AS `M_R_W:Board_W_W`,
+       sum(CASE WHEN columnKey = 'M_R_W:Board_W_D_W' THEN cnt ELSE 0 END) AS `M_R_W:Board_W_D_W`,
+       sum(CASE WHEN columnKey = 'M_R_W:Board_B_W' THEN cnt ELSE 0 END) AS `M_R_W:Board_B_W`,
+       sum(CASE WHEN columnKey = 'M_R_W:Board_B_D_W' THEN cnt ELSE 0 END) AS `M_R_W:Board_B_D_W`,
+       sum(CASE WHEN columnKey = 'M_R_W:Board_Draw' THEN cnt ELSE 0 END) AS `M_R_W:Board_Draw`,
+       sum(CASE WHEN columnKey = 'M_R_W:game_state' THEN cnt ELSE 0 END) AS `M_R_W:game_state`,
+       sum(CASE WHEN columnKey = 'M_R_B:Board_W_W' THEN cnt ELSE 0 END) AS `M_R_B:Board_W_W`,
+       sum(CASE WHEN columnKey = 'M_R_B:Board_W_D_W' THEN cnt ELSE 0 END) AS `M_R_B:Board_W_D_W`,
+       sum(CASE WHEN columnKey = 'M_R_B:Board_B_W' THEN cnt ELSE 0 END) AS `M_R_B:Board_B_W`,
+       sum(CASE WHEN columnKey = 'M_R_B:Board_B_D_W' THEN cnt ELSE 0 END) AS `M_R_B:Board_B_D_W`,
+       sum(CASE WHEN columnKey = 'M_R_B:Board_Draw' THEN cnt ELSE 0 END) AS `M_R_B:Board_Draw`,
+       sum(CASE WHEN columnKey = 'M_R_B:game_state' THEN cnt ELSE 0 END) AS `M_R_B:game_state`
+    ORDER BY source_id
+
+
+
+WITH [28229, 28234, 28648, 28649, 28650, 28671] AS nodeIds
+MATCH (n)
+WHERE n.id IN nodeIds
+MATCH path=(n)-[r]->(t)
+RETURN path
 
         ''')
 
