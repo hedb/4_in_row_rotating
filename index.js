@@ -553,6 +553,9 @@ class GameApp {
     initReplayMode() {
         if (!this.gameController) return;
 
+        // Add analyze mode class to body for smaller logo
+        document.body.classList.add('analyze-mode');
+
         // Hide turn indicator
         const turnIndicator = document.getElementById('turn-indicator');
         if (turnIndicator) {
@@ -684,6 +687,9 @@ class GameApp {
 
     exitReplayMode() {
         if (!this.gameController) return;
+
+        // Remove analyze mode class from body to restore normal logo size
+        document.body.classList.remove('analyze-mode');
 
         // Exit replay mode in GameController
         this.gameController.exitReplayMode();
@@ -1385,6 +1391,9 @@ class GameApp {
         // Increment generation ID to invalidate any ongoing GIF generation
         this.currentGifGenerationId++;
         console.log(`[GameApp] Switching to new game - invalidating GIF generation (new ID: ${this.currentGifGenerationId})`);
+        
+        // Remove analyze mode class to restore normal logo size
+        document.body.classList.remove('analyze-mode');
         
         // Analytics: end active session as quit
         this.endSession('quit');

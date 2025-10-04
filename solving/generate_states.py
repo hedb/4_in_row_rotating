@@ -399,22 +399,48 @@ def write_state_graph_json(base_dir: str,
 def main() -> None:
     base_dir = os.path.dirname(os.path.abspath(__file__))
     print("[gen] Generating unique final states after 3 moves + rotation...")
+    t_start = time.perf_counter()
     states = generate_states_after_3_moves_rotated()
     # Legacy emit removed; we only keep graph.json now
     ensure_output_dir(base_dir)
     print(f"[gen] Output directory ensured: {os.path.join(base_dir, 'output')}")
+    t_after_3moves = time.perf_counter()
+    print(f"[time] generate_3moves: {(t_after_3moves - t_start)*1000:.1f} ms | states={len(states)}")
 
     # Build state graph (parameterized)
     moves_per_rotation = 3
     total_moves = 16
     
     print(f"[gen] Building state graph: moves_per_rotation={moves_per_rotation}, total_moves={total_moves}...")
+    t_build_start = time.perf_counter()
     state_index, transitions, order, labels_map = build_state_graph(moves_per_rotation, total_moves)
     print(f"[gen] Encountered states: {len(state_index)} | Transitions: {len(transitions)}")
+    t_build_end = time.perf_counter()
+    print(f"[time] build_graph: {(t_build_end - t_build_start)*1000:.1f} ms")
 
     # Write unified JSON graph (nodes + edges)
+    t_json_start = time.perf_counter()
     graph_json_path = write_state_graph_json(base_dir, state_index, order, transitions, labels_map)
     print(f"[gen] Wrote unified graph JSON: {graph_json_path}")
+    t_json_end = time.perf_counter()
+    print(f"[time] write_graph_json: {(t_json_end - t_json_start)*1000:.1f} ms | nodes={len(state_index)} edges={len(transitions)}")
+
+    # Print summary counts by node label and edge type
+    try:
+        from collections import Counter
+        node_counts = Counter(labels_map.values())
+        print("[gen] Node counts by label:")
+        for label, cnt in sorted(node_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {label}: {cnt}")
+
+        edge_counts = Counter(rel for (_s, _c, _d, rel, _p, _r) in transitions)
+        print("[gen] Edge counts by type:")
+        for rel_type, cnt in sorted(edge_counts.items(), key=lambda x: (str(x[0]), x[1])):
+            print(f"  {rel_type}: {cnt}")
+    except Exception as e:
+        print(f"[gen] Failed to print summary counts: {e}")
+    t_after_summary = time.perf_counter()
+    print(f"[time] summary_counts: {(t_after_summary - t_json_end)*1000:.1f} ms")
 
     # Print summary counts by node label and edge type
     try:
@@ -440,7 +466,10 @@ def main() -> None:
         print(f"[neo4j] Password env var found. Loading graph JSON from {graph_json}")
         print(f"[neo4j] Connecting to {uri} as '{user}'...")
         try:
+            t_load_start = time.perf_counter()
             load_graph_json_to_neo4j(uri=uri, user=user, password=pwd, graph_json_path=graph_json)
+            t_load_end = time.perf_counter()
+            print(f"[time] neo4j_load_total: {(t_load_end - t_load_start)*1000:.1f} ms")
         except Exception as e:
             print(f"[neo4j] Load failed: {e}")
     else:
@@ -647,6 +676,6 @@ Graph paths leading to the draws
         driver.close()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     main()
 
