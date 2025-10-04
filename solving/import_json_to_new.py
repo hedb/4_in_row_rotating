@@ -185,8 +185,13 @@ def main() -> None:
     parser.add_argument('--graph-json', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output', 'graph.json'), help='Path to graph.json')
     parser.add_argument('--output-dir', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output', 'neo4j_from_json'), help='Directory to write CSVs')
     parser.add_argument('--rels-chunk-size', type=int, default=2_000_000, help='Max relationship rows per CSV file')
-    parser.add_argument('--database', default='states', help='Target Neo4j database name for import')
-    parser.add_argument('--neo4j-admin', dest='neo4j_admin', default=None, help='Path to neo4j-admin binary (optional)')
+    parser.add_argument('--database', default='neo4j', help='Target Neo4j database name for import')
+    parser.add_argument(
+        '--neo4j-admin',
+        dest='neo4j_admin',
+        default='/Users/hed-bar-nissan/Library/Application Support/neo4j-desktop/Application/Data/dbmss/dbms-a4f09df9-ed5f-4ce3-b9ce-3978a7af8eb8/bin/neo4j-admin',
+        help='Path to neo4j-admin binary (optional)'
+    )
     parser.add_argument('--run-import', action='store_true', help='If set, run neo4j-admin import after writing CSVs')
 
     args = parser.parse_args()
