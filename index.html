@@ -167,6 +167,34 @@
                     <label>Board Tools:</label>
                     <div class="log-controls">
                         <button id="copy-board-btn" class="copy-logs-btn">Copy Board</button>
+                        <button id="load-board-btn" class="copy-logs-btn">Load Board</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Rotation Counter:</label>
+                    <div class="log-controls">
+                        <input id="rotation-counter-input" type="number" min="0" step="1" placeholder="Turns until rotation" style="width:140px;">
+                        <button id="apply-rotation-counter-btn" class="copy-logs-btn">Apply</button>
+                    </div>
+                    <div class="log-stats">Current shown: <span id="current-rotation-counter">-</span></div>
+                </div>
+                <div class="setting-item">
+                    <label>Your color / Next turn:</label>
+                    <div class="log-controls">
+                        <select id="next-turn-color">
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                        </select>
+                        <button id="apply-next-turn-btn" class="copy-logs-btn">Apply</button>
+                    </div>
+                    <div id="next-turn-note" class="log-stats"></div>
+                </div>
+                <div id="load-board-container" class="load-board-container hidden">
+                    <label for="load-board-input">Paste board array (6 strings of length 6):</label>
+                    <textarea id="load-board-input" class="load-board-textarea" rows="6" placeholder='board: ["______", "______", "_____W", "_____W", "____WW", "_B_BBB"]'></textarea>
+                    <div class="load-board-actions">
+                        <button id="apply-load-board-btn" class="copy-logs-btn">Apply</button>
+                        <button id="cancel-load-board-btn" class="clear-logs-btn">Cancel</button>
                     </div>
                 </div>
                 <div class="setting-item">

@@ -222,8 +222,38 @@ def build_state_graph(
                     return True
         return False
 
-    def winners_after_key(key: Tuple[Tuple[int, ...], ...]) -> Tuple[bool, bool]:
-        return check_player_win(key, WHITE), check_player_win(key, BLACK)
+    def check_player_win_detail(key: Tuple[Tuple[int, ...], ...], player: int) -> Tuple[bool, bool]:
+        """Return (win_any, win_diagonal) for player on this board."""
+        n = len(key)
+        p = player
+        win_any = False
+        win_diag = False
+        for r in range(n):
+            for c in range(n):
+                if key[r][c] != p:
+                    continue
+                # horiz
+                if c + WIN_LENGTH <= n and all(key[r][c + k] == p for k in range(WIN_LENGTH)):
+                    win_any = True
+                # vert
+                if r + WIN_LENGTH <= n and all(key[r + k][c] == p for k in range(WIN_LENGTH)):
+                    win_any = True
+                # diag down-right
+                if r + WIN_LENGTH <= n and c + WIN_LENGTH <= n and all(key[r + k][c + k] == p for k in range(WIN_LENGTH)):
+                    win_any = True
+                    win_diag = True
+                # diag up-right
+                if r - (WIN_LENGTH - 1) >= 0 and c + WIN_LENGTH <= n and all(key[r - k][c + k] == p for k in range(WIN_LENGTH)):
+                    win_any = True
+                    win_diag = True
+                if win_any and win_diag:
+                    return True, True
+        return win_any, win_diag
+
+    def winners_after_key(key: Tuple[Tuple[int, ...], ...]) -> Tuple[bool, bool, bool, bool]:
+        w_any, w_diag = check_player_win_detail(key, WHITE)
+        b_any, b_diag = check_player_win_detail(key, BLACK)
+        return w_any, w_diag, b_any, b_diag
 
     # Initialize frontier with empty state
     start_board = Board(GRID_SIZE)
@@ -251,13 +281,16 @@ def build_state_graph(
                     continue  # column full
                 # Pre-rotation win check
                 pre_key = b.to_hashable()
-                pre_white, pre_black = winners_after_key(pre_key)
+                pre_w_any, pre_w_diag, pre_b_any, pre_b_diag = winners_after_key(pre_key)
                 rotation = False
                 final_board_key = pre_key
                 terminal_label: str = ''
-                if pre_white or pre_black:
+                if pre_w_any or pre_b_any:
                     # terminal before rotation
-                    terminal_label = "Board_W_W" if pre_white else "Board_B_W"
+                    if pre_w_any:
+                        terminal_label = "Board_W_D_W" if pre_w_diag else "Board_W_W"
+                    else:
+                        terminal_label = "Board_B_D_W" if pre_b_diag else "Board_B_W"
                 else:
                     # Apply rotation at rotation steps
                     if move_num % moves_per_rotation == 0:
@@ -265,13 +298,13 @@ def build_state_graph(
                         b.rotate_ccw()
                         b.apply_gravity()
                         post_key = b.to_hashable()
-                        post_white, post_black = winners_after_key(post_key)
-                        if post_white and post_black:
+                        post_w_any, post_w_diag, post_b_any, post_b_diag = winners_after_key(post_key)
+                        if post_w_any and post_b_any:
                             terminal_label = "Board_Draw"
-                        elif post_white:
-                            terminal_label = "Board_W_W"
-                        elif post_black:
-                            terminal_label = "Board_B_W"
+                        elif post_w_any:
+                            terminal_label = "Board_W_D_W" if post_w_diag else "Board_W_W"
+                        elif post_b_any:
+                            terminal_label = "Board_B_D_W" if post_b_diag else "Board_B_W"
                         final_board_key = post_key
 
                 # Register destination
@@ -373,7 +406,8 @@ def main() -> None:
 
     # Build state graph (parameterized)
     moves_per_rotation = 3
-    total_moves = 10
+    total_moves = 16
+    
     print(f"[gen] Building state graph: moves_per_rotation={moves_per_rotation}, total_moves={total_moves}...")
     state_index, transitions, order, labels_map = build_state_graph(moves_per_rotation, total_moves)
     print(f"[gen] Encountered states: {len(state_index)} | Transitions: {len(transitions)}")
