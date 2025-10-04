@@ -15,16 +15,22 @@ h1 {
 }
 
 .hero-logo {
-    width: 150px;
+    width: 200px;
     height: auto;
     display: block;
-    margin: 5px auto 0 auto;
+    margin: 30px auto 30px auto;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
 .hero-logo:hover {
     transform: scale(1.05);
+}
+
+/* Smaller logo and padding when in analyze mode */
+body.analyze-mode .hero-logo {
+    width: 120px;
+    margin: 10px auto 10px auto;
 }
 
 #game-container {
