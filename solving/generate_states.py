@@ -585,6 +585,6 @@ def load_graph_json_to_neo4j(uri: str, user: str, password: str, graph_json_path
         driver.close()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     main()
 
