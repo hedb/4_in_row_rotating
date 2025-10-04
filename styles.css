@@ -27,6 +27,12 @@ h1 {
     transform: scale(1.05);
 }
 
+/* Smaller logo and padding when in analyze mode */
+body.analyze-mode .hero-logo {
+    width: 120px;
+    margin: 10px auto 10px auto;
+}
+
 #game-container {
     background-color: white;
     border-radius: 12px;
