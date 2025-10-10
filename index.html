@@ -56,14 +56,33 @@
         </div>
 
         <div class="mode-buttons">
-            <button id="play-online-btn" class="mode-button">
-                <span class="mode-title">Play Online</span>
-                <span class="mode-description">Play with someone remotely</span>
+            <div class="mode-buttons-row">
+                <button id="play-online-btn" class="mode-button mode-button-half">
+                    <span class="mode-title">Play Online</span>
+                    <span class="mode-description">Play with someone remotely</span>
+                </button>
+                <button id="play-local-btn" class="mode-button mode-button-half">
+                    <span class="mode-title">Play Local</span>
+                    <span class="mode-description">Two players on this device</span>
+                </button>
+            </div>
+            <button id="play-riddle-btn" class="mode-button">
+                <span class="mode-title">🎯 Daily Riddle</span>
+                <span class="mode-description">Solve today's puzzle</span>
             </button>
-            <button id="play-local-btn" class="mode-button">
-                <span class="mode-title">Play Local</span>
-                <span class="mode-description">Two players on this device</span>
-            </button>
+        </div>
+    </div>
+
+    <!-- Riddle Calendar Screen -->
+    <div id="riddle-calendar" class="riddle-calendar hidden">
+        <div class="riddle-calendar-content">
+            <div class="riddle-calendar-header">
+                <button id="riddle-calendar-back-btn" class="back-btn">← Back</button>
+                <h2>Daily Riddles</h2>
+            </div>
+            <div id="riddle-calendar-grid" class="riddle-calendar-grid">
+                <!-- Calendar dates will be generated dynamically -->
+            </div>
         </div>
     </div>
 

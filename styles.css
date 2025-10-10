@@ -633,6 +633,18 @@ select {
     justify-content: center;
 }
 
+.mode-buttons-row {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+    justify-content: center;
+}
+
+.mode-button-half {
+    flex: 1;
+    min-width: 0;
+}
+
 .mode-button {
     background-color: #f8f9fa;
     border: 2px solid #e9ecef;
@@ -904,4 +916,123 @@ select {
     cursor: not-allowed;
     transform: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Riddle Calendar Styles */
+.riddle-calendar {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border: 1px solid #e8e8e8;
+    max-width: 600px;
+    margin: 10px;
+}
+
+.riddle-calendar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.riddle-calendar-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+}
+
+.riddle-calendar-header h2 {
+    color: #1ca433;
+    margin: 0;
+    font-size: 24px;
+    flex: 1;
+    text-align: center;
+}
+
+.back-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.back-btn:hover {
+    background-color: #5a6268;
+    transform: translateX(-2px);
+}
+
+.back-btn:active {
+    transform: translateX(0);
+}
+
+.riddle-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+    padding: 10px 0;
+    direction: rtl;
+}
+
+.riddle-date-card {
+    aspect-ratio: 1;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    padding: 8px;
+    direction: ltr;
+}
+
+.riddle-date-card:hover {
+    background-color: #e9ecef;
+    border-color: #1ca433;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 164, 51, 0.2);
+}
+
+.riddle-date-card.current {
+    background-color: #d4edda;
+    border-color: #1ca433;
+    border-width: 3px;
+}
+
+.riddle-date-card.current:hover {
+    background-color: #c3e6cb;
+}
+
+.riddle-date-card.solved::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: #1ca433;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.riddle-date-month {
+    font-size: 10px;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.riddle-date-day {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
 }
