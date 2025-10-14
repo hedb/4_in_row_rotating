@@ -6,3 +6,5 @@
 /solving/output/neo4j_from_json
 solving/import.report
 /solving/output
+/solving/riddle_nodes_queries/__pycache__
+/solving/__pycache__

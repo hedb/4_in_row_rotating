@@ -53,36 +53,31 @@ class GameApp {
             this.startOnlineModeAsGuest(sessionId);
         } else if (mode === 'riddle') {
             if (riddleDate) {
-                // Load specific riddle
                 const board = urlParams.get('board');
                 const steps = urlParams.get('steps');
-                
                 if (board && steps) {
-                    // Load from URL params
                     try {
                         const boardArray = JSON.parse(decodeURIComponent(board));
+                        const rotationParam = urlParams.get('rotation') || urlParams.get('counter');
+                        const rotationCounter = rotationParam != null ? parseInt(rotationParam, 10) : null;
                         this.startRiddleGameMode({
                             board: boardArray,
                             steps: parseInt(steps),
-                            date: riddleDate
+                            date: riddleDate,
+                            rotationCounter: Number.isFinite(rotationCounter) ? rotationCounter : undefined
                         });
                     } catch (e) {
                         console.error('[GameApp] Error parsing riddle from URL:', e);
-                        this.showRiddleCalendar();
+                        window.location.href = '/riddles.html';
+                        return;
                     }
                 } else {
-                    // Load from sample data
-                    const riddleData = this.getRiddleData(riddleDate);
-                    if (riddleData) {
-                        this.startRiddleGameMode(riddleData);
-                    } else {
-                        console.error('[GameApp] No riddle data for date:', riddleDate);
-                        this.showRiddleCalendar();
-                    }
+                    window.location.href = '/riddles.html';
+                    return;
                 }
             } else {
-                // Show riddle calendar
-                this.showRiddleCalendar();
+                window.location.href = '/riddles.html';
+                return;
             }
         } else {
             // Show mode selection
@@ -109,33 +104,28 @@ class GameApp {
             return;
         } else if (mode === 'riddle') {
             if (riddleDate) {
-                // Load specific riddle
                 const board = urlParams.get('board');
                 const steps = urlParams.get('steps');
-                
                 if (board && steps) {
                     try {
                         const boardArray = JSON.parse(decodeURIComponent(board));
+                        const rotationParam = urlParams.get('rotation') || urlParams.get('counter');
+                        const rotationCounter = rotationParam != null ? parseInt(rotationParam, 10) : null;
                         this.startRiddleGameMode({
                             board: boardArray,
                             steps: parseInt(steps),
-                            date: riddleDate
+                            date: riddleDate,
+                            rotationCounter: Number.isFinite(rotationCounter) ? rotationCounter : undefined
                         });
                     } catch (e) {
                         console.error('[GameApp] Error parsing riddle from URL:', e);
-                        this.showRiddleCalendar();
+                        window.location.href = '/riddles.html';
                     }
                 } else {
-                    const riddleData = this.getRiddleData(riddleDate);
-                    if (riddleData) {
-                        this.startRiddleGameMode(riddleData);
-                    } else {
-                        this.showRiddleCalendar();
-                    }
+                    window.location.href = '/riddles.html';
                 }
             } else {
-                // Show calendar
-                this.showRiddleCalendar();
+                window.location.href = '/riddles.html';
             }
         } else {
             // Show mode selection
@@ -146,12 +136,10 @@ class GameApp {
     showModeSelection() {
         const modeSelection = document.getElementById('mode-selection');
         const gameContainer = document.getElementById('game-container');
-        const riddleCalendar = document.getElementById('riddle-calendar');
         const waitingRoom = document.getElementById('waiting-room');
 
         modeSelection.classList.remove('hidden');
         gameContainer.classList.add('hidden');
-        riddleCalendar.classList.add('hidden');
         waitingRoom.classList.add('hidden');
 
         // Bind mode selection buttons
@@ -213,7 +201,8 @@ class GameApp {
             riddleBtn.parentNode.replaceChild(newRiddleBtn, riddleBtn);
             newRiddleBtn.addEventListener('click', () => {
                 HapticFeedback.buttonPress();
-                this.startRiddleMode();
+                // Navigate to the new riddle chooser page
+                window.location.href = '/riddles.html';
             });
         }
     }
@@ -381,35 +370,18 @@ class GameApp {
     }
 
     showRiddleCalendar() {
-        console.log('[GameApp] Showing riddle calendar');
-        
-        const modeSelection = document.getElementById('mode-selection');
-        const gameContainer = document.getElementById('game-container');
-        const riddleCalendar = document.getElementById('riddle-calendar');
-        const waitingRoom = document.getElementById('waiting-room');
-
-        modeSelection.classList.add('hidden');
-        gameContainer.classList.add('hidden');
-        riddleCalendar.classList.remove('hidden');
-        waitingRoom.classList.add('hidden');
-
-        // Generate calendar
-        this.generateRiddleCalendar();
-
-        // Bind back button
-        const backBtn = document.getElementById('riddle-calendar-back-btn');
-        if (backBtn) {
-            const newBackBtn = backBtn.cloneNode(true);
-            backBtn.parentNode.replaceChild(newBackBtn, backBtn);
-            newBackBtn.addEventListener('click', () => {
-                HapticFeedback.buttonPress();
-                this.returnToModeSelectionFromRiddle();
-            });
-        }
+        // Redirect to external chooser page now
+        window.location.href = '/riddles.html';
     }
 
     returnToModeSelectionFromRiddle() {
         console.log('[GameApp] Returning to mode selection from riddle');
+        
+        // Remove riddle-mode class from body
+        document.body.classList.remove('riddle-mode');
+        // Remove any riddle button bars left in the DOM
+        document.querySelectorAll('.riddle-button-bar').forEach(el => el.remove());
+        
         // Update URL to remove riddle mode
         const url = new URL(window.location);
         url.searchParams.delete('mode');
@@ -420,65 +392,7 @@ class GameApp {
     }
 
     generateRiddleCalendar() {
-        const grid = document.getElementById('riddle-calendar-grid');
-        if (!grid) return;
-
-        // Clear existing content
-        grid.innerHTML = '';
-
-        // Get today's date
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Load progress from localStorage
-        const progress = this.loadRiddleProgress();
-
-        // Generate current day and 20 past days, in reverse order (newest first)
-        const dates = [];
-        for (let i = 0; i >= -20; i--) {
-            const date = new Date(today);
-            date.setDate(date.getDate() + i);
-            dates.push(date);
-        }
-
-        // Create date cards
-        dates.forEach(date => {
-            const dateStr = this.formatDateForRiddle(date);
-            const card = document.createElement('div');
-            card.className = 'riddle-date-card';
-
-            // Determine state
-            const isCurrent = date.getTime() === today.getTime();
-
-            if (isCurrent) {
-                card.classList.add('current');
-            }
-
-            // Check if solved
-            if (progress[dateStr]?.solved) {
-                card.classList.add('solved');
-            }
-
-            // Add date display
-            const monthSpan = document.createElement('div');
-            monthSpan.className = 'riddle-date-month';
-            monthSpan.textContent = date.toLocaleDateString('en-US', { month: 'short' });
-
-            const daySpan = document.createElement('div');
-            daySpan.className = 'riddle-date-day';
-            daySpan.textContent = date.getDate();
-
-            card.appendChild(monthSpan);
-            card.appendChild(daySpan);
-
-            // Add click handler for all dates (current and past)
-            card.addEventListener('click', () => {
-                HapticFeedback.buttonPress();
-                this.openRiddle(dateStr);
-            });
-
-            grid.appendChild(card);
-        });
+        // No-op: calendar is rendered on riddles.html
     }
 
     formatDateForRiddle(date) {
@@ -611,6 +525,9 @@ class GameApp {
         console.log('[GameApp] Starting riddle game mode:', riddleData);
         this.currentMode = 'riddle';
 
+        // Add riddle-mode class to body for styling
+        document.body.classList.add('riddle-mode');
+
         // Clean up any existing input handlers
         if (this.inputHandler) {
             this.inputHandler.unbindInputEvents();
@@ -621,7 +538,7 @@ class GameApp {
 
         // Hide other screens
         document.getElementById('mode-selection').classList.add('hidden');
-        document.getElementById('riddle-calendar').classList.add('hidden');
+        // Riddle calendar is not on this page anymore
         document.getElementById('waiting-room').classList.add('hidden');
         document.getElementById('game-container').classList.remove('hidden');
 
@@ -638,42 +555,98 @@ class GameApp {
         this.inputHandler.bindInputEvents();
 
         // Load the board state
+        console.log('[GameApp] Loading riddle board:', riddleData.board);
         this.loadRiddleBoard(riddleData.board);
 
         // Initialize the riddle game
+        console.log('[GameApp] Initializing riddle game handler');
         this.riddleGameHandler.init();
 
         // Update New Game button to be Reset button for riddles
         this.bindRiddleButtons();
 
-        console.log('[GameApp] Riddle mode started');
+        console.log('[GameApp] Riddle mode started successfully');
     }
 
     loadRiddleBoard(boardArray) {
         // boardArray is an array of 6 strings, each 6 characters
         // '_' = empty, 'W' = white (player 1), 'B' = black (player 2)
+        
+        console.log('[GameApp] Loading riddle board with array:', boardArray);
+        
+        // Reset the board first
+        this.gameController.board.resetBoard();
+        
+        let stonesPlaced = 0;
         for (let row = 0; row < 6; row++) {
             for (let col = 0; col < 6; col++) {
                 const char = boardArray[row][col];
                 if (char === 'W') {
-                    this.gameController.board.placeStone(row, col, 1);
+                    const stone = new Stone(1);
+                    this.gameController.board.placeStone(row, col, stone);
+                    stonesPlaced++;
+                    console.log(`[GameApp] Placed white stone at (${row}, ${col})`);
                 } else if (char === 'B') {
-                    this.gameController.board.placeStone(row, col, 2);
+                    const stone = new Stone(2);
+                    this.gameController.board.placeStone(row, col, stone);
+                    stonesPlaced++;
+                    console.log(`[GameApp] Placed black stone at (${row}, ${col})`);
                 }
             }
         }
-        this.gameController.boardRenderer.render();
+        
+        console.log(`[GameApp] Total stones placed: ${stonesPlaced}`);
+        
+        // Render the board
+        console.log('[GameApp] Drawing board...');
+        this.gameController.boardRenderer.drawBoard();
+        
+        // Capture the initial state for the riddle
+        this.gameController.captureGameState('riddle_start', null, null);
+        
+        console.log('[GameApp] Riddle board loaded successfully');
     }
 
     bindRiddleButtons() {
-        const newGameBtn = document.getElementById('new-game-btn');
-        if (newGameBtn) {
-            // Change button text to "Reset"
-            newGameBtn.textContent = 'Reset Puzzle';
-            
-            const newBtn = newGameBtn.cloneNode(true);
-            newGameBtn.parentNode.replaceChild(newBtn, newGameBtn);
-            newBtn.addEventListener('click', () => {
+        // For riddle mode, we want the buttons in a separate row above the game status
+        // Hide the default game over buttons
+        const topLeftActions = document.getElementById('top-left-actions');
+        if (topLeftActions) {
+            topLeftActions.classList.add('hidden');
+        }
+
+        // Clear the top-center-display since we don't want buttons there
+        const topCenterDisplay = document.getElementById('top-center-display');
+        if (topCenterDisplay) {
+            topCenterDisplay.innerHTML = '';
+        }
+
+        // Remove any existing riddle button bars to avoid duplicates
+        document.querySelectorAll('.riddle-button-bar').forEach(el => el.remove());
+
+        // Find the existing top-bar, but render the button bar as a separate row ABOVE it
+        const gameContainer = document.getElementById('game-container');
+        const existingTopBar = document.querySelector('.top-bar');
+        
+        // Create the riddle button bar
+        const riddleButtonBar = document.createElement('div');
+        riddleButtonBar.className = 'riddle-button-bar';
+        riddleButtonBar.innerHTML = `
+            <div class="riddle-top-buttons">
+                <button id="riddle-reset-btn" class="riddle-btn riddle-reset-btn">Reset Puzzle</button>
+                <button id="riddle-back-btn" class="riddle-btn riddle-back-btn">← Back to Calendar</button>
+            </div>
+        `;
+
+        // Insert the button bar before the top-bar so we get two distinct rows
+        if (gameContainer && existingTopBar) {
+            gameContainer.insertBefore(riddleButtonBar, existingTopBar);
+        }
+
+        // Bind the reset button
+        const resetBtn = document.getElementById('riddle-reset-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
                 HapticFeedback.buttonPress();
                 if (this.riddleGameHandler) {
                     this.riddleGameHandler.resetToInitialState();
@@ -681,14 +654,10 @@ class GameApp {
             });
         }
 
-        const analyzeBtn = document.getElementById('analyze-btn');
-        if (analyzeBtn) {
-            // Change button text to "Back to Calendar"
-            analyzeBtn.textContent = 'Back to Calendar';
-            
-            const newBtn = analyzeBtn.cloneNode(true);
-            analyzeBtn.parentNode.replaceChild(newBtn, analyzeBtn);
-            newBtn.addEventListener('click', () => {
+        // Bind the back button
+        const backBtn = document.getElementById('riddle-back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
                 HapticFeedback.buttonPress();
                 this.returnToRiddleCalendar();
             });
@@ -697,6 +666,12 @@ class GameApp {
 
     returnToRiddleCalendar() {
         console.log('[GameApp] Returning to riddle calendar from game');
+        
+        // Remove riddle-mode class from body
+        document.body.classList.remove('riddle-mode');
+        // Remove any riddle button bars left in the DOM
+        document.querySelectorAll('.riddle-button-bar').forEach(el => el.remove());
+        
         // Update URL to calendar view
         const url = new URL(window.location);
         url.searchParams.set('mode', 'riddle');

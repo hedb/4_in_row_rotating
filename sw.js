@@ -1,5 +1,5 @@
 // Hard-code VERSION to avoid module import issues in service worker
-const VERSION = '0.13.0';
+const VERSION = '0.14.1';
 const CACHE_NAME = `4-in-a-row-v${VERSION}`;
 
 // console.log(`[Service Worker] Starting with VERSION: ${VERSION}`);
@@ -9,6 +9,7 @@ const CACHE_NAME = `4-in-a-row-v${VERSION}`;
 const APP_SHELL_FILES = [
     '/',
     '/index.html',
+    '/riddles.html',
     '/styles.css',
     '/index.js',
     '/config.js',
@@ -102,15 +103,33 @@ self.addEventListener('fetch', event => {
     // console.log(`[Service Worker] FETCH EVENT - Search params: ${url.search}`);
 
 
-    // For HTML pages, try the network first, then fall back to the cache.
-    // This is a "Network falling back to cache" strategy.
+    const url = new URL(event.request.url);
+
+    // Network-first for riddle chooser API with cache fallback
+    if (url.pathname === '/api/riddles/chooser.json') {
+        event.respondWith((async () => {
+            const runtimeCache = await caches.open('riddles-cache');
+            try {
+                const fresh = await fetch(event.request);
+                // Store fresh copy for offline use
+                runtimeCache.put(event.request, fresh.clone());
+                return fresh;
+            } catch (e) {
+                const cached = await runtimeCache.match(event.request, { ignoreSearch: true });
+                if (cached) return cached;
+                return new Response(JSON.stringify({ since: '2025-09-01', todayUtc: null, items: [] }), {
+                    headers: { 'Content-Type': 'application/json' },
+                    status: 200
+                });
+            }
+        })());
+        return;
+    }
+
+    // For others, cache-first
     event.respondWith(
         caches.match(event.request, { ignoreSearch: true }).then(response => {
-            if (response) {
-                // console.log(`[Service Worker] Serving from cache: ${event.request.url}`);
-                return response;
-            }
-            // console.log(`[Service Worker] Not in cache, fetching from network: ${event.request.url}`);
+            if (response) return response;
             return fetch(event.request);
         })
     );

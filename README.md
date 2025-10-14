@@ -38,6 +38,36 @@ The game is a PWA with offline capabilities, powered by a service worker (`sw.js
     -   The service worker dynamically injects the version number as a query parameter into the CSS and JS links in `index.html` (e.g., `index.js?v=0.9.2`). This ensures the browser requests the new files after an update.
     -   For all requests, the fetch handler uses `caches.match(event.request, { ignoreSearch: true })`. This powerful option allows it to serve the correct cached file by ignoring the query string, seamlessly handling both versioned requests from the HTML and clean URL requests from ES6 module imports.
 
+### Riddle Chooser (Vercel API + JSON)
+
+- Endpoint: `/api/riddles/chooser.json`
+  - Reads `solving/output/riddles_calendar.json` (override with `RIDDLES_JSON_PATH` env)
+  - Timezone: UTC
+  - Includes all dates from `2025-09-01` through today (UTC), future dates excluded
+  - Marks only the last 20 days (including today) as `enabled: true`
+  - Response shape:
+    ```json
+    {
+      "since": "2025-09-01",
+      "todayUtc": "YYYY-MM-DD",
+      "items": [
+        {
+          "date": "YYYY-MM-DD",
+          "enabled": true,
+          "board": ["______", ...],
+          "rotation_counter": 0,
+          "step_to_win": 1
+        }
+      ]
+    }
+    ```
+
+- Chooser UI: `riddles.html`
+  - Fetches `/api/riddles/chooser.json`
+  - Renders tiles newest-first; tiles older than 20 days are visually disabled
+  - Each tile embeds `data-*` attributes for `board`, `rotation_counter`, and `step_to_win`
+  - Clicking an enabled tile navigates to `index.html?mode=riddle&date=YYYY-MM-DD&board=[...]&steps=X`
+
 ### Animations & Transitions
 
 -   **Bouncy Grid Rotation:** The grid rotation uses a custom CSS `transition` with a `cubic-bezier` timing function to create a delightful "bouncy" effect.

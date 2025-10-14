@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/riddles/chooser.json.js": {
+      "includeFiles": [
+        "solving/output/riddles_calendar.json"
+      ]
+    }
+  }
+}
+
+

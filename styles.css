@@ -1013,6 +1013,19 @@ select {
     background-color: #c3e6cb;
 }
 
+.riddle-date-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+}
+
+.riddle-date-card.disabled:hover {
+    background-color: #f0f1f2;
+    border-color: #e9ecef;
+    transform: none;
+    box-shadow: none;
+}
+
 .riddle-date-card.solved::after {
     content: '✓';
     position: absolute;
@@ -1035,4 +1048,83 @@ select {
     font-size: 20px;
     font-weight: 600;
     color: #333;
+}
+
+/* Riddle Mode Button Styles */
+.riddle-button-bar {
+    width: 100%;
+    background-color: white;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 12px 10px; /* Slight tweak */
+    margin-bottom: 8px;  /* space between rows */
+    box-sizing: border-box; /* ensure padding is contained */
+}
+
+.riddle-top-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px; /* Reduced gap between buttons */
+}
+
+.riddle-btn {
+    padding: 8px 14px; /* Reduced padding to make buttons more compact */
+    font-size: 13px; /* Slightly smaller font */
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex: 0 1 auto; /* Allow buttons to shrink if needed */
+    max-width: 48%; /* Ensure each button takes at most 48% of width */
+}
+
+.riddle-reset-btn {
+    background-color: #1ca433;
+    color: white;
+}
+
+.riddle-reset-btn:hover {
+    background-color: #158c2b;
+    transform: translateY(-1px);
+}
+
+.riddle-back-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.riddle-back-btn:hover {
+    background-color: #545b62;
+    transform: translateY(-1px);
+}
+
+.riddle-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive riddle buttons */
+@media (max-width: 600px) {
+    .riddle-button-bar {
+        padding: 10px 8px;
+    }
+    
+    .riddle-top-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .riddle-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .riddle-btn {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
 }

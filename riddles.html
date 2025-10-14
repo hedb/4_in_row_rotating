@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Riddles – Four-in-a-Row</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png">
+</head>
+<body>
+    <div style="margin-bottom: 20px; text-align:center;">
+        <a href="/index.html" style="text-decoration:none;">
+            <img class="hero-logo" src="/icons/icon-512.png" alt="Four-in-a-Row with Rotating Grid" />
+        </a>
+    </div>
+
+    <div class="riddle-calendar" id="riddle-calendar">
+        <div class="riddle-calendar-content">
+            <div class="riddle-calendar-header">
+                <a href="/index.html" class="back-btn">← Back</a>
+                <h2>Daily Riddles</h2>
+            </div>
+            <div id="riddle-calendar-grid" class="riddle-calendar-grid"></div>
+            <div id="riddle-status" style="text-align:center; color:#666; font-size:14px;"></div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const gridEl = document.getElementById('riddle-calendar-grid');
+        const statusEl = document.getElementById('riddle-status');
+
+        function monthLabelFromDateStr(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const dt = new Date(Date.UTC(y, m - 1, d));
+            return dt.toLocaleDateString('en-US', { month: 'short' });
+        }
+
+        function dayNumFromDateStr(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return d;
+        }
+
+        function buildCard(item, todayUtc) {
+            const card = document.createElement('div');
+            card.className = 'riddle-date-card';
+
+            if (!item.enabled) {
+                card.classList.add('disabled');
+            }
+            if (item.date === todayUtc) {
+                card.classList.add('current');
+            }
+
+            // Embed metadata so even disabled cards carry settings
+            card.dataset.date = item.date;
+            card.dataset.rotation = String(item.rotation_counter ?? '');
+            card.dataset.steps = String(item.step_to_win ?? '');
+            try {
+                card.dataset.board = JSON.stringify(item.board || []);
+            } catch (_) {
+                card.dataset.board = '[]';
+            }
+
+            // Title for quick info
+            const steps = item.step_to_win;
+            if (typeof steps === 'number') {
+                card.title = `White wins in ${steps}`;
+            }
+
+            const monthSpan = document.createElement('div');
+            monthSpan.className = 'riddle-date-month';
+            monthSpan.textContent = monthLabelFromDateStr(item.date);
+
+            const daySpan = document.createElement('div');
+            daySpan.className = 'riddle-date-day';
+            daySpan.textContent = dayNumFromDateStr(item.date);
+
+            card.appendChild(monthSpan);
+            card.appendChild(daySpan);
+
+            if (item.enabled) {
+                card.addEventListener('click', () => {
+                    const params = new URLSearchParams();
+                    params.set('mode', 'riddle');
+                    params.set('date', item.date);
+                    if (Array.isArray(item.board)) {
+                        params.set('board', encodeURIComponent(JSON.stringify(item.board)));
+                    }
+                    if (typeof item.step_to_win === 'number') {
+                        params.set('steps', String(item.step_to_win));
+                    }
+                    if (typeof item.rotation_counter === 'number') {
+                        params.set('rotation', String(item.rotation_counter));
+                    }
+                    window.location.href = `/index.html?${params.toString()}`;
+                });
+            }
+
+            return card;
+        }
+
+        function mockChooser() {
+            const now = new Date();
+            const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+                .toISOString().slice(0,10);
+            const items = [];
+            for (let i = 0; i < 28; i++) {
+                const d = new Date(Date.parse(todayUtc));
+                d.setUTCDate(d.getUTCDate() - i);
+                const dateStr = d.toISOString().slice(0,10);
+                items.push({
+                    date: dateStr,
+                    enabled: i < 20,
+                    board: ["______","______","___WWB","___WWB","___BBW","B_WWBB"],
+                    rotation_counter: 0,
+                    step_to_win: 1
+                });
+            }
+            return { since: '2025-09-01', todayUtc, items };
+        }
+
+        function renderData(data, note = '') {
+            const items = Array.isArray(data.items) ? data.items.slice() : [];
+            // Sort newest first
+            items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
+            gridEl.innerHTML = '';
+            for (const it of items) {
+                const card = buildCard(it, data.todayUtc);
+                gridEl.appendChild(card);
+            }
+            const enabledCount = items.filter(x => x.enabled).length;
+            statusEl.textContent = `Available: ${enabledCount} (last 20 days, UTC)${note}`;
+        }
+
+        async function loadChooser() {
+            const qs = new URLSearchParams(location.search);
+            const mockParam = (qs.get('mock') || '').toLowerCase();
+            const forceMockOn = mockParam === '1' || mockParam === 'true';
+            const forceMockOff = mockParam === '0' || mockParam === 'false';
+            const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            const useMock = forceMockOn || (!forceMockOff && isLocal);
+
+            statusEl.textContent = 'Loading…';
+            if (useMock) {
+                const data = mockChooser();
+                renderData(data, ' – mock');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/riddles/chooser.json', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                renderData(data);
+            } catch (err) {
+                console.warn('[RiddleChooser] Falling back to mock after fetch error:', err);
+                const data = mockChooser();
+                renderData(data, ' – mock (fallback)');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadChooser);
+    })();
+    </script>
+</body>
+</html>
+
+
