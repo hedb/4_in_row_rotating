@@ -125,6 +125,11 @@ export class RiddleGameHandler {
         console.log('[RiddleGameHandler] Reset complete - ready to replay puzzle');
     }
 
+    resetGame() {
+        // Wire up to global Reset button behavior
+        this.resetToInitialState();
+    }
+
     handlePlayerInput(selectedRow, col) {
         // Use same logic as standard AI mode
         if (this.gameController.isGameOver() || this.isAIThinking || this.currentPlayer !== this.humanPlayerId) {
