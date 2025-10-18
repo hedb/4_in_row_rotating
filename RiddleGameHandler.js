@@ -27,22 +27,33 @@ export class RiddleGameHandler {
         // Store initial board state for reset functionality
         this.initialBoardState = this.cloneBoardState();
         this.humanStepsTaken = 0;
-        this.turnCounter = 0;
+		this.turnCounter = 0;
         this.currentPlayer = this.humanPlayerId;
         this.updateRiddleIndicator();
-        // If a rotation counter is provided with the riddle, prime the countdown accordingly
-        if (typeof this.riddleData.rotationCounter === 'number' && this.riddleData.rotationCounter >= 0) {
-            // Keep rotationFrequency at default (3) for now; just set countdown to the given value
-            // This mirrors UI semantics: "turns until rotation"
-            this.updateCountdown(this.riddleData.rotationCounter);
-        } else {
-            this.updateCountdown(this.rotationFrequency);
-        }
+		// Enforce initial rotation countdown from riddle (turns until next rotation)
+		this.primeRotationCounterFromRiddle();
         this.updateTurnIndicator();
         try {
             Analytics.trackEvent('riddle_start', { date: this.riddleData.date });
         } catch (_) {}
     }
+
+	primeRotationCounterFromRiddle() {
+		// Adjust internal turnCounter so that the remaining turns until rotation
+		// match riddleData.rotationCounter (clamped to [0, rotationFrequency]).
+		const hasRc = typeof this.riddleData.rotationCounter === 'number' && this.riddleData.rotationCounter >= 0;
+		const freq = this.rotationFrequency;
+		if (hasRc) {
+			const desiredRem = Math.max(0, Math.min(freq, this.riddleData.rotationCounter));
+			const mod = (freq - (desiredRem % freq)) % freq;
+			// Set turnCounter so that (turnCounter % freq) equals mod
+			this.turnCounter = mod;
+			this.updateCountdown(desiredRem === 0 ? freq : desiredRem);
+		} else {
+			this.turnCounter = 0;
+			this.updateCountdown(freq);
+		}
+	}
 
     cloneBoardState() {
         const grid = [];
@@ -85,8 +96,9 @@ export class RiddleGameHandler {
         this.gameController.winner = null;
         
         // Update UI to show it's the human's turn
-        this.updateTurnIndicator();
-        this.updateCountdown(this.rotationFrequency);
+		this.updateTurnIndicator();
+		// Re-apply rotation countdown from the riddle when resetting
+		this.primeRotationCounterFromRiddle();
         
         // Hide game over messages and show gameplay status
         const gameOverContainer = document.getElementById('game-over-container');
