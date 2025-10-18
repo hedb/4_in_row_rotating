@@ -1,0 +1,6333 @@
+{
+  "2025-09-01": {
+    "board": [
+      "______",
+      "______",
+      "___WWB",
+      "___WWB",
+      "___BBW",
+      "B_WWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 589958
+  },
+  "2025-09-02": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "_B___W",
+      "_WBWWB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 555836
+  },
+  "2025-09-03": {
+    "board": [
+      "____BW",
+      "____BW",
+      "____WW",
+      "____WB",
+      "____BW",
+      "____BB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 59462
+  },
+  "2025-09-04": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__W_BW",
+      "_WBBWB",
+      "_BBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 486358
+  },
+  "2025-09-05": {
+    "board": [
+      "_____W",
+      "____BB",
+      "____WB",
+      "____WB",
+      "B___BW",
+      "W__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 513047
+  },
+  "2025-09-06": {
+    "board": [
+      "______",
+      "___B__",
+      "___W__",
+      "___WBW",
+      "__BWWB",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 448269
+  },
+  "2025-09-07": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "_B___B",
+      "_W__BW",
+      "BWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 267622
+  },
+  "2025-09-08": {
+    "board": [
+      "______",
+      "______",
+      "___WBB",
+      "___WBW",
+      "B__BWB",
+      "W__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 353530
+  },
+  "2025-09-09": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "_B__WB",
+      "_W__BW",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 211712
+  },
+  "2025-09-10": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "__B_BB",
+      "__BWWB",
+      "__WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 380240
+  },
+  "2025-09-11": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "_B___W",
+      "_W__BW",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 188302
+  },
+  "2025-09-12": {
+    "board": [
+      "______",
+      "____B_",
+      "____WW",
+      "___WBB",
+      "__BWWB",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 186750
+  },
+  "2025-09-13": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "____WW",
+      "_B__BW",
+      "WWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 381112
+  },
+  "2025-09-14": {
+    "board": [
+      "______",
+      "____W_",
+      "____BW",
+      "___BWB",
+      "__WBWB",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 512195
+  },
+  "2025-09-15": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "____BW",
+      "W___BW",
+      "BWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 189821
+  },
+  "2025-09-16": {
+    "board": [
+      "______",
+      "___W__",
+      "___WBW",
+      "___BWB",
+      "___BWB",
+      "B__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 356476
+  },
+  "2025-09-17": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "__B__W",
+      "__W_BW",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 427486
+  },
+  "2025-09-18": {
+    "board": [
+      "______",
+      "______",
+      "___BW_",
+      "___WBW",
+      "__BWWB",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 388730
+  },
+  "2025-09-19": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "B____B",
+      "W___BW",
+      "BBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 214523
+  },
+  "2025-09-20": {
+    "board": [
+      "______",
+      "___B__",
+      "___W__",
+      "___BWW",
+      "__BWBB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 361720
+  },
+  "2025-09-21": {
+    "board": [
+      "______",
+      "____WB",
+      "____BW",
+      "___WBW",
+      "___BWW",
+      "B__WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203251
+  },
+  "2025-09-22": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "__B_WB",
+      "__WWBB",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 235510
+  },
+  "2025-09-23": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "B____W",
+      "W__BWW",
+      "WWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 466700
+  },
+  "2025-09-24": {
+    "board": [
+      "______",
+      "______",
+      "__W___",
+      "__WWWB",
+      "__BWBB",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 540308
+  },
+  "2025-09-25": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____BW",
+      "_B__WW",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 198948
+  },
+  "2025-09-26": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "__W_WB",
+      "__WWBB",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 385477
+  },
+  "2025-09-27": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "___WBW",
+      "B__BWW",
+      "BBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 557975
+  },
+  "2025-09-28": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "__B_WB",
+      "__BWBB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 322501
+  },
+  "2025-09-29": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____BW",
+      "WB__WW",
+      "WBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 547752
+  },
+  "2025-09-30": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "___WWB",
+      "__BWBB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 327236
+  },
+  "2025-10-01": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "_B___W",
+      "_W__WW",
+      "BBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 428086
+  },
+  "2025-10-02": {
+    "board": [
+      "______",
+      "______",
+      "___B__",
+      "__WWBB",
+      "__WBWW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 469584
+  },
+  "2025-10-03": {
+    "board": [
+      "_____W",
+      "____BB",
+      "____WB",
+      "____WW",
+      "_B__WB",
+      "_W_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 498646
+  },
+  "2025-10-04": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__WWBB",
+      "__BWBW",
+      "__BWWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79418
+  },
+  "2025-10-05": {
+    "board": [
+      "_____B",
+      "____WW",
+      "____WB",
+      "____BW",
+      "B___WB",
+      "W__BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 200992
+  },
+  "2025-10-06": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "___B_B",
+      "_BBWBW",
+      "_WBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 388450
+  },
+  "2025-10-07": {
+    "board": [
+      "____W_",
+      "____BB",
+      "____WB",
+      "____WW",
+      "___BWB",
+      "B__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 502001
+  },
+  "2025-10-08": {
+    "board": [
+      "______",
+      "______",
+      "__W___",
+      "__BWBW",
+      "__WWBW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 489659
+  },
+  "2025-10-09": {
+    "board": [
+      "_____W",
+      "_____W",
+      "___W_B",
+      "___BWB",
+      "___BWB",
+      "B__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 595774
+  },
+  "2025-10-10": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "__B_BW",
+      "_BWWBW",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 553618
+  },
+  "2025-10-11": {
+    "board": [
+      "______",
+      "_____W",
+      "____BW",
+      "___WWB",
+      "B__BWB",
+      "W__BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 357065
+  },
+  "2025-10-12": {
+    "board": [
+      "______",
+      "______",
+      "___BW_",
+      "___BBW",
+      "__BWBW",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 507808
+  },
+  "2025-10-13": {
+    "board": [
+      "____BB",
+      "____WW",
+      "____BW",
+      "____WW",
+      "____WB",
+      "____BB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 61790
+  },
+  "2025-10-14": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__WB_B",
+      "_BWWBW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 365565
+  },
+  "2025-10-15": {
+    "board": [
+      "____BW",
+      "____BB",
+      "____WW",
+      "____BW",
+      "____WB",
+      "____BW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 61023
+  },
+  "2025-10-16": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "__B__W",
+      "W_BWBB",
+      "WWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 559765
+  },
+  "2025-10-17": {
+    "board": [
+      "_____W",
+      "_____W",
+      "____BW",
+      "___WWB",
+      "___BBW",
+      "_B_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 413525
+  },
+  "2025-10-18": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "_W___W",
+      "_BBWWB",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 457018
+  },
+  "2025-10-19": {
+    "board": [
+      "_____B",
+      "____WB",
+      "____WW",
+      "____WB",
+      "____BW",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 77168
+  },
+  "2025-10-20": {
+    "board": [
+      "______",
+      "______",
+      "___W__",
+      "___WBW",
+      "_B_BWB",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 600613
+  },
+  "2025-10-21": {
+    "board": [
+      "______",
+      "____WW",
+      "____BB",
+      "__B_WB",
+      "__W_BW",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 386769
+  },
+  "2025-10-22": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_B_WBW",
+      "_W_BWB",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 573620
+  },
+  "2025-10-23": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WB",
+      "____WB",
+      "__W_BW",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 408761
+  },
+  "2025-10-24": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_BW__W",
+      "_WBWWB",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 593386
+  },
+  "2025-10-25": {
+    "board": [
+      "_____W",
+      "____BW",
+      "____WB",
+      "____WB",
+      "___BBW",
+      "B__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 498930
+  },
+  "2025-10-26": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "___B_W",
+      "W_BWWB",
+      "WBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 458199
+  },
+  "2025-10-27": {
+    "board": [
+      "____W_",
+      "____BB",
+      "____WB",
+      "____WB",
+      "___WBW",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 514799
+  },
+  "2025-10-28": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___W_W",
+      "_BWBWB",
+      "BBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 551017
+  },
+  "2025-10-29": {
+    "board": [
+      "______",
+      "____BW",
+      "____BB",
+      "____WB",
+      "____BW",
+      "____WW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 14828
+  },
+  "2025-10-30": {
+    "board": [
+      "______",
+      "______",
+      "___W__",
+      "___WBW",
+      "B__BWB",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 515924
+  },
+  "2025-10-31": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WB",
+      "_B__BW",
+      "_WWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 591670
+  },
+  "2025-11-01": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___W_W",
+      "B_WBBB",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 274281
+  },
+  "2025-11-02": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WB",
+      "____WB",
+      "___WBW",
+      "BW_BWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 438503
+  },
+  "2025-11-03": {
+    "board": [
+      "______",
+      "______",
+      "___WBW",
+      "___WBW",
+      "__BBWB",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 200375
+  },
+  "2025-11-04": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "B____B",
+      "W___BW",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 484122
+  },
+  "2025-11-05": {
+    "board": [
+      "______",
+      "___B__",
+      "___WBW",
+      "___BWW",
+      "___BWB",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 340110
+  },
+  "2025-11-06": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "__B__B",
+      "__W_BW",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 558325
+  },
+  "2025-11-07": {
+    "board": [
+      "______",
+      "____B_",
+      "___WBB",
+      "___BWW",
+      "___BWB",
+      "W__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 347992
+  },
+  "2025-11-08": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "__W__W",
+      "__BWBW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 388914
+  },
+  "2025-11-09": {
+    "board": [
+      "______",
+      "______",
+      "___WWB",
+      "___WBB",
+      "_B_BWB",
+      "_W_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 540532
+  },
+  "2025-11-10": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "____WW",
+      "B__WBB",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 402245
+  },
+  "2025-11-11": {
+    "board": [
+      "______",
+      "___B__",
+      "___W__",
+      "___WWB",
+      "__BBWB",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 555194
+  },
+  "2025-11-12": {
+    "board": [
+      "____WB",
+      "____WB",
+      "____WB",
+      "____BW",
+      "____BW",
+      "____BW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79218
+  },
+  "2025-11-13": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___B_B",
+      "_BWWWB",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 458680
+  },
+  "2025-11-14": {
+    "board": [
+      "_____W",
+      "____BB",
+      "____WB",
+      "____BW",
+      "____BW",
+      "___BWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 60317
+  },
+  "2025-11-15": {
+    "board": [
+      "______",
+      "______",
+      "__W___",
+      "__WWWB",
+      "__BBWW",
+      "B_BWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 601657
+  },
+  "2025-11-16": {
+    "board": [
+      "______",
+      "_____B",
+      "____WB",
+      "____BW",
+      "_BW_BB",
+      "_WWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 578491
+  },
+  "2025-11-17": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "___BWB",
+      "___BWW",
+      "WB_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 218443
+  },
+  "2025-11-18": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "____BW",
+      "_B_WBB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 436817
+  },
+  "2025-11-19": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "__BW_B",
+      "__WBWW",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 279642
+  },
+  "2025-11-20": {
+    "board": [
+      "______",
+      "____B_",
+      "____WB",
+      "____BW",
+      "__BWBB",
+      "W_WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 445884
+  },
+  "2025-11-21": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "_W_BWW",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 242495
+  },
+  "2025-11-22": {
+    "board": [
+      "______",
+      "___W__",
+      "___BWB",
+      "___WBW",
+      "___WBW",
+      "B__BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203666
+  },
+  "2025-11-23": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "__BBWB",
+      "_WBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 412660
+  },
+  "2025-11-24": {
+    "board": [
+      "____B_",
+      "____BW",
+      "____WB",
+      "____BW",
+      "___WBW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 275139
+  },
+  "2025-11-25": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___WWB",
+      "_W_BWB",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 513894
+  },
+  "2025-11-26": {
+    "board": [
+      "_____B",
+      "____WW",
+      "____WB",
+      "____BW",
+      "__W_BW",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 296010
+  },
+  "2025-11-27": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "_____B",
+      "_WBWBB",
+      "WBWWWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 82222
+  },
+  "2025-11-28": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____BB",
+      "___BWW",
+      "___BWW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 417213
+  },
+  "2025-11-29": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__B_BW",
+      "_WBWBB",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 448906
+  },
+  "2025-11-30": {
+    "board": [
+      "______",
+      "____WB",
+      "____BB",
+      "___BWW",
+      "___BWW",
+      "W__BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 405754
+  },
+  "2025-12-01": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "____BW",
+      "_BW_BB",
+      "_WBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 306082
+  },
+  "2025-12-02": {
+    "board": [
+      "______",
+      "______",
+      "___WBB",
+      "___BWB",
+      "___WWW",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 66935
+  },
+  "2025-12-03": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__W__W",
+      "B_WBWB",
+      "BBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 450085
+  },
+  "2025-12-04": {
+    "board": [
+      "_____B",
+      "____BW",
+      "____WB",
+      "____WB",
+      "_B__BW",
+      "_W_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 247944
+  },
+  "2025-12-05": {
+    "board": [
+      "______",
+      "______",
+      "___B_W",
+      "___WBW",
+      "__BBWB",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390064
+  },
+  "2025-12-06": {
+    "board": [
+      "______",
+      "_____B",
+      "____WB",
+      "____WB",
+      "_W__BW",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 234818
+  },
+  "2025-12-07": {
+    "board": [
+      "______",
+      "___B__",
+      "___W_W",
+      "___WBB",
+      "__BWWW",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 184263
+  },
+  "2025-12-08": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "____WW",
+      "_BWBBB",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 473606
+  },
+  "2025-12-09": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "__W_BB",
+      "__BWWB",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 409009
+  },
+  "2025-12-10": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___BWW",
+      "_W_BWW",
+      "BBWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 450216
+  },
+  "2025-12-11": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "__B__W",
+      "__BWBB",
+      "W_BWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 478817
+  },
+  "2025-12-12": {
+    "board": [
+      "______",
+      "______",
+      "___WB_",
+      "___BWB",
+      "__WBWW",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 522240
+  },
+  "2025-12-13": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "_B___W",
+      "_W_WBB",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 354317
+  },
+  "2025-12-14": {
+    "board": [
+      "______",
+      "_____B",
+      "____WB",
+      "___WBB",
+      "B__BWW",
+      "W__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 380747
+  },
+  "2025-12-15": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_W_B_W",
+      "_BWWBB",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 593146
+  },
+  "2025-12-16": {
+    "board": [
+      "____B_",
+      "____WB",
+      "____WB",
+      "____WB",
+      "___BBW",
+      "W__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 208443
+  },
+  "2025-12-17": {
+    "board": [
+      "______",
+      "______",
+      "___B__",
+      "__WWBW",
+      "__BBWW",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390091
+  },
+  "2025-12-18": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "___BWB",
+      "___WBW",
+      "B_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 204454
+  },
+  "2025-12-19": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "____BW",
+      "__BBWB",
+      "_WWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 256322
+  },
+  "2025-12-20": {
+    "board": [
+      "______",
+      "____B_",
+      "____WW",
+      "____WB",
+      "W___BW",
+      "BBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 548328
+  },
+  "2025-12-21": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "___B_W",
+      "__WBWB",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 436406
+  },
+  "2025-12-22": {
+    "board": [
+      "____B_",
+      "____W_",
+      "____BW",
+      "___WWB",
+      "___BBW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 183855
+  },
+  "2025-12-23": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____BW",
+      "B_WWWB",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 471036
+  },
+  "2025-12-24": {
+    "board": [
+      "______",
+      "______",
+      "___BW_",
+      "___WWB",
+      "__BBBW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 375903
+  },
+  "2025-12-25": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____BW",
+      "WB__WB",
+      "BWBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 519647
+  },
+  "2025-12-26": {
+    "board": [
+      "____W_",
+      "____BW",
+      "____WW",
+      "____WB",
+      "___BBW",
+      "_B_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 425260
+  },
+  "2025-12-27": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "__W__W",
+      "__BWWW",
+      "B_BWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 237032
+  },
+  "2025-12-28": {
+    "board": [
+      "______",
+      "____W_",
+      "___WBW",
+      "___BWB",
+      "___BWB",
+      "_B_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 356388
+  },
+  "2025-12-29": {
+    "board": [
+      "_____W",
+      "_____W",
+      "____WB",
+      "____BW",
+      "__B_BW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 299336
+  },
+  "2025-12-30": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_B__WB",
+      "_BWWWB",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 597583
+  },
+  "2025-12-31": {
+    "board": [
+      "______",
+      "_____W",
+      "____WB",
+      "___WBW",
+      "B__BBW",
+      "W__BWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 577159
+  },
+  "2026-01-01": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "____WW",
+      "_BW_WB",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 236180
+  },
+  "2026-01-02": {
+    "board": [
+      "______",
+      "______",
+      "___WWB",
+      "___WBB",
+      "___WBW",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80691
+  },
+  "2026-01-03": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "_____W",
+      "____WB",
+      "BWBWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 61115
+  },
+  "2026-01-04": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "___BWW",
+      "__WWBW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390585
+  },
+  "2026-01-05": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_B__BB",
+      "_W_BWB",
+      "WWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 562945
+  },
+  "2026-01-06": {
+    "board": [
+      "______",
+      "_____B",
+      "____BB",
+      "__B_WW",
+      "__W_BW",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 283770
+  },
+  "2026-01-07": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WW",
+      "____BW",
+      "B__BWB",
+      "W__BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 249636
+  },
+  "2026-01-08": {
+    "board": [
+      "______",
+      "______",
+      "___WB_",
+      "___BWW",
+      "__WWBB",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 510836
+  },
+  "2026-01-09": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____W",
+      "__B_BB",
+      "__BBWW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 253961
+  },
+  "2026-01-10": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___BWW",
+      "W__BBW",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 341155
+  },
+  "2026-01-11": {
+    "board": [
+      "_____W",
+      "____BW",
+      "____WB",
+      "____BW",
+      "__B_WB",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 239543
+  },
+  "2026-01-12": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "___B_B",
+      "___BBW",
+      "WWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 245839
+  },
+  "2026-01-13": {
+    "board": [
+      "______",
+      "____BB",
+      "____WB",
+      "__B_WW",
+      "__W_WB",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 502049
+  },
+  "2026-01-14": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "B___BB",
+      "W__BWW",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 459825
+  },
+  "2026-01-15": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____BB",
+      "__B_WW",
+      "__W_BW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 261135
+  },
+  "2026-01-16": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___WBB",
+      "B__BWB",
+      "BWBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 350999
+  },
+  "2026-01-17": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "_____W",
+      "__WWBW",
+      "__WBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 68732
+  },
+  "2026-01-18": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "___WBW",
+      "_B_BWB",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 387709
+  },
+  "2026-01-19": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___BWB",
+      "___WBW",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 58842
+  },
+  "2026-01-20": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "____BW",
+      "__BBWB",
+      "B_WWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 491353
+  },
+  "2026-01-21": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "_B__WB",
+      "_W_WBB",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 383821
+  },
+  "2026-01-22": {
+    "board": [
+      "______",
+      "____BB",
+      "____WB",
+      "____BW",
+      "B___WW",
+      "W_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 284150
+  },
+  "2026-01-23": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__BWWB",
+      "__BBBW",
+      "_WWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 404716
+  },
+  "2026-01-24": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WW",
+      "____BW",
+      "B___BW",
+      "W_BWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 426678
+  },
+  "2026-01-25": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "___WWB",
+      "_B_WWB",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 548159
+  },
+  "2026-01-26": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "__W__W",
+      "__WBWB",
+      "B_BWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 333628
+  },
+  "2026-01-27": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "_W__WB",
+      "_BBWBW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 404853
+  },
+  "2026-01-28": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "B____W",
+      "W__BWB",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 448002
+  },
+  "2026-01-29": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "__B_WB",
+      "__W_BW",
+      "_WBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 218108
+  },
+  "2026-01-30": {
+    "board": [
+      "______",
+      "___W__",
+      "___WWB",
+      "___BBW",
+      "___BWW",
+      "B__BWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 376360
+  },
+  "2026-01-31": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__BWWB",
+      "__WWBB",
+      "__BWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80701
+  },
+  "2026-02-01": {
+    "board": [
+      "______",
+      "_____W",
+      "____WB",
+      "___BBW",
+      "_B_BWW",
+      "_W_BWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 402548
+  },
+  "2026-02-02": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___BWB",
+      "B_WWBB",
+      "W_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 272085
+  },
+  "2026-02-03": {
+    "board": [
+      "______",
+      "____W_",
+      "___BWB",
+      "___WBW",
+      "___BWW",
+      "_B_BWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 395788
+  },
+  "2026-02-04": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "__B__W",
+      "_WBWBB",
+      "BWWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 560319
+  },
+  "2026-02-05": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____BW",
+      "___WWB",
+      "___BWW",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 248574
+  },
+  "2026-02-06": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "____BW",
+      "_BWWWB",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 585933
+  },
+  "2026-02-07": {
+    "board": [
+      "______",
+      "____BW",
+      "____BW",
+      "___BWB",
+      "___BBW",
+      "W__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 221997
+  },
+  "2026-02-08": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "B____W",
+      "W_BWWB",
+      "BWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 195749
+  },
+  "2026-02-09": {
+    "board": [
+      "______",
+      "_____W",
+      "____BW",
+      "_B__WB",
+      "_W__BW",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 193069
+  },
+  "2026-02-10": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "__W__W",
+      "__BBWB",
+      "B_WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 233502
+  },
+  "2026-02-11": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___BWB",
+      "_WWWBW",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 538959
+  },
+  "2026-02-12": {
+    "board": [
+      "____B_",
+      "____WB",
+      "____WB",
+      "____BW",
+      "___BWB",
+      "__WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 285845
+  },
+  "2026-02-13": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___B_B",
+      "W_BWBW",
+      "BWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 302076
+  },
+  "2026-02-14": {
+    "board": [
+      "____W_",
+      "____BW",
+      "____WB",
+      "____BW",
+      "___BWB",
+      "_B_BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 239480
+  },
+  "2026-02-15": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "__W__W",
+      "_BWWBW",
+      "BWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 469883
+  },
+  "2026-02-16": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "___WBB",
+      "B__BWB",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 384758
+  },
+  "2026-02-17": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "_W___W",
+      "_WBWBW",
+      "BBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390008
+  },
+  "2026-02-18": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "____WB",
+      "___BWB",
+      "__WBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 64759
+  },
+  "2026-02-19": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "__W__W",
+      "B_BWBW",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 491191
+  },
+  "2026-02-20": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___WBB",
+      "_B_WWB",
+      "_WWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 469386
+  },
+  "2026-02-21": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "B___WW",
+      "W___BW",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 198822
+  },
+  "2026-02-22": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___WBW",
+      "__BWWB",
+      "B_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 349514
+  },
+  "2026-02-23": {
+    "board": [
+      "_____W",
+      "_____W",
+      "____BB",
+      "___BWB",
+      "___BBW",
+      "W__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 413541
+  },
+  "2026-02-24": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "__BW_W",
+      "__WWBB",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 373505
+  },
+  "2026-02-25": {
+    "board": [
+      "______",
+      "____BW",
+      "____BB",
+      "___WWB",
+      "___BWW",
+      "B__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 495014
+  },
+  "2026-02-26": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "__B__W",
+      "_BWWBB",
+      "_WWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 544797
+  },
+  "2026-02-27": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___WWB",
+      "W__BWW",
+      "BBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 423416
+  },
+  "2026-02-28": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "_B___W",
+      "_WBWBB",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 447628
+  },
+  "2026-03-01": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "___WWB",
+      "B__BBW",
+      "W_BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 592926
+  },
+  "2026-03-02": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "____BW",
+      "_B_WWB",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 574554
+  },
+  "2026-03-03": {
+    "board": [
+      "______",
+      "____BB",
+      "____WW",
+      "____WB",
+      "B___BW",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 247724
+  },
+  "2026-03-04": {
+    "board": [
+      "______",
+      "______",
+      "___W__",
+      "__BWBW",
+      "__BBWW",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 582703
+  },
+  "2026-03-05": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____WW",
+      "____WB",
+      "___BBW",
+      "B_WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 265980
+  },
+  "2026-03-06": {
+    "board": [
+      "______",
+      "___B__",
+      "___W__",
+      "___BWW",
+      "__BWWW",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 461927
+  },
+  "2026-03-07": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____WB",
+      "____BW",
+      "B___BW",
+      "W_WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 509936
+  },
+  "2026-03-08": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___BWB",
+      "__BBWB",
+      "_WBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 276523
+  },
+  "2026-03-09": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WB",
+      "____BW",
+      "___WBW",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 333184
+  },
+  "2026-03-10": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__BBWB",
+      "__BWWW",
+      "W_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 424622
+  },
+  "2026-03-11": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "_B__BW",
+      "_W_BWW",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 346742
+  },
+  "2026-03-12": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "____WW",
+      "B_BWBB",
+      "W_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 574762
+  },
+  "2026-03-13": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "__WBWW",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 266016
+  },
+  "2026-03-14": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "_B__WW",
+      "_W__BW",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 586574
+  },
+  "2026-03-15": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___WBB",
+      "B__WWB",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 482895
+  },
+  "2026-03-16": {
+    "board": [
+      "______",
+      "___W__",
+      "___BWB",
+      "___WWW",
+      "___BBW",
+      "_B_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 566662
+  },
+  "2026-03-17": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "__B_BW",
+      "__BWWB",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 266423
+  },
+  "2026-03-18": {
+    "board": [
+      "______",
+      "______",
+      "___WWW",
+      "___BWB",
+      "___BBW",
+      "WB_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 600389
+  },
+  "2026-03-19": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "__B__W",
+      "__WBWW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 210137
+  },
+  "2026-03-20": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "B___BB",
+      "W__BWB",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 288571
+  },
+  "2026-03-21": {
+    "board": [
+      "______",
+      "___W__",
+      "___BWB",
+      "___BWW",
+      "___WBW",
+      "__BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 394276
+  },
+  "2026-03-22": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__B_BB",
+      "__WBWB",
+      "BWWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 288320
+  },
+  "2026-03-23": {
+    "board": [
+      "______",
+      "____BB",
+      "____BB",
+      "___WWW",
+      "___WBW",
+      "_B_BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 362378
+  },
+  "2026-03-24": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "__B__W",
+      "__WBWB",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 310827
+  },
+  "2026-03-25": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "___BWB",
+      "B__BWW",
+      "W_WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 501583
+  },
+  "2026-03-26": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "_B___W",
+      "_WWWBW",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 430670
+  },
+  "2026-03-27": {
+    "board": [
+      "______",
+      "______",
+      "___WBB",
+      "___WBB",
+      "__BBWW",
+      "__WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 351655
+  },
+  "2026-03-28": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "__W__W",
+      "_WWWBB",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 586657
+  },
+  "2026-03-29": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___BWB",
+      "__BBWW",
+      "B_WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 296372
+  },
+  "2026-03-30": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "_B___W",
+      "_W_BWB",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 254152
+  },
+  "2026-03-31": {
+    "board": [
+      "______",
+      "____WB",
+      "____BB",
+      "___WWB",
+      "___WBW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 294619
+  },
+  "2026-04-01": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "__B__W",
+      "__WBWB",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 459332
+  },
+  "2026-04-02": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "___WBB",
+      "___WBW",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 73835
+  },
+  "2026-04-03": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "__W__W",
+      "__BBWB",
+      "_BBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 206152
+  },
+  "2026-04-04": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "___BBW",
+      "_B_WBW",
+      "_W_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203274
+  },
+  "2026-04-05": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "__B_WB",
+      "__WBWB",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 500630
+  },
+  "2026-04-06": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "____BW",
+      "BW_WBW",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 545724
+  },
+  "2026-04-07": {
+    "board": [
+      "_____B",
+      "____BB",
+      "____WW",
+      "____BW",
+      "__W_WB",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 260133
+  },
+  "2026-04-08": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "___WWB",
+      "___WBW",
+      "WBWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 85558
+  },
+  "2026-04-09": {
+    "board": [
+      "_____B",
+      "____WB",
+      "____WB",
+      "____BW",
+      "___BWB",
+      "_W_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 285765
+  },
+  "2026-04-10": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "___BWB",
+      "B__WBW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 231753
+  },
+  "2026-04-11": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "_W__BW",
+      "_BWWWB",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 594378
+  },
+  "2026-04-12": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____W",
+      "_____B",
+      "____BW",
+      "BWWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 62042
+  },
+  "2026-04-13": {
+    "board": [
+      "______",
+      "____B_",
+      "____BB",
+      "___BWW",
+      "__WBWB",
+      "__BWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 502616
+  },
+  "2026-04-14": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "______",
+      "_B_WWW",
+      "WBWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 12192
+  },
+  "2026-04-15": {
+    "board": [
+      "______",
+      "____BW",
+      "____WW",
+      "____BB",
+      "___BBB",
+      "___WWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 83296
+  },
+  "2026-04-16": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____WW",
+      "_WB_WW",
+      "BBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 506779
+  },
+  "2026-04-17": {
+    "board": [
+      "______",
+      "______",
+      "___BWW",
+      "___BWW",
+      "___WBB",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 69986
+  },
+  "2026-04-18": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "____BW",
+      "_WB_WW",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 187472
+  },
+  "2026-04-19": {
+    "board": [
+      "______",
+      "_____W",
+      "____WW",
+      "___BWB",
+      "_B_BBW",
+      "_W_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 398001
+  },
+  "2026-04-20": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "B____W",
+      "W___WW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 237701
+  },
+  "2026-04-21": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "___BWB",
+      "_BWWBB",
+      "_WBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 537124
+  },
+  "2026-04-22": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "__B__W",
+      "__BBWW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 596568
+  },
+  "2026-04-23": {
+    "board": [
+      "______",
+      "____BB",
+      "____WW",
+      "____WB",
+      "____BB",
+      "__WWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 84495
+  },
+  "2026-04-24": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__W_BW",
+      "__WBWW",
+      "BWBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 340403
+  },
+  "2026-04-25": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "___WWB",
+      "___WBB",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 83892
+  },
+  "2026-04-26": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "____BW",
+      "W_B_BW",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 423747
+  },
+  "2026-04-27": {
+    "board": [
+      "_____W",
+      "_____B",
+      "___W_B",
+      "___BWW",
+      "___WWB",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 233387
+  },
+  "2026-04-28": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "___WBB",
+      "__BBWW",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 348892
+  },
+  "2026-04-29": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "____WW",
+      "_B_WBB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 250555
+  },
+  "2026-04-30": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "___WBW",
+      "__BBWW",
+      "__WBBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 376312
+  },
+  "2026-05-01": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___BWB",
+      "_B_WBB",
+      "_BBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 496162
+  },
+  "2026-05-02": {
+    "board": [
+      "______",
+      "_____B",
+      "__B__W",
+      "__W_BW",
+      "__WBWW",
+      "__WBBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 291618
+  },
+  "2026-05-03": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "_B__WB",
+      "_W_WBB",
+      "_BBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 575893
+  },
+  "2026-05-04": {
+    "board": [
+      "______",
+      "_____B",
+      "____BW",
+      "___BBW",
+      "__WBWW",
+      "__WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 343553
+  },
+  "2026-05-05": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "____WW",
+      "WB_WBB",
+      "BWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 195785
+  },
+  "2026-05-06": {
+    "board": [
+      "______",
+      "____W_",
+      "____BW",
+      "__B_WB",
+      "__BBWW",
+      "__WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 501833
+  },
+  "2026-05-07": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "___B_W",
+      "___WBW",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 447249
+  },
+  "2026-05-08": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__W_WB",
+      "_BWWWB",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 597450
+  },
+  "2026-05-09": {
+    "board": [
+      "_____W",
+      "____WB",
+      "____WB",
+      "____BW",
+      "___BBW",
+      "B__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 207173
+  },
+  "2026-05-10": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_W_B_B",
+      "_BBWWB",
+      "_BBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 456810
+  },
+  "2026-05-11": {
+    "board": [
+      "______",
+      "____BB",
+      "____WB",
+      "____WW",
+      "___WBW",
+      "BW_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 519695
+  },
+  "2026-05-12": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___BBW",
+      "__BBWB",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 189442
+  },
+  "2026-05-13": {
+    "board": [
+      "______",
+      "____BW",
+      "____WB",
+      "____WB",
+      "__W_BW",
+      "B_BWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 489911
+  },
+  "2026-05-14": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "___WBW",
+      "_B_WWB",
+      "_W_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 294501
+  },
+  "2026-05-15": {
+    "board": [
+      "______",
+      "_____W",
+      "____WB",
+      "____WB",
+      "B___BW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 236859
+  },
+  "2026-05-16": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "__B_BW",
+      "__WBWB",
+      "__WWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 562663
+  },
+  "2026-05-17": {
+    "board": [
+      "______",
+      "____W_",
+      "____BW",
+      "___WWB",
+      "___WBW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 285330
+  },
+  "2026-05-18": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____BW",
+      "B_W_WB",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 547387
+  },
+  "2026-05-19": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___BWW",
+      "_WBWBW",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 341021
+  },
+  "2026-05-20": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "_____B",
+      "__WBBB",
+      "__WWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80181
+  },
+  "2026-05-21": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___WBW",
+      "W__BWW",
+      "WBBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390510
+  },
+  "2026-05-22": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "_____B",
+      "__BWBB",
+      "__WWWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 76054
+  },
+  "2026-05-23": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__WBWB",
+      "__WBWW",
+      "_WBBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 312493
+  },
+  "2026-05-24": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "____BW",
+      "_B__BW",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 430372
+  },
+  "2026-05-25": {
+    "board": [
+      "______",
+      "____B_",
+      "___WWB",
+      "___WWB",
+      "___BWB",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 498244
+  },
+  "2026-05-26": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "_____W",
+      "_WWWBW",
+      "BBWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80379
+  },
+  "2026-05-27": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "___BBW",
+      "B__BWB",
+      "W_BWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 426423
+  },
+  "2026-05-28": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "_W___W",
+      "_BBWWW",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 423237
+  },
+  "2026-05-29": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "___BWB",
+      "___BBW",
+      "B_WWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 220220
+  },
+  "2026-05-30": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "____BW",
+      "__WWWB",
+      "_WBBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 75463
+  },
+  "2026-05-31": {
+    "board": [
+      "______",
+      "_____W",
+      "___BWB",
+      "___BWW",
+      "___BBW",
+      "B__WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 400956
+  },
+  "2026-06-01": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__B_BB",
+      "_BWWWB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 471390
+  },
+  "2026-06-02": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "___WWW",
+      "___BBW",
+      "WBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 304274
+  },
+  "2026-06-03": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "__B_BB",
+      "__WBWB",
+      "__BWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 360499
+  },
+  "2026-06-04": {
+    "board": [
+      "______",
+      "____B_",
+      "____BB",
+      "___BWW",
+      "___WBW",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 531664
+  },
+  "2026-06-05": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "___W_W",
+      "_B_BWB",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 250399
+  },
+  "2026-06-06": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "__B_WB",
+      "__BWBW",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 236489
+  },
+  "2026-06-07": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "_____W",
+      "___BWB",
+      "_BWWWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 75928
+  },
+  "2026-06-08": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BWB",
+      "__WWBW",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 493356
+  },
+  "2026-06-09": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "____BW",
+      "_WB_WB",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 568263
+  },
+  "2026-06-10": {
+    "board": [
+      "_____W",
+      "_____W",
+      "____BB",
+      "___BWB",
+      "___WBW",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 187901
+  },
+  "2026-06-11": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "B____W",
+      "W_WBBB",
+      "WBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 474408
+  },
+  "2026-06-12": {
+    "board": [
+      "______",
+      "_____B",
+      "____BB",
+      "___WWB",
+      "_B_BWW",
+      "_W_BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 514834
+  },
+  "2026-06-13": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__WBBW",
+      "__WWWB",
+      "__BWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 84026
+  },
+  "2026-06-14": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____BB",
+      "___WWW",
+      "___BBW",
+      "W__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 283879
+  },
+  "2026-06-15": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__B_WB",
+      "_BBWWW",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 505308
+  },
+  "2026-06-16": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____WB",
+      "____BW",
+      "____WB",
+      "____WW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 13505
+  },
+  "2026-06-17": {
+    "board": [
+      "______",
+      "______",
+      "___B_W",
+      "___WWB",
+      "__BBBW",
+      "W_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 382265
+  },
+  "2026-06-18": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "____BW",
+      "_W_BWB",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 185082
+  },
+  "2026-06-19": {
+    "board": [
+      "______",
+      "____WB",
+      "____BW",
+      "__B_WW",
+      "__W_BW",
+      "__BWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 434691
+  },
+  "2026-06-20": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "___B_W",
+      "_W_BWB",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 206566
+  },
+  "2026-06-21": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "____WB",
+      "__BWBW",
+      "__BWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 82918
+  },
+  "2026-06-22": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "_____B",
+      "____WB",
+      "BBWBWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 74122
+  },
+  "2026-06-23": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "___BBW",
+      "__BWBW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203603
+  },
+  "2026-06-24": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WB",
+      "BWBBWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 81417
+  },
+  "2026-06-25": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BBW",
+      "__BWBW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 486067
+  },
+  "2026-06-26": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "_____B",
+      "___WWB",
+      "_WBBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 82745
+  },
+  "2026-06-27": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__BBWW",
+      "__BBBW",
+      "__WWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 81688
+  },
+  "2026-06-28": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____WW",
+      "____BB",
+      "___WWB",
+      "___WWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 68668
+  },
+  "2026-06-29": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BWW",
+      "__WBBW",
+      "_WBBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 320830
+  },
+  "2026-06-30": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "____BB",
+      "____WW",
+      "B___WB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 11226
+  },
+  "2026-07-01": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BWW",
+      "_B_BWB",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 194902
+  },
+  "2026-07-02": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__BWBB",
+      "__WWBW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 371074
+  },
+  "2026-07-03": {
+    "board": [
+      "______",
+      "_____W",
+      "____BB",
+      "___BWW",
+      "_B_BWB",
+      "_W_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 242043
+  },
+  "2026-07-04": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "____WB",
+      "B___BW",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 211605
+  },
+  "2026-07-05": {
+    "board": [
+      "____B_",
+      "____W_",
+      "____WW",
+      "____BW",
+      "__BWWB",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 427949
+  },
+  "2026-07-06": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___W_B",
+      "___BBW",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 242755
+  },
+  "2026-07-07": {
+    "board": [
+      "______",
+      "____W_",
+      "____BB",
+      "__B_WW",
+      "__BWWW",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 393383
+  },
+  "2026-07-08": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "____BW",
+      "WB_BBB",
+      "WWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 541338
+  },
+  "2026-07-09": {
+    "board": [
+      "____W_",
+      "____BB",
+      "____WB",
+      "____WB",
+      "__B_WW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 514725
+  },
+  "2026-07-10": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___WBW",
+      "_B_BWB",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 357492
+  },
+  "2026-07-11": {
+    "board": [
+      "______",
+      "____BB",
+      "____WB",
+      "____BW",
+      "__W_BW",
+      "B_WWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 284586
+  },
+  "2026-07-12": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "___W_W",
+      "_B_BWW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 254121
+  },
+  "2026-07-13": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "____WB",
+      "____BB",
+      "B__WWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 8486
+  },
+  "2026-07-14": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "___B_W",
+      "__BWWW",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 434484
+  },
+  "2026-07-15": {
+    "board": [
+      "____B_",
+      "____W_",
+      "____BB",
+      "___BWW",
+      "___BBW",
+      "__WBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 259137
+  },
+  "2026-07-16": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "____WB",
+      "B___WW",
+      "BWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 216678
+  },
+  "2026-07-17": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "__B_BW",
+      "__WBBW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 311746
+  },
+  "2026-07-18": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___BWW",
+      "B__WWB",
+      "W_BWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 452361
+  },
+  "2026-07-19": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____BW",
+      "__B_BW",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 295824
+  },
+  "2026-07-20": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___BWB",
+      "_B_WWB",
+      "_WBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 412262
+  },
+  "2026-07-21": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "__B_BW",
+      "__BBWW",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 395710
+  },
+  "2026-07-22": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____W",
+      "___B_B",
+      "___WBW",
+      "BBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 192277
+  },
+  "2026-07-23": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__BWBW",
+      "__BBWB",
+      "__WWWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 84324
+  },
+  "2026-07-24": {
+    "board": [
+      "______",
+      "____BW",
+      "____BB",
+      "___BWB",
+      "___WBW",
+      "_W_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 252428
+  },
+  "2026-07-25": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "__B_BW",
+      "__WBWW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 346725
+  },
+  "2026-07-26": {
+    "board": [
+      "______",
+      "______",
+      "___WWB",
+      "___BWB",
+      "___WBW",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 207261
+  },
+  "2026-07-27": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "____BW",
+      "B__BWB",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 417182
+  },
+  "2026-07-28": {
+    "board": [
+      "______",
+      "____B_",
+      "____WB",
+      "___BWW",
+      "___WBW",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 487613
+  },
+  "2026-07-29": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___WBB",
+      "__WBWW",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 199429
+  },
+  "2026-07-30": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "____WW",
+      "_WBWBB",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 568783
+  },
+  "2026-07-31": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "___W_W",
+      "__WBWW",
+      "B_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 241322
+  },
+  "2026-08-01": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "____BW",
+      "_WB_BB",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 400303
+  },
+  "2026-08-02": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "___BWB",
+      "___BWW",
+      "___BWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 71158
+  },
+  "2026-08-03": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "____BW",
+      "_BBWWB",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 565455
+  },
+  "2026-08-04": {
+    "board": [
+      "______",
+      "_____B",
+      "___W_B",
+      "___WWB",
+      "___BBW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 494845
+  },
+  "2026-08-05": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____W",
+      "_____W",
+      "__BWWB",
+      "__BBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 72702
+  },
+  "2026-08-06": {
+    "board": [
+      "______",
+      "____B_",
+      "____WB",
+      "____WB",
+      "___BBW",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 207388
+  },
+  "2026-08-07": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___W_W",
+      "__BWBB",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 388968
+  },
+  "2026-08-08": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "_B__BB",
+      "_W_BWW",
+      "_WWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 372366
+  },
+  "2026-08-09": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "____WW",
+      "__B_BW",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 427219
+  },
+  "2026-08-10": {
+    "board": [
+      "______",
+      "______",
+      "___WBW",
+      "___BBW",
+      "___BWB",
+      "___WWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 67329
+  },
+  "2026-08-11": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "_B___W",
+      "_BWWBW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 373650
+  },
+  "2026-08-12": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___WWB",
+      "___BWB",
+      "___WBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 85735
+  },
+  "2026-08-13": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "__W_BW",
+      "__BWBW",
+      "WBBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 489822
+  },
+  "2026-08-14": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WB",
+      "___BWB",
+      "___WBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 83095
+  },
+  "2026-08-15": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "_____W",
+      "_BWBBW",
+      "WWBBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 84196
+  },
+  "2026-08-16": {
+    "board": [
+      "______",
+      "_____B",
+      "___WBB",
+      "___WWW",
+      "___BWB",
+      "_B_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 350922
+  },
+  "2026-08-17": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "__BWWW",
+      "W_BBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 551643
+  },
+  "2026-08-18": {
+    "board": [
+      "____B_",
+      "____W_",
+      "____WB",
+      "____BW",
+      "___BBW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203747
+  },
+  "2026-08-19": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "__B_BB",
+      "__BWWB",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 356909
+  },
+  "2026-08-20": {
+    "board": [
+      "______",
+      "____BB",
+      "____WB",
+      "____BW",
+      "_W__BW",
+      "_WBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 327571
+  },
+  "2026-08-21": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "___BWW",
+      "__BBWB",
+      "W_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 339598
+  },
+  "2026-08-22": {
+    "board": [
+      "____W_",
+      "____BB",
+      "____WB",
+      "____BW",
+      "___WBW",
+      "_B_WBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 284511
+  },
+  "2026-08-23": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "___BWB",
+      "__BBWW",
+      "_WWBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80050
+  },
+  "2026-08-24": {
+    "board": [
+      "_____B",
+      "____BW",
+      "____WB",
+      "____BW",
+      "___WWB",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 196785
+  },
+  "2026-08-25": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_____B",
+      "_BWBWW",
+      "_BWBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 69355
+  },
+  "2026-08-26": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "____WW",
+      "B___BW",
+      "BWWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 447315
+  },
+  "2026-08-27": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "__B_BB",
+      "_WBWWW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 305700
+  },
+  "2026-08-28": {
+    "board": [
+      "______",
+      "_____B",
+      "____BW",
+      "___BWW",
+      "B__BBW",
+      "W__WWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 258912
+  },
+  "2026-08-29": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "___W_W",
+      "_BBWWB",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 418414
+  },
+  "2026-08-30": {
+    "board": [
+      "______",
+      "____WB",
+      "____BW",
+      "___BWW",
+      "___BBW",
+      "__WWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 258304
+  },
+  "2026-08-31": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "_____B",
+      "_BBWWW",
+      "BBWBWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 72101
+  },
+  "2026-09-01": {
+    "board": [
+      "_____B",
+      "____WB",
+      "____BW",
+      "____WW",
+      "____BB",
+      "___WWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 68691
+  },
+  "2026-09-02": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "__BWBB",
+      "__BWWW",
+      "__WBBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 76309
+  },
+  "2026-09-03": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "____WW",
+      "BW_BBB",
+      "BBWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 358081
+  },
+  "2026-09-04": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WB",
+      "____BW",
+      "__BWWW",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 187625
+  },
+  "2026-09-05": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_B___W",
+      "_BWBBB",
+      "WBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 336624
+  },
+  "2026-09-06": {
+    "board": [
+      "_____B",
+      "____BW",
+      "____BW",
+      "____WB",
+      "____WW",
+      "___WBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 62250
+  },
+  "2026-09-07": {
+    "board": [
+      "______",
+      "______",
+      "_____B",
+      "___B_W",
+      "_BBWBB",
+      "WWBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 197495
+  },
+  "2026-09-08": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WW",
+      "_WWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79787
+  },
+  "2026-09-09": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "__B_BW",
+      "__BWWB",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 388754
+  },
+  "2026-09-10": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "___WWB",
+      "___BBW",
+      "__WBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 83730
+  },
+  "2026-09-11": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____B",
+      "____BW",
+      "__BWWB",
+      "_WBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 479362
+  },
+  "2026-09-12": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "___WWB",
+      "__WBWW",
+      "B_WBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 470980
+  },
+  "2026-09-13": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "_____W",
+      "__BWBB",
+      "_WBWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79454
+  },
+  "2026-09-14": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___WBB",
+      "_B_BWW",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 350876
+  },
+  "2026-09-15": {
+    "board": [
+      "______",
+      "____WW",
+      "____WB",
+      "____WW",
+      "___BBB",
+      "___BBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 58951
+  },
+  "2026-09-16": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "__W_BB",
+      "__BWWB",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 476408
+  },
+  "2026-09-17": {
+    "board": [
+      "______",
+      "_____W",
+      "___WWB",
+      "___BBW",
+      "___WBW",
+      "_B_BBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 223750
+  },
+  "2026-09-18": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "____WB",
+      "__BBWB",
+      "BWBWWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 74310
+  },
+  "2026-09-19": {
+    "board": [
+      "______",
+      "_____W",
+      "___BWB",
+      "___BBW",
+      "___WWW",
+      "W__BBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 404565
+  },
+  "2026-09-20": {
+    "board": [
+      "______",
+      "______",
+      "__B__W",
+      "__W_WB",
+      "__BBBW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 224408
+  },
+  "2026-09-21": {
+    "board": [
+      "______",
+      "_____B",
+      "____BB",
+      "___BWW",
+      "B__WWB",
+      "W__BWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 502106
+  },
+  "2026-09-22": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_____W",
+      "_WBBBW",
+      "_WBWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79275
+  },
+  "2026-09-23": {
+    "board": [
+      "______",
+      "_____B",
+      "____BW",
+      "____WB",
+      "____WB",
+      "_B__WW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 14892
+  },
+  "2026-09-24": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "___B_W",
+      "__BBWW",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 451856
+  },
+  "2026-09-25": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_B_WBB",
+      "_W_WBW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 403245
+  },
+  "2026-09-26": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "____WW",
+      "B__BWB",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 370592
+  },
+  "2026-09-27": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "_WBWWW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 257110
+  },
+  "2026-09-28": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "____BW",
+      "__W_BW",
+      "WBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 320173
+  },
+  "2026-09-29": {
+    "board": [
+      "______",
+      "____W_",
+      "____BW",
+      "___BWB",
+      "___BWW",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 414826
+  },
+  "2026-09-30": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "_____W",
+      "___WBB",
+      "_WWWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80409
+  },
+  "2026-10-01": {
+    "board": [
+      "______",
+      "______",
+      "___W__",
+      "___WBB",
+      "__BBWW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 393463
+  },
+  "2026-10-02": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WW",
+      "____WW",
+      "____BB",
+      "__WBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 59918
+  },
+  "2026-10-03": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "___B_B",
+      "__BBWW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 419180
+  },
+  "2026-10-04": {
+    "board": [
+      "______",
+      "______",
+      "___B__",
+      "___WWW",
+      "___WBB",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 12298
+  },
+  "2026-10-05": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "____BW",
+      "W_B_WW",
+      "BBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 184440
+  },
+  "2026-10-06": {
+    "board": [
+      "______",
+      "____WB",
+      "____WW",
+      "____WB",
+      "___WBB",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 83835
+  },
+  "2026-10-07": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "_B___W",
+      "_W_BWW",
+      "BWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 499761
+  },
+  "2026-10-08": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "__W_WB",
+      "__BWBW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 184080
+  },
+  "2026-10-09": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "_____W",
+      "____WW",
+      "B__WBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 12272
+  },
+  "2026-10-10": {
+    "board": [
+      "______",
+      "______",
+      "___W_W",
+      "___WWB",
+      "__BBBW",
+      "_BBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 402372
+  },
+  "2026-10-11": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "____BW",
+      "B_W_WB",
+      "BWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 486641
+  },
+  "2026-10-12": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "_B__WB",
+      "_W_BBW",
+      "_WBBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 296129
+  },
+  "2026-10-13": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "___W_W",
+      "__BWWB",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 232197
+  },
+  "2026-10-14": {
+    "board": [
+      "______",
+      "_____W",
+      "____BW",
+      "__B_WB",
+      "__WBBW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 251073
+  },
+  "2026-10-15": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "___B_W",
+      "_W_BWB",
+      "WWBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 543321
+  },
+  "2026-10-16": {
+    "board": [
+      "______",
+      "_____W",
+      "___B_B",
+      "___WBW",
+      "__BWBW",
+      "__WBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 283126
+  },
+  "2026-10-17": {
+    "board": [
+      "______",
+      "____B_",
+      "____WW",
+      "____WW",
+      "_W_BWB",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 461777
+  },
+  "2026-10-18": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____BW",
+      "B_BWBW",
+      "W_BWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 362585
+  },
+  "2026-10-19": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "_B__WW",
+      "_W_BWB",
+      "_BWBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 189133
+  },
+  "2026-10-20": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "____BW",
+      "__BWBW",
+      "B_BWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 354853
+  },
+  "2026-10-21": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "___BWB",
+      "__WBWW",
+      "_BBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 312478
+  },
+  "2026-10-22": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "___WBW",
+      "___WBB",
+      "___WWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 78898
+  },
+  "2026-10-23": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "__W_WB",
+      "__BBWW",
+      "B_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 486247
+  },
+  "2026-10-24": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "___B_W",
+      "_WWWBW",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 472090
+  },
+  "2026-10-25": {
+    "board": [
+      "______",
+      "____B_",
+      "____WW",
+      "__W_BW",
+      "__BBWB",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 297777
+  },
+  "2026-10-26": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WB",
+      "___BBW",
+      "WB_WWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 412141
+  },
+  "2026-10-27": {
+    "board": [
+      "______",
+      "______",
+      "____BW",
+      "___BBW",
+      "__BWWB",
+      "_WWBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 254870
+  },
+  "2026-10-28": {
+    "board": [
+      "_____B",
+      "_____B",
+      "_____W",
+      "_____B",
+      "____BW",
+      "B__WWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 9758
+  },
+  "2026-10-29": {
+    "board": [
+      "______",
+      "____B_",
+      "____W_",
+      "___BWW",
+      "__BWWB",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 580320
+  },
+  "2026-10-30": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "____BW",
+      "_W__BW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 199668
+  },
+  "2026-10-31": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "___BWB",
+      "___BWB",
+      "__WWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 67160
+  },
+  "2026-11-01": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "__W__W",
+      "_BBWBW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 352911
+  },
+  "2026-11-02": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___BWW",
+      "__WBWB",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 553835
+  },
+  "2026-11-03": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____B",
+      "____BB",
+      "____WW",
+      "__B_WW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 14587
+  },
+  "2026-11-04": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "___BWW",
+      "__WWBB",
+      "_WWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80394
+  },
+  "2026-11-05": {
+    "board": [
+      "_____B",
+      "____BB",
+      "____WW",
+      "____WB",
+      "___BWW",
+      "__BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 479804
+  },
+  "2026-11-06": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___WBW",
+      "__BWWW",
+      "BBWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 390476
+  },
+  "2026-11-07": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "_B__WW",
+      "_W_BWB",
+      "_WBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 452426
+  },
+  "2026-11-08": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "___BBW",
+      "B__WBW",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 203822
+  },
+  "2026-11-09": {
+    "board": [
+      "______",
+      "_____W",
+      "_____W",
+      "__B_WB",
+      "__BBWB",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 251890
+  },
+  "2026-11-10": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BBW",
+      "_B_WBW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 501307
+  },
+  "2026-11-11": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WB",
+      "WBWWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 85229
+  },
+  "2026-11-12": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____BW",
+      "___WBW",
+      "B_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 209079
+  },
+  "2026-11-13": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___BWW",
+      "__BBWW",
+      "_BWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 451759
+  },
+  "2026-11-14": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "____BB",
+      "____BB",
+      "___WWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 10739
+  },
+  "2026-11-15": {
+    "board": [
+      "______",
+      "____B_",
+      "____WW",
+      "____WB",
+      "___BWW",
+      "BWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 457753
+  },
+  "2026-11-16": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "____WW",
+      "_WBWBB",
+      "_BWBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 217936
+  },
+  "2026-11-17": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "__B_BB",
+      "__BWWW",
+      "WWBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 559879
+  },
+  "2026-11-18": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "____WW",
+      "____BB",
+      "_B__WW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 11193
+  },
+  "2026-11-19": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "___B_B",
+      "_W_BWW",
+      "BWWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 279700
+  },
+  "2026-11-20": {
+    "board": [
+      "______",
+      "_____W",
+      "____BB",
+      "__W_WB",
+      "__BWWB",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 407535
+  },
+  "2026-11-21": {
+    "board": [
+      "_____B",
+      "_____B",
+      "____WW",
+      "____BW",
+      "___BWW",
+      "WB_WBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 363804
+  },
+  "2026-11-22": {
+    "board": [
+      "______",
+      "____B_",
+      "____BB",
+      "___WWB",
+      "__BWWW",
+      "__BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 351758
+  },
+  "2026-11-23": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "____BW",
+      "_WB_BB",
+      "BWWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 470805
+  },
+  "2026-11-24": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "____WB",
+      "___WWW",
+      "__BBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 13953
+  },
+  "2026-11-25": {
+    "board": [
+      "_____W",
+      "_____B",
+      "____WB",
+      "____BW",
+      "_B__BW",
+      "_BWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 427748
+  },
+  "2026-11-26": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___BWB",
+      "__BWWB",
+      "__BBWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 61193
+  },
+  "2026-11-27": {
+    "board": [
+      "_____W",
+      "_____W",
+      "_____B",
+      "____WW",
+      "___BBW",
+      "BBWWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 190382
+  },
+  "2026-11-28": {
+    "board": [
+      "______",
+      "______",
+      "____WB",
+      "___WBB",
+      "__BWWB",
+      "W_BBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 380251
+  },
+  "2026-11-29": {
+    "board": [
+      "_____W",
+      "_____B",
+      "_____W",
+      "____WW",
+      "_B_BWW",
+      "_BBWBB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 205981
+  },
+  "2026-11-30": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "__B_WB",
+      "__W_BW",
+      "BWBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 284326
+  },
+  "2026-12-01": {
+    "board": [
+      "______",
+      "____BB",
+      "____WW",
+      "____BW",
+      "___WWW",
+      "___BBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 61794
+  },
+  "2026-12-02": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "_____W",
+      "_WWBBB",
+      "BWBWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80351
+  },
+  "2026-12-03": {
+    "board": [
+      "______",
+      "_____W",
+      "____WB",
+      "____BB",
+      "____WW",
+      "_BWBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 65359
+  },
+  "2026-12-04": {
+    "board": [
+      "______",
+      "______",
+      "___W_B",
+      "___BWW",
+      "__WBWB",
+      "B_BWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 436490
+  },
+  "2026-12-05": {
+    "board": [
+      "______",
+      "_____W",
+      "____WW",
+      "____BB",
+      "___WBW",
+      "__BBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 69999
+  },
+  "2026-12-06": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "__B__W",
+      "__BWWB",
+      "WBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 539225
+  },
+  "2026-12-07": {
+    "board": [
+      "____B_",
+      "____W_",
+      "____WB",
+      "____WB",
+      "___BBW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 238365
+  },
+  "2026-12-08": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "____WW",
+      "_BBWWB",
+      "_BWWBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 74498
+  },
+  "2026-12-09": {
+    "board": [
+      "______",
+      "____BW",
+      "____WB",
+      "____WB",
+      "__B_BW",
+      "_WBBWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 498937
+  },
+  "2026-12-10": {
+    "board": [
+      "______",
+      "______",
+      "____B_",
+      "___BWW",
+      "_W_BWB",
+      "WBBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 516115
+  },
+  "2026-12-11": {
+    "board": [
+      "_____B",
+      "_____W",
+      "_____B",
+      "____BW",
+      "____WW",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 13737
+  },
+  "2026-12-12": {
+    "board": [
+      "______",
+      "______",
+      "____W_",
+      "___WBB",
+      "__BBWB",
+      "BWWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 603639
+  },
+  "2026-12-13": {
+    "board": [
+      "______",
+      "_____B",
+      "____WW",
+      "____WW",
+      "_BW_BW",
+      "_BBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 205906
+  },
+  "2026-12-14": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "___BWB",
+      "___WWB",
+      "BBWWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 75940
+  },
+  "2026-12-15": {
+    "board": [
+      "______",
+      "_____W",
+      "_____B",
+      "____BW",
+      "_WBWBW",
+      "_WBBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 299474
+  },
+  "2026-12-16": {
+    "board": [
+      "______",
+      "_____B",
+      "____BW",
+      "___BWB",
+      "___BWW",
+      "___WBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 60902
+  },
+  "2026-12-17": {
+    "board": [
+      "______",
+      "____W_",
+      "____WB",
+      "____BW",
+      "__BWBB",
+      "_BWWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 575049
+  },
+  "2026-12-18": {
+    "board": [
+      "______",
+      "_____W",
+      "__B__W",
+      "__W_WB",
+      "__BBWW",
+      "__BBBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 255360
+  },
+  "2026-12-19": {
+    "board": [
+      "______",
+      "____B_",
+      "____WB",
+      "____BW",
+      "_W_WBW",
+      "_BBWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 506664
+  },
+  "2026-12-20": {
+    "board": [
+      "______",
+      "_____B",
+      "_____W",
+      "_____B",
+      "__B_WW",
+      "__WBBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 2,
+    "state_id": 6734
+  },
+  "2026-12-21": {
+    "board": [
+      "______",
+      "____W_",
+      "____BB",
+      "___WWW",
+      "___BBW",
+      "B_BWWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 348993
+  },
+  "2026-12-22": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "_____B",
+      "_WBWWB",
+      "_WWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 79815
+  },
+  "2026-12-23": {
+    "board": [
+      "______",
+      "______",
+      "____BB",
+      "___BWW",
+      "___WBW",
+      "BBBWWW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 198728
+  },
+  "2026-12-24": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "____BB",
+      "_WWBWW",
+      "_WWBBB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80930
+  },
+  "2026-12-25": {
+    "board": [
+      "______",
+      "____WB",
+      "____BB",
+      "____BW",
+      "___WBB",
+      "___WWW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 80636
+  },
+  "2026-12-26": {
+    "board": [
+      "______",
+      "______",
+      "_____W",
+      "___WBB",
+      "_B_BWW",
+      "BBWWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 275666
+  },
+  "2026-12-27": {
+    "board": [
+      "_____B",
+      "_____W",
+      "____WB",
+      "____WW",
+      "___WBB",
+      "___BWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 73797
+  },
+  "2026-12-28": {
+    "board": [
+      "______",
+      "______",
+      "______",
+      "____WB",
+      "_WBBWW",
+      "_BBWBW"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 72155
+  },
+  "2026-12-29": {
+    "board": [
+      "______",
+      "____BW",
+      "____BW",
+      "____WW",
+      "____BB",
+      "__WBWB"
+    ],
+    "step_to_win": 2,
+    "rotation_counter": 3,
+    "state_id": 66491
+  },
+  "2026-12-30": {
+    "board": [
+      "______",
+      "_____B",
+      "_____B",
+      "___W_W",
+      "_B_BWW",
+      "BWBWBW"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 510273
+  },
+  "2026-12-31": {
+    "board": [
+      "______",
+      "______",
+      "____WW",
+      "__W_BB",
+      "__BWWB",
+      "_BWBWB"
+    ],
+    "step_to_win": 1,
+    "rotation_counter": 1,
+    "state_id": 384793
+  }
+}
