@@ -37,10 +37,34 @@ module.exports = async (req, res) => {
 		const SINCE = '2025-09-01';
 		const todayUtc = toUtcDateStr();
 
-		const riddlesPath = process.env.RIDDLES_JSON_PATH || path.join(process.cwd(), 'solving', 'output', 'riddles_calendar.json');
-		console.log('[chooser] resolved paths', { requestId, riddlesPath });
-		const raw = fs.readFileSync(riddlesPath, 'utf8');
-		console.log('[chooser] file read ok', { requestId, bytes: raw.length });
+		const candidatePaths = [];
+		if (process.env.RIDDLES_JSON_PATH) {
+			candidatePaths.push(process.env.RIDDLES_JSON_PATH);
+		}
+		candidatePaths.push(
+			path.join(__dirname, '..', '..', 'solving', 'output', 'riddles_calendar.json'),
+			path.join(process.cwd(), 'solving', 'output', 'riddles_calendar.json')
+		);
+		const existence = candidatePaths.map(p => ({ path: p, exists: fs.existsSync(p) }));
+		console.log('[chooser] resolved paths', { requestId, candidates: existence });
+		const chosen = existence.find(e => e.exists);
+		let raw;
+		if (chosen) {
+			const riddlesPath = chosen.path;
+			raw = fs.readFileSync(riddlesPath, 'utf8');
+			console.log('[chooser] file read ok', { requestId, bytes: raw.length, source: 'fs', path: riddlesPath });
+		} else {
+			const proto = (req && req.headers && (req.headers['x-forwarded-proto'] || '')).split(',')[0] || 'https';
+			const host = req && req.headers && req.headers.host;
+			const publicUrl = `${proto}://${host}/solving/output/riddles_calendar.json`;
+			console.log('[chooser] reading via http fallback', { requestId, publicUrl });
+			const httpRes = await fetch(publicUrl, { headers: { 'accept': 'application/json' }, cache: 'no-store' });
+			if (!httpRes.ok) {
+				throw new Error(`http_fallback_failed status=${httpRes.status}`);
+			}
+			raw = await httpRes.text();
+			console.log('[chooser] http fallback read ok', { requestId, bytes: raw.length });
+		}
 		const all = JSON.parse(raw);
 		const totalKeys = Object.keys(all || {}).length;
 		console.log('[chooser] json parsed', { requestId, totalKeys });
