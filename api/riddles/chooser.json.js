@@ -21,13 +21,29 @@ function clampToRange(dateStr, startStr, endStr) {
 }
 
 module.exports = async (req, res) => {
+	const requestStartMs = Date.now();
+	const requestId = (req && (req.headers['x-vercel-id'] || req.headers['x-request-id'])) || Math.random().toString(36).slice(2);
 	try {
+		console.log('[chooser] start', {
+			requestId,
+			method: req && req.method,
+			url: req && req.url,
+			host: req && req.headers && req.headers.host,
+			xForwardedFor: req && req.headers && req.headers['x-forwarded-for'],
+			cwd: process.cwd(),
+			__dirname,
+			envHasCustomPath: Boolean(process.env.RIDDLES_JSON_PATH)
+		});
 		const SINCE = '2025-09-01';
 		const todayUtc = toUtcDateStr();
 
 		const riddlesPath = process.env.RIDDLES_JSON_PATH || path.join(process.cwd(), 'solving', 'output', 'riddles_calendar.json');
+		console.log('[chooser] resolved paths', { requestId, riddlesPath });
 		const raw = fs.readFileSync(riddlesPath, 'utf8');
+		console.log('[chooser] file read ok', { requestId, bytes: raw.length });
 		const all = JSON.parse(raw);
+		const totalKeys = Object.keys(all || {}).length;
+		console.log('[chooser] json parsed', { requestId, totalKeys });
 
 		// Collect relevant dates between SINCE and todayUtc that exist in the source JSON
 		const dates = Object.keys(all)
@@ -48,10 +64,13 @@ module.exports = async (req, res) => {
 		res.setHeader('Content-Type', 'application/json');
 		res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
 		res.status(200).end(JSON.stringify({ since: '2025-09-01', todayUtc, items }));
+		console.log('[chooser] success', { requestId, items: items.length, durationMs: Date.now() - requestStartMs });
 	} catch (err) {
 		res.statusCode = 500;
 		res.setHeader('Content-Type', 'application/json');
-		res.end(JSON.stringify({ error: 'internal_error', message: err && err.message ? err.message : String(err) }));
+		const message = err && err.message ? err.message : String(err);
+		console.error('[chooser] error', { requestId, message, stack: err && err.stack, durationMs: Date.now() - requestStartMs });
+		res.end(JSON.stringify({ error: 'internal_error', message }));
 	}
 };
 

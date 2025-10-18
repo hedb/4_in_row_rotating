@@ -177,12 +177,9 @@
         }
 
         async function loadChooser() {
-            const qs = new URLSearchParams(location.search);
-            const mockParam = (qs.get('mock') || '').toLowerCase();
-            const forceMockOn = mockParam === '1' || mockParam === 'true';
-            const forceMockOff = mockParam === '0' || mockParam === 'false';
-            const isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-            const useMock = forceMockOn || (!forceMockOff && isLocal);
+			const qs = new URLSearchParams(location.search);
+			const mockParam = (qs.get('mock') || '').toLowerCase();
+			const useMock = mockParam === '1' || mockParam === 'true';
 
             statusEl.textContent = 'Loading…';
             if (useMock) {
@@ -191,16 +188,15 @@
                 return;
             }
 
-            try {
-                const res = await fetch('/api/riddles/chooser.json', { cache: 'no-store' });
-                if (!res.ok) throw new Error('Network error');
-                const data = await res.json();
-                renderData(data);
-            } catch (err) {
-                console.warn('[RiddleChooser] Falling back to mock after fetch error:', err);
-                const data = mockChooser();
-                renderData(data, ' – mock (fallback)');
-            }
+			try {
+				const res = await fetch('/api/riddles/chooser.json', { cache: 'no-store' });
+				if (!res.ok) throw new Error('Network error');
+				const data = await res.json();
+				renderData(data);
+			} catch (err) {
+				console.warn('[RiddleChooser] Fetch error:', err);
+				statusEl.textContent = 'Failed to load riddles.';
+			}
         }
 
         document.addEventListener('DOMContentLoaded', loadChooser);
