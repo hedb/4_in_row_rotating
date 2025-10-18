@@ -105,24 +105,61 @@
             return card;
         }
 
-        function mockChooser() {
-            const now = new Date();
-            const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
-                .toISOString().slice(0,10);
-            const items = [];
-            for (let i = 0; i < 28; i++) {
-                const d = new Date(Date.parse(todayUtc));
-                d.setUTCDate(d.getUTCDate() - i);
-                const dateStr = d.toISOString().slice(0,10);
-                items.push({
-                    date: dateStr,
-                    enabled: i < 20,
-                    board: ["______","______","___WWB","___WWB","___BBW","B_WWBB"],
-                    rotation_counter: 0,
-                    step_to_win: 1
+        function toUtcDateStr(date = new Date()) {
+            const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+            return d.toISOString().slice(0, 10);
+        }
+
+        function daysSinceEpochUtc(dateStr) {
+            return Math.floor(Date.parse(dateStr) / 86400000);
+        }
+
+        function isEnabled(dateStr, todayStr) {
+            const todayDays = daysSinceEpochUtc(todayStr);
+            const dDays = daysSinceEpochUtc(dateStr);
+            return dDays <= todayDays && dDays >= todayDays - 19; // last 20 days incl today
+        }
+
+        async function mockChooser() {
+            // Try to mirror current data by reading the local JSON from repo
+            const SINCE = '2025-09-01';
+            const todayUtc = toUtcDateStr();
+            try {
+                const res = await fetch('/solving/output/riddles_calendar.json', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Failed to read local riddles_calendar.json');
+                const all = await res.json();
+                const dates = Object.keys(all)
+                    .filter(d => d >= SINCE && d <= todayUtc)
+                    .sort();
+                const items = dates.map(date => {
+                    const entry = all[date] || {};
+                    return {
+                        date,
+                        enabled: isEnabled(date, todayUtc),
+                        board: entry.board,
+                        rotation_counter: entry.rotation_counter,
+                        step_to_win: entry.step_to_win
+                    };
                 });
+                return { since: SINCE, todayUtc, items };
+            } catch (e) {
+                console.warn('[RiddleChooser] Local JSON load failed, falling back to synthetic mock', e);
+                // Fallback synthetic mock (kept minimal)
+                const items = [];
+                for (let i = 0; i < 28; i++) {
+                    const d = new Date(Date.parse(todayUtc));
+                    d.setUTCDate(d.getUTCDate() - i);
+                    const dateStr = d.toISOString().slice(0,10);
+                    items.push({
+                        date: dateStr,
+                        enabled: i < 20,
+                        board: ["______","______","___WWB","___WWB","___BBW","B_WWBB"],
+                        rotation_counter: 1,
+                        step_to_win: 1
+                    });
+                }
+                return { since: SINCE, todayUtc, items };
             }
-            return { since: '2025-09-01', todayUtc, items };
         }
 
         function renderData(data, note = '') {
@@ -149,7 +186,7 @@
 
             statusEl.textContent = 'Loading…';
             if (useMock) {
-                const data = mockChooser();
+                const data = await mockChooser();
                 renderData(data, ' – mock');
                 return;
             }
