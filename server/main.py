@@ -3,7 +3,9 @@ import time
 import uuid
 import logging
 import traceback
-from datetime import datetime, timedelta
+import copy
+import threading
+from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from io import BytesIO
@@ -20,6 +22,8 @@ REGION = "europe-west1"
 CORS_ORIGIN = "*"  # Allow all origins for now
 WAIT_TIMEOUT = 30  # seconds for long polling
 SESSION_TIMEOUT = 3600  # 1 hour for game sessions
+MOCK_SESSIONS = {}
+MOCK_SESSIONS_LOCK = threading.Lock()
 
 def log_request_info(request):
     """Log detailed request information"""
@@ -70,7 +74,7 @@ def clean_firestore_timestamps(data):
         return cleaned
     return data
 
-def create_mock_session():
+def create_mock_session(rotation_frequency=3):
     """Create a mock session when Firestore is not available"""
     session_id = str(uuid.uuid4())
     session_data = {
@@ -89,7 +93,7 @@ def create_mock_session():
         "moves": [],  # Empty moves array
         "currentPlayer": 1,
         "moveCount": 0,
-        "rotationFrequency": 3,  # Default frequency
+        "rotationFrequency": rotation_frequency,
         "gameOver": False,
         "winner": None,
         "createdAt": datetime.now().isoformat(),
@@ -99,6 +103,36 @@ def create_mock_session():
     }
     logger.info(f"Created mock session: {session_id}")
     return session_data
+
+def is_mock_session_expired(session_data):
+    """Check if an in-memory mock session has expired."""
+    expires_at = session_data.get("expiresAt")
+    if not expires_at:
+        return False
+
+    try:
+        return datetime.fromisoformat(expires_at) <= datetime.now()
+    except ValueError:
+        # If timestamp is malformed, keep session rather than dropping unexpectedly.
+        return False
+
+def get_mock_session(session_id):
+    """Fetch mock session by ID, removing expired sessions."""
+    with MOCK_SESSIONS_LOCK:
+        session = MOCK_SESSIONS.get(session_id)
+        if not session:
+            return None
+
+        if is_mock_session_expired(session):
+            del MOCK_SESSIONS[session_id]
+            return None
+
+        return copy.deepcopy(session)
+
+def save_mock_session(session_data):
+    """Persist mock session in memory."""
+    with MOCK_SESSIONS_LOCK:
+        MOCK_SESSIONS[session_data["sessionId"]] = copy.deepcopy(session_data)
 
 def handle_create_session(request):
     """Handle session creation with Firestore"""
@@ -114,8 +148,8 @@ def handle_create_session(request):
         if db is None:
             logger.warning("Firestore not available, using mock session")
             # This mock response should also respect the frequency for local testing
-            mock_session = create_mock_session()
-            mock_session['rotationFrequency'] = rotation_frequency
+            mock_session = create_mock_session(rotation_frequency=rotation_frequency)
+            save_mock_session(mock_session)
             return {
                 "sessionId": mock_session["sessionId"],
                 "playerId": 1,
@@ -197,13 +231,21 @@ def handle_join_session():
         
         db = get_firestore_client()
         if db is None:
+            session_data = get_mock_session(session_id)
+            if session_data is None:
+                return {"error": "Session not found"}, 404
+
+            if session_data["players"]["2"]["connected"]:
+                return {"error": "Game is full"}, 400
+
+            session_data["players"]["2"]["connected"] = True
+            session_data["players"]["2"]["lastSeen"] = datetime.now().isoformat()
+            session_data["status"] = "playing"
+            save_mock_session(session_data)
+
             return {
                 "playerId": 2,
-                "gameState": {
-                    "status": "ready",
-                    "mock": True,
-                    "message": "Mock join - Firestore not available"
-                }
+                "gameState": session_data
             }
         
         # Get session from Firestore
@@ -250,7 +292,10 @@ def handle_get_session_state(session_id):
         
         db = get_firestore_client()
         if db is None:
-            return {"error": "Firestore not available"}, 503
+            session_data = get_mock_session(session_id)
+            if session_data is None:
+                return {"error": "Session not found"}, 404
+            return session_data
         
         session_ref = db.collection('game_sessions').document(session_id)
         session_doc = session_ref.get()
@@ -293,10 +338,27 @@ def handle_submit_move():
         
         db = get_firestore_client()
         if db is None:
+            session_data = get_mock_session(session_id)
+            if session_data is None:
+                return {"error": "Session not found"}, 404
+
+            current_move_count = session_data.get('moveCount', 0)
+            move = {
+                'player': player_id,
+                'column': column,
+                'moveNumber': current_move_count + 1,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            }
+
+            session_data.setdefault('moves', []).append(move)
+            session_data['moveCount'] = current_move_count + 1
+            save_mock_session(session_data)
+
             return {
                 "success": True,
                 "mock": True,
-                "message": "Move stored (mock) - Firestore not available"
+                "message": "Move stored in mock session",
+                "moveNumber": current_move_count + 1
             }
         
         # Get session from Firestore
@@ -315,7 +377,7 @@ def handle_submit_move():
             'player': player_id,
             'column': column,
             'moveNumber': current_move_count + 1,
-            'timestamp': datetime.utcnow().isoformat()
+            'timestamp': datetime.now(timezone.utc).isoformat()
         }
         
         # Append move to session's moves array and increment move count
@@ -349,11 +411,20 @@ def handle_get_moves(session_id):
         
         db = get_firestore_client()
         if db is None:
+            session_data = get_mock_session(session_id)
+            if session_data is None:
+                return {"error": "Session not found"}, 404
+
+            all_moves = session_data.get('moves', [])
+            current_move_count = session_data.get('moveCount', 0)
+            new_moves = [move for move in all_moves if move.get('moveNumber', 0) > since_move]
+
             return {
-                "moves": [],
-                "currentMoveCount": 0,
+                "moves": new_moves,
+                "currentMoveCount": current_move_count,
+                "sessionId": session_id,
                 "mock": True,
-                "message": "Mock moves - Firestore not available"
+                "message": "Moves returned from mock session"
             }
         
         # Get session from Firestore
